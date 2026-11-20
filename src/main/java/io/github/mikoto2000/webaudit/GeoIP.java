@@ -11,6 +11,7 @@ import java.util.*;
 
 public final class GeoIP implements AutoCloseable {
   final List<String> warnings = new ArrayList<>();
+  final List<String> lookupWarnings = new ArrayList<>();
   private Reader country, asn;
   private final List<Map<String, Object>> metadata = new ArrayList<>();
   private final LinkedHashMap<String, Map<String, Object>> cache =
@@ -210,8 +211,8 @@ public final class GeoIP implements AutoCloseable {
   }
 
   private void lookupError(String role, Exception ex) {
-    if (warnings.size() < 10)
-      unique(warnings, "GeoIP " + role + " lookup failed: " + ex.getMessage());
+    if (lookupWarnings.size() < 10)
+      unique(lookupWarnings, "GeoIP " + role + " lookup failed: " + ex.getMessage());
   }
 
   public List<Map<String, Object>> metadata() {

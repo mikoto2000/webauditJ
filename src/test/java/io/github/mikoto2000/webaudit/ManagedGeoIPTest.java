@@ -17,7 +17,9 @@ class ManagedGeoIPTest {
         Path legacy = Files.createTempDirectory(dir, "legacy");
         Files.writeString(legacy.resolve("country.mmdb"), "broken");
         if (healthyAsn) Files.copy(Path.of(GeoIPTest.db("asn")), legacy.resolve("asn.mmdb"));
-        var opened = ManagedGeoIP.open("", "", managedDirectory ? dir.resolve("uninstalled") : null, legacy, 4);
+        var opened =
+            ManagedGeoIP.open(
+                "", "", managedDirectory ? dir.resolve("uninstalled") : null, legacy, 4);
         assertEquals(1, opened.warnings().size());
         try (var g = opened.geo()) {
           assertEquals(healthyAsn, g != null);

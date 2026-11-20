@@ -155,6 +155,9 @@ final class GeoAnalysis {
     }
     for (String w : g.warnings) {
       Engine.warn(report, w);
+    }
+    for (String w : g.lookupWarnings) {
+      Engine.warn(report, w);
       report.put("partial", true);
     }
   }

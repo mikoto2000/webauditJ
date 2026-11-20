@@ -1,9 +1,10 @@
 package io.github.mikoto2000.webaudit;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.*;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class AuraAnalysisTest {
   @Test

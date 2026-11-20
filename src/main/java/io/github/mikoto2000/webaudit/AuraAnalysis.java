@@ -33,31 +33,43 @@ final class AuraAnalysis {
     this.o = o;
   }
 
-  void observe(Event e) {
-    if (e.timezoneUnknown || !e.logType.equals("http_access-log")) return;
+  private boolean allowKey() {
     if (peers.size() + windows.size() + uas.size() + hours.size() >= o.maxKeys) {
       unique(warnings, "Aura aggregation limit reached; source aggregations are incomplete");
-      return;
+      return false;
     }
-    Peer p = peers.computeIfAbsent(e.ip, _ -> new Peer());
-    p.count++;
-    p.bytes += e.bytes == null ? 0 : e.bytes;
-    if (p.first == null || e.time.isBefore(p.first)) p.first = e.time;
-    if (p.last == null || e.time.isAfter(p.last)) p.last = e.time;
-    if (e.status != null && e.status == 404) {
-      if (p.notFound == 0 || e.time.isBefore(p.notFoundFirst)) p.notFoundFirst = e.time;
-      if (p.notFound == 0 || e.time.isAfter(p.notFoundLast)) p.notFoundLast = e.time;
-      p.notFound++;
+    return true;
+  }
+
+  void observe(Event e) {
+    if (e.timezoneUnknown || !e.logType.equals("http_access-log")) return;
+    Peer p = peers.get(e.ip);
+    if (p == null && allowKey()) {
+      p = new Peer();
+      peers.put(e.ip, p);
     }
-    if (e.status != null && (e.status == 401 || e.status == 403)) {
-      p.auth++;
-      String key = e.ip + "/" + (Math.floorDiv(e.time.toEpochSecond(), 300) * 300);
-      long n = windows.merge(key, 1L, Long::sum);
-      p.worst = Math.max(p.worst, n);
+    if (p != null) {
+      p.count++;
+      p.bytes += e.bytes == null ? 0 : e.bytes;
+      if (p.first == null || e.time.isBefore(p.first)) p.first = e.time;
+      if (p.last == null || e.time.isAfter(p.last)) p.last = e.time;
+      if (e.status != null && e.status == 404) {
+        if (p.notFound == 0 || e.time.isBefore(p.notFoundFirst)) p.notFoundFirst = e.time;
+        if (p.notFound == 0 || e.time.isAfter(p.notFoundLast)) p.notFoundLast = e.time;
+        p.notFound++;
+      }
+      if (e.status != null && (e.status == 401 || e.status == 403)) {
+        p.auth++;
+        String key = e.ip + "/" + (Math.floorDiv(e.time.toEpochSecond(), 300) * 300);
+        if (windows.containsKey(key) || allowKey()) {
+          long n = windows.merge(key, 1L, Long::sum);
+          p.worst = Math.max(p.worst, n);
+        }
+      }
     }
     String ua = SourceMatcher.sourceUA(e), key = digest(ua);
     UA u = uas.get(key);
-    if (u == null) {
+    if (u == null && allowKey()) {
       String value = clip(ua, 512);
       if (!value.equals(ua))
         unique(
@@ -65,8 +77,9 @@ final class AuraAnalysis {
       u = new UA(value);
       uas.put(key, u);
     }
-    u.count++;
-    hours.merge(Math.floorDiv(e.time.toEpochSecond(), 3600) * 3600, 1L, Long::sum);
+    if (u != null) u.count++;
+    long hour = Math.floorDiv(e.time.toEpochSecond(), 3600) * 3600;
+    if (hours.containsKey(hour) || allowKey()) hours.merge(hour, 1L, Long::sum);
   }
 
   private List<String> top(java.util.function.ToLongFunction<Peer> count, int max) {
