@@ -50,19 +50,12 @@ final class DBIPProvider implements GeoSource {
         private final HttpClient client=HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).connectTimeout(Duration.ofSeconds(10)).proxy(new ProxySelector(){public List<Proxy> select(URI uri){return List.of(Proxy.NO_PROXY);}public void connectFailed(URI uri,SocketAddress address,IOException error){}}).build();
         public Response get(URI uri,Duration timeout,OutputStream out,long limit)throws IOException{
             var request=HttpRequest.newBuilder(uri).timeout(timeout).header("User-Agent","Mozilla/5.0 (compatible; WebAuditJ GeoIP manager)").GET().build();
-            CompletableFuture<HttpResponse<Void>> future=client.sendAsync(request,info->info.statusCode()==200?new BoundedBody(out,limit):HttpResponse.BodySubscribers.replacing(null));
+            CompletableFuture<HttpResponse<Void>> future=client.sendAsync(request,info->info.statusCode()==200?new LimitedHttpBody(out,limit):HttpResponse.BodySubscribers.replacing(null));
             try{var r=future.get(timeout.toNanos(),TimeUnit.NANOSECONDS);return new Response(r.statusCode(),r.headers().firstValue("location").orElse(null));}
             catch(InterruptedException ex){future.cancel(true);Thread.currentThread().interrupt();throw new IOException("GeoIP download interrupted",ex);}
             catch(TimeoutException ex){future.cancel(true);throw new IOException("GeoIP download timeout",ex);}
             catch(ExecutionException ex){throw new IOException("GeoIP transfer failed: "+ex.getCause().getMessage(),ex.getCause());}
         }
     }
-    private static final class BoundedBody implements HttpResponse.BodySubscriber<Void>{
-        private final OutputStream out;private final long limit;private long count;private Flow.Subscription subscription;private final CompletableFuture<Void> done=new CompletableFuture<>();
-        BoundedBody(OutputStream out,long limit){this.out=out;this.limit=limit;}
-        public CompletionStage<Void> getBody(){return done;}
-        public void onSubscribe(Flow.Subscription subscription){this.subscription=subscription;subscription.request(1);}
-        public void onNext(List<ByteBuffer> chunks){try{for(var chunk:chunks){int n=chunk.remaining();count+=n;if(count>limit)throw new IOException("GeoIP transfer exceeds size limit");byte[] bytes=new byte[n];chunk.get(bytes);out.write(bytes);}subscription.request(1);}catch(Exception ex){subscription.cancel();done.completeExceptionally(ex);}}
-        public void onError(Throwable error){done.completeExceptionally(error);}public void onComplete(){done.complete(null);}
-    }
+
 }
