@@ -1,0 +1,44 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build and test executable JAR
+        run: ./mvnw -B -ntp -s .mvn/settings.xml verify
+      - name: Inspect executable JAR
+        run: python tools/verify_jar.py
+      - name: Verify offline execution
+        run: python tools/verify_offline.py
+      - name: Create release with executable JAR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: >-
+          gh release create "$RELEASE_TAG" target/webauditJ.jar
+          --verify-tag
+          --title "$RELEASE_TAG"
+          --generate-notes
