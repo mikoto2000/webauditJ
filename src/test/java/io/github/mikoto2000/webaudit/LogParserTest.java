@@ -12,7 +12,8 @@ class LogParserTest {
                     assertThrows(IllegalArgumentException.class, () -> LogParser.parse(Json.string(row.get("input")), Json.string(row.get("file")), Json.number(row.get("line")), Json.string(row.get("custom"))));
                 } else {
                     Event e = LogParser.parse(Json.string(row.get("input")), Json.string(row.get("file")), Json.number(row.get("line")), Json.string(row.get("custom")));
-                    assertEquals(Json.MAPPER.valueToTree(row.get("event")), Json.MAPPER.valueToTree(e.toMap()));
+                    assertEquals(Json.MAPPER.readTree(Json.MAPPER.writeValueAsString(row.get("event"))),
+                            Json.MAPPER.readTree(Json.MAPPER.writeValueAsString(e.toMap())));
                 }
             }));
     }
