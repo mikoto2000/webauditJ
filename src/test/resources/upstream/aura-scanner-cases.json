@@ -1,0 +1,14 @@
+[
+  {
+    "ua": "sqlmap/1.7#stable",
+    "match": true
+  },
+  {
+    "ua": "Mozilla/5.0 (compatible; Nuclei)",
+    "match": true
+  },
+  {
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "match": false
+  }
+]

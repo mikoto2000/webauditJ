@@ -1,0 +1,347 @@
+[
+  {
+    "id": "WA-sqli",
+    "category": "sqli",
+    "severity": "high",
+    "pattern": "union(?:\\s|/\\*.*?\\*/|\\+)+(?:all\\s+)?select|(?:'|\\\")\\s*(?:or|and)\\s+|\\b(?:or|and)\\s+1\\s*=\\s*1|\\b(?:sleep|pg_sleep|benchmark|load_file)\\s*\\(|information_schema|into\\s+(?:out|dump)file",
+    "description": "SQL injection attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-nosqli",
+    "category": "nosqli",
+    "severity": "high",
+    "pattern": "\\[\\$(?:ne|gt|lt|gte|lte|regex|where|exists|in|nin|or)\\]|\\$where\\s*[=:]",
+    "description": "NoSQL operator injection attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-command_injection",
+    "category": "command_injection",
+    "severity": "critical",
+    "pattern": "(?:;|\\||\\$\\(|`|\\n)\\s*(?:whoami|id|uname|cat|curl|wget|bash|sh|powershell)(?:\\b)|/bin/(?:ba)?sh|/dev/tcp/|\\$\\{ifs\\}",
+    "description": "Command injection attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-shellshock",
+    "category": "shellshock",
+    "severity": "critical",
+    "pattern": "\\(\\)\\s*\\{",
+    "description": "Shellshock function payload",
+    "field": "url_headers",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-ssti",
+    "category": "ssti",
+    "severity": "high",
+    "pattern": "\\{\\{\\s*(?:[0-9]+\\s*\\*|config\\b|self\\b|request\\b)|\\$\\{\\s*[0-9]+\\s*\\*|\\{%\\s*(?:import|include)",
+    "description": "Template injection attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-ldap_injection",
+    "category": "ldap_injection",
+    "severity": "high",
+    "pattern": "\\)\\((?:uid|cn|userpassword|objectclass)=",
+    "description": "LDAP injection attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-xpath_injection",
+    "category": "xpath_injection",
+    "severity": "medium",
+    "pattern": "/child::|\\]\\[position\\(|\\bor\\s+count\\(",
+    "description": "XPath injection attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-xss",
+    "category": "xss",
+    "severity": "medium",
+    "pattern": "<(?:script|svg|img|iframe)\\b|javascript\\s*:|\\bon(?:error|load|mouseover)\\s*=",
+    "description": "XSS payload attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-lfi_traversal",
+    "category": "lfi_traversal",
+    "severity": "high",
+    "pattern": "\\.\\./|/etc/(?:passwd|shadow)|/proc/self/|php://(?:filter|input)|(?:file|phar|zip):///|windows/system32|boot\\.ini",
+    "description": "Traversal or local inclusion attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-rfi",
+    "category": "rfi",
+    "severity": "high",
+    "pattern": "(?:[?&])(?:include|require|page|template|file)=\\s*(?:https?|ftp)://",
+    "description": "Remote inclusion candidate",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-ssrf",
+    "category": "ssrf",
+    "severity": "high",
+    "pattern": "(?:169\\.254\\.169\\.254|metadata\\.google|100\\.100\\.100\\.200)|=(?:https?://(?:localhost\\b|127\\.|\\[::1\\]|192\\.168\\.|10\\.[0-9])|(?:gopher|dict)://)",
+    "description": "SSRF or metadata target attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-xxe",
+    "category": "xxe",
+    "severity": "high",
+    "pattern": "<!entity\\b|<!doctype\\s+[^>]+\\bsystem\\b",
+    "description": "URL-visible XML external entity attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-deserialization",
+    "category": "deserialization",
+    "severity": "high",
+    "pattern": "java\\.lang\\.(?:runtime|processbuilder)|__reduce__|pickle\\.loads|ysoserial|_\\$\\$nd_func|o:[0-9]+:\"",
+    "description": "Deserialization/RCE payload attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-webshell",
+    "category": "webshell",
+    "severity": "critical",
+    "pattern": "/(?:c99|r57|wso|shell|cmd|b374k)\\.(?:php|jsp|asp|aspx)(?:[?;/]|$)|[?&]cmd=(?:whoami|id|cat|dir)\\b",
+    "description": "Webshell probe (not proof of presence)",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-log4shell",
+    "category": "log4shell",
+    "severity": "critical",
+    "pattern": "\\$\\{(?:jndi:|\\$\\{|lower:|upper:|::-j)",
+    "description": "Log4Shell-style lookup attempt",
+    "field": "url_headers",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-spring4shell",
+    "category": "spring4shell",
+    "severity": "critical",
+    "pattern": "class\\.(?:module\\.)?classloader|springframework[^&]*classloader",
+    "description": "Spring classloader manipulation attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-struts_ognl",
+    "category": "struts_ognl",
+    "severity": "critical",
+    "pattern": "_memberaccess|ognl\\.|@java\\.lang|#context\\[",
+    "description": "Struts/OGNL payload attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-crlf_injection",
+    "category": "crlf_injection",
+    "severity": "medium",
+    "pattern": "%0d%0a|%0a%0d|\\r\\n",
+    "description": "CRLF injection attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-open_redirect",
+    "category": "open_redirect",
+    "severity": "low",
+    "pattern": "[?&](?:redirect|next|return_url)=(?://|/\\\\)",
+    "description": "Protocol-relative redirect candidate",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-access_bypass",
+    "category": "access_bypass",
+    "severity": "high",
+    "pattern": "/\\.\\.;/|/;/|/;jsessionid",
+    "description": "Access-control bypass path attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-sensitive_file",
+    "category": "sensitive_file",
+    "severity": "high",
+    "pattern": "/(?:\\.env(?:\\.[a-z0-9_-]+)?|\\.git/(?:config|head)|\\.svn/entries|\\.htpasswd|id_rsa|\\.aws/credentials|dump\\.sql|database\\.sql|wp-config\\.php(?:\\.bak)?|web\\.config)(?:[?;/]|$)",
+    "description": "Sensitive resource probe",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-null_byte",
+    "category": "null_byte",
+    "severity": "medium",
+    "pattern": "%00|\\x00|%c0%80",
+    "description": "Null-byte encoding attempt",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-cve_probe",
+    "category": "cve_probe",
+    "severity": "medium",
+    "pattern": "/vendor/phpunit/|/phpunit/src/util/php/eval-stdin|/actuator/(?:env|heapdump|gateway)|/wls-wsat/|/remote/fgt_lang\\?",
+    "description": "Selected vulnerable component probe",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-iis_aspnet",
+    "category": "iis_aspnet",
+    "severity": "medium",
+    "pattern": "/(?:trace|elmah)\\.axd|/app_data/|/global\\.asax",
+    "description": "IIS sensitive endpoint probe",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-recon_probe",
+    "category": "recon_probe",
+    "severity": "low",
+    "pattern": "/(?:api|static|v1)/\\.\\./",
+    "description": "API/static path fuzzing",
+    "field": "url",
+    "required": [
+      "target"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-scanner",
+    "category": "scanner",
+    "severity": "medium",
+    "pattern": "\\b(?:sqlmap|nikto|nuclei|gobuster|dirbuster|dirsearch|wpscan|wfuzz|ffuf|feroxbuster|masscan|zgrab|acunetix|nmap)\\b",
+    "description": "Identified scanner User-Agent",
+    "field": "ua",
+    "required": [
+      "user_agent"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-method",
+    "category": "method",
+    "severity": "low",
+    "pattern": "^(?:TRACE|TRACK|DEBUG|CONNECT)$",
+    "description": "Unusual HTTP method",
+    "field": "method",
+    "required": [
+      "method"
+    ],
+    "source": "docs/rule-inventory.md"
+  },
+  {
+    "id": "WA-protocol",
+    "category": "unusual_protocol",
+    "severity": "low",
+    "pattern": "^HTTP/",
+    "description": "Unusual HTTP protocol version; inspect malformed/probing traffic",
+    "field": "protocol",
+    "required": [
+      "protocol"
+    ],
+    "source": "hub/scenarios/crowdsecurity/http-dos-invalid-http-versions.yaml",
+    "exclude": [
+      "HTTP/0.9",
+      "HTTP/1.0",
+      "HTTP/1.1",
+      "HTTP/2",
+      "HTTP/2.0",
+      "HTTP/3",
+      "HTTP/3.0"
+    ]
+  }
+]

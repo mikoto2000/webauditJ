@@ -1,0 +1,254 @@
+{
+  "signatures": [
+    {
+      "id": "sqli",
+      "severity": "high",
+      "pattern": "(union[ +/*]*select|union[ +](all|distinct)[ +]select|information_schema|table_schema|column_name|group_concat|load_file[ (]|into[ +]outfile|into[ +]dumpfile|sleep[ (][ 0-9]|benchmark[ (]|pg_sleep[ (]|waitfor[ +]delay|extractvalue[ (]|updatexml[ (]|' or '|\\\" or \\\"|%27[ +]?or|%22[ +]?or|or[ +]1[ ]?=[ ]?1|and[ +]1[ ]?=[ ]?1|' and '|'--|'\\#|;--|/\\*!|xp_cmdshell|sp_executesql|utl_http|dbms_lock|convert[ (]int|cast[ (]|concat[ (]0x|char[ (][0-9]|0x[0-9a-f][0-9a-f][0-9a-f]|having[ +]1[ ]?=|%27%20or|%20or%201=1)",
+      "description": "SQL injection payloads or probes"
+    },
+    {
+      "id": "nosqli",
+      "severity": "high",
+      "pattern": "(\\[\\$ne\\]|\\[\\$gt\\]|\\[\\$lt\\]|\\[\\$gte\\]|\\[\\$lte\\]|\\[\\$regex\\]|\\[\\$where\\]|\\[\\$exists\\]|\\[\\$in\\]|\\[\\$nin\\]|\\[\\$or\\]|\\$where[ ]?[=:]|%5b%24ne%5d|%24where|\\{\\$gt|\\{\\$ne|\\{\\$where|mapreduce\\{)",
+      "description": "NoSQL / MongoDB operator injection"
+    },
+    {
+      "id": "command_injection",
+      "severity": "critical",
+      "pattern": "(;[ +]?(id|whoami|uname|cat|ls|dir|ping|curl|wget|nc|bash|sh|powershell|cmd)[ +;/]|\\|[ +]?(id|whoami|uname|cat|ls|nc|bash|sh|curl|wget)|\\$\\([ ]?(id|whoami|uname|cat|ls)|%24%28|%60|%0a(id|whoami|uname|cat|ls|ping)|/bin/(sh|bash|dash|zsh|busybox)|bash[ +]-i|nc[ +]-e|/dev/tcp/|chmod[ +]+[0-9x]|%3b(id|whoami|uname)|%7c(id|whoami)|\\$\\{ifs\\}|\\$ifs|/etc/cron)",
+      "description": "OS command injection"
+    },
+    {
+      "id": "shellshock",
+      "severity": "critical",
+      "pattern": "(\\(\\)[ +]*\\{|%28%29[ +]*%7b|\\(\\)[ +]*\\{[ +:;]|%28%29%20%7b)",
+      "description": "Shellshock / Bash function-definition injection"
+    },
+    {
+      "id": "ssti",
+      "severity": "high",
+      "pattern": "(\\{\\{[ ]?[0-9*]|\\{\\{[ ]?(config|self|request|session|settings|g\\.)|\\$\\{[ ]?[0-9*]|\\$\\{[ ]?(t|java|runtime|class)|\\#\\{[ ]?[0-9]|\\<%[ ]?=[ ]?[0-9]|%7b%7b[0-9]|freemarker|velocity\\.|\\{\\{7[ ]?\\*[ ]?7|\\$\\{7[ ]?\\*[ ]?7|\\{%[ ]?(if|for|import)|\\{\\{[ ]?['\\\"].*['\\\"]\\.)",
+      "description": "Server-side template injection"
+    },
+    {
+      "id": "ldap_injection",
+      "severity": "high",
+      "pattern": "(\\)\\(uid=|\\)\\(cn=|\\)\\(userpassword=|\\*\\)\\(|admin\\*\\)|\\)\\(objectclass=\\*|%29%28uid=|%2a%29%28|\\)%00|\\*\\)%00)",
+      "description": "LDAP injection"
+    },
+    {
+      "id": "xpath_injection",
+      "severity": "medium",
+      "pattern": "(' or '1'='1|' or count\\(|/child::|::text\\(\\)|string-length\\(|' or name\\(|\\]\\[position\\(\\)|substring\\([ ]?/)",
+      "description": "XPath / XQuery injection"
+    },
+    {
+      "id": "xss",
+      "severity": "medium",
+      "pattern": "(\\<script|%3cscript|\\<img[ +/]|%3cimg|\\<svg[ +/]|\\<iframe|\\<body[ +/]|\\<object[ +/]|\\<embed[ +/]|\\<details[ +/]|javascript:|vbscript:|data:text/html|onerror[ ]?=|onload[ ]?=|onmouseover[ ]?=|onclick[ ]?=|onfocus[ ]?=|onanimationstart|onerror%3d|onload%3d|alert[ (]|prompt[ (]|confirm[ (]|document\\.cookie|document\\.domain|document\\.location|window\\.location|eval[ (]|string\\.fromcharcode|expression[ (]|%3cscript%3e|\\<svg/onload)",
+      "description": "Cross-site scripting payloads"
+    },
+    {
+      "id": "lfi_traversal",
+      "severity": "high",
+      "pattern": "(\\.\\./|\\.\\.\\\\|\\.\\.%2f|\\.\\.%5c|%2e%2e%2f|%2e%2e/|%2e%2e%5c|\\.\\.%252f|%252e%252e%252f|etc/passwd|etc%2fpasswd|/etc/shadow|/etc/hosts|/etc/group|boot\\.ini|win\\.ini|windows/system32|/proc/self/|/proc/version|/proc/cmdline|php://filter|php://input|php://fd|expect://|file:///|data://text|zip://|phar://|/var/log/|/usr/local/|c:\\\\windows|\\.\\.%c0%af|\\.\\.%c1%9c)",
+      "description": "Path traversal / local file inclusion"
+    },
+    {
+      "id": "rfi",
+      "severity": "high",
+      "pattern": "(=[ ]?(https?|ftp|ftps|php|data|expect|dict|gopher)(://|%3a%2f%2f)|=[ ]?%68%74%74%70|include=[ ]?https?|require=[ ]?https?)",
+      "description": "Remote file inclusion \u2014 URL passed as a parameter value"
+    },
+    {
+      "id": "ssrf",
+      "severity": "high",
+      "pattern": "(169\\.254\\.169\\.254|metadata\\.google|metadata\\.azure\\.com|100\\.100\\.100\\.200|/latest/meta-data|/computemetadata|/metadata/instance|=[ ]?(file|dict|gopher|ldap|tftp|sftp|netdoc)://|=[ ]?https?://(localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0|\\[::1\\]|169\\.254|192\\.168\\.|10\\.[0-9]|172\\.1[6-9]\\.|172\\.2[0-9]\\.|172\\.3[01]\\.)|%6c%6f%63%61%6c%68%6f%73%74|burpcollaborator|oastify|interact\\.sh|\\.oast\\.|requestbin|\\.canarytokens)",
+      "description": "Server-side request forgery / cloud-metadata access"
+    },
+    {
+      "id": "xxe",
+      "severity": "high",
+      "pattern": "(\\<!entity|\\<!doctype[ +]|%3c%21entity|%3c%21doctype|system[ +]%22file|system[ +]%22http|\\<\\?xml[ +].*entity|/etc/passwd%22[ ]?%3e|\\<!\\[cdata\\[|expect://.*%3c)",
+      "description": "XML external entity injection"
+    },
+    {
+      "id": "deserialization",
+      "severity": "high",
+      "pattern": "(java\\.lang\\.runtime|java\\.lang\\.processbuilder|rO0AB|aced0005|__reduce__|__reduce_ex__|pickle\\.loads|cpickle|subprocess\\.popen|os\\.system|child_process|_\\$\\$nd_func|phar://|O:[0-9]+:%22|O:[0-9]+:\\\"|a:[0-9]+:\\{|commons-collections|ysoserial|readobject|marshal\\.loads|yaml\\.load|__proto__|constructor\\[)",
+      "description": "Insecure deserialization / object injection"
+    },
+    {
+      "id": "webshell",
+      "severity": "critical",
+      "pattern": "(c99\\.php|c100\\.php|r57\\.php|wso\\.php|wso[0-9]|alfa\\.php|alfashell|indoxploit|priv8|mini[ ]?shell|shell\\.php|shell\\.asp|shell\\.jsp|shell\\.aspx|cmd\\.php|cmd\\.jsp|cmd\\.asp|eval-stdin\\.php|b374k|filesman|antsword|weevely|regeorg|regeorge|behinder|godzilla|webadmin\\.php|adminer\\.php|up\\.php|upload\\.php|gecko\\.php|madspot|backdoor|/1\\.php|/2\\.php|/x\\.php|/a\\.php|xx\\.php|404\\.php|radio\\.php|wp-conf\\.php|wp-cd\\.php|cmd=(whoami|id|dir|type|cat|net[ +]user)|(func|action|act)=(cmd|shell|command|exec))",
+      "description": "Known webshell filenames or command-execution parameters"
+    },
+    {
+      "id": "log4shell",
+      "severity": "critical",
+      "pattern": "(\\$\\{jndi:|%24%7bjndi|\\$\\{jndi:(ldap|ldaps|rmi|dns|iiop|corba|nis|nds)|\\$\\{\\$\\{|\\$\\{lower:|\\$\\{upper:|\\$\\{env:|\\$\\{sys:|\\$\\{::-j|\\$\\{base64:|%24%7b%6a%6e%64%69|\\$\\{main:|\\$\\{date:)",
+      "description": "Log4Shell JNDI injection"
+    },
+    {
+      "id": "spring4shell",
+      "severity": "critical",
+      "pattern": "(class\\.module\\.classloader|class\\.classloader|springframework.*classloader|%63%6c%61%73%73%2e%6d%6f%64%75%6c%65|class%2emodule%2eclassloader|getruntime\\(\\)\\.exec)",
+      "description": "Spring4Shell class-loader manipulation"
+    },
+    {
+      "id": "struts_ognl",
+      "severity": "critical",
+      "pattern": "(%\\{[ ]?\\(|\\$\\{[ ]?\\(|_memberaccess|ognl\\.|\\.getruntime|multipart/form-data.*%\\{|redirect:\\$\\{|\\.action\\?.*%\\{|\\#context\\[|\\#_memberaccess|\\@java\\.lang)",
+      "description": "Apache Struts2 OGNL injection"
+    },
+    {
+      "id": "crlf_injection",
+      "severity": "medium",
+      "pattern": "(%0d%0a|%0a%0d|%250d%250a|%0d%0aset-cookie|%0aset-cookie|%0alocation:|%0acontent-type|%0acontent-length|%3f%0d%0a|%23%0d%0a|%e5%98%8a%e5%98%8d)",
+      "description": "CRLF injection / HTTP response splitting"
+    },
+    {
+      "id": "open_redirect",
+      "severity": "medium",
+      "pattern": "((redirect|redir|url|next|return|returnurl|return_url|goto|dest|destination|continue|redirect_uri|redirect_url|callback|forward|image_url|go|out|link|target|checkout_url)=[ ]?(https?:|//|/\\\\|%2f%2f|%5c%5c|%68%74%74%70|/%2f))",
+      "description": "Open redirect via user-controlled destination parameter"
+    },
+    {
+      "id": "access_bypass",
+      "severity": "high",
+      "pattern": "(\\.\\.;/|%2e%2e;|/\\.\\.;|;/\\.\\.|/%2e%2e/|/\\.;/|/;/|/\\.%2e/|%2e%2e%2f%2e%2e|/manager/\\.\\.;|/j_security_check|/\\.%00|/\\.\\./\\.\\./;|/;jsessionid|x-original-url|x-rewrite-url|/%2e/)",
+      "description": "Authentication / access-control bypass technique"
+    },
+    {
+      "id": "sensitive_file",
+      "severity": "high",
+      "pattern": "(/\\.env|\\.env\\.bak|/\\.git/|/\\.git/config|/\\.gitignore|/\\.svn/|/\\.hg/|/\\.bzr/|/\\.ds_store|/web\\.config|/\\.htaccess|/\\.htpasswd|/wp-config\\.php|/config\\.php|/configuration\\.php|/settings\\.py|/database\\.yml|/credentials|/id_rsa|/\\.aws/|/\\.ssh/|/\\.bash_history|/backup\\.|/dump\\.sql|/database\\.sql|/\\.npmrc|/\\.dockercfg|/docker-compose\\.yml|/composer\\.lock|/phpinfo\\.php|/info\\.php|/server-status|/server-info|/\\.well-known/security|/\\.travis\\.yml|/config\\.json\\.bak|/\\.env\\.local|/\\.env\\.production|/secrets\\.|/\\.kube/config)",
+      "description": "Access to sensitive files, backups, secrets or config"
+    },
+    {
+      "id": "null_byte",
+      "severity": "medium",
+      "pattern": "(%00|%2500|%c0%80|\\.php%00|%00\\.jpg|\\.jsp%00|%252e%252e)",
+      "description": "Null-byte injection or double-encoding evasion"
+    },
+    {
+      "id": "cve_probe",
+      "severity": "medium",
+      "pattern": "(/vendor/phpunit|/phpunit/src/util/php/eval-stdin|xmlrpc\\.php|/wp-login\\.php|/wp-admin/|/wp-json/wp/|/wp-content/plugins/|/administrator/|/user/register\\?|\\?author=[0-9]|/cgi-bin/|/manager/html|/host-manager|/actuator|/actuator/env|/actuator/gateway|/solr/admin|/jenkins|/thinkphp|/tp/public|/index\\.php\\?s=|/hnap1|/boaform|/setup\\.cgi|/currentsetting\\.htm|/goform/|/api/jsonws/invoke|/druid/|/nacos/|/eureka/|/consul/|/_all_dbs|/owa/|/autodiscover|/ews/|/remote/fgt_lang|/remote/login|/dana-na/|/global-protect|/vpn/|/citrix|/vaadin|/wls-wsat|/_async/asyncresponseservice|/console/css|/adminer|/pma/|/phpmyadmin|/dbadmin|/typo3|/joomla|/jsonws|/cfide|/geoserver|/zabbix|/grafana/|/kibana|/_cat/|/telescope/requests|/debug/default/view|/frontend/web|/graphql|/v2/api-docs|/swagger|/api-docs|/wsdl|/soap|/\\.vscode/|/actuator/heapdump|/wp-content/uploads/.*\\.php|/mifs/|/cgi-bin/luci|/ecp/|/rpc/|/portal/|/\\+cscoe\\+|/api/v1/totp)",
+      "description": "Probes for known-vulnerable components, panels or CVEs"
+    },
+    {
+      "id": "iis_aspnet",
+      "severity": "medium",
+      "pattern": "(/trace\\.axd|/elmah\\.axd|/\\.axd|__viewstate=|/app_data/|/global\\.asax|/aspnet_client|/iisstart|/certsrv|/owa/auth|/scripts/.*\\.asp|/fckeditor|/ckeditor|web\\.config|/bin/.*\\.dll|%u002e%u002e)",
+      "description": "IIS / ASP.NET specific probe or misconfiguration access"
+    },
+    {
+      "id": "recon_probe",
+      "severity": "low",
+      "pattern": "(/robots\\.txt.*\\.\\.|/\\.env.*/|/\\?rest_route=|/\\?p=[0-9]+' |wp-json/oembed|/sitemap\\.xml.*\\<|/\\.aws/credentials|/api/\\.\\./|/v1/\\.\\./|/static/\\.\\./)",
+      "description": "Reconnaissance / fuzzing artefacts"
+    }
+  ],
+  "scanner_uas": [
+    "sqlmap",
+    "nikto",
+    "nuclei",
+    "gobuster",
+    "dirbuster",
+    "dirb",
+    "dirsearch",
+    "wpscan",
+    "joomscan",
+    "droopescan",
+    "cmsmap",
+    "wfuzz",
+    "ffuf",
+    "feroxbuster",
+    "arachni",
+    "acunetix",
+    "netsparker",
+    "burpsuite",
+    "burp",
+    "owasp zap",
+    "zaproxy",
+    "vega",
+    "skipfish",
+    "w3af",
+    "whatweb",
+    "wappalyzer",
+    "httprint",
+    "commix",
+    "xsstrike",
+    "nosqlmap",
+    "sqlninja",
+    "jsql",
+    "havij",
+    "pangolin",
+    "nmap",
+    "masscan",
+    "zgrab",
+    "zmap",
+    "shodan",
+    "censys",
+    "netcraft",
+    "fscan",
+    "goby",
+    "xray",
+    "rustscan",
+    "naabu",
+    "metasploit",
+    "hydra",
+    "medusa",
+    "patator",
+    "crackmapexec",
+    "impacket",
+    "python-requests",
+    "python-urllib",
+    "go-http-client",
+    "curl/",
+    "wget/",
+    "libwww-perl",
+    "winhttp",
+    "okhttp",
+    "httpclient",
+    "java/",
+    "aiohttp",
+    "node-fetch",
+    "axios/",
+    "guzzle",
+    "mechanize",
+    "scrapy",
+    "phantomjs",
+    "headlesschrome",
+    "selenium",
+    "zgrab",
+    "l9explore",
+    "l9tcpid",
+    "internetmeasurement",
+    "custom-asynchttp",
+    "hello world",
+    "mozila",
+    "morfeus",
+    "zmeu",
+    "muieblackcat",
+    "jaws"
+  ],
+  "methods": [
+    "PUT",
+    "DELETE",
+    "TRACE",
+    "CONNECT",
+    "PROPFIND",
+    "MKCOL",
+    "MOVE",
+    "COPY",
+    "LOCK",
+    "UNLOCK",
+    "SEARCH",
+    "DEBUG",
+    "TRACK",
+    "PATCH"
+  ]
+}

