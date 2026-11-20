@@ -11,6 +11,13 @@ import org.junit.jupiter.api.io.TempDir;
 class ReportsTest {
   @TempDir Path dir;
 
+  @Test
+  void removesAllBidiControlsAndPreservesOrdinaryMultilingualText() {
+    for (int cp : new int[] {0x061c, 0x200e, 0x200f, 0x202a, 0x202b, 0x202c, 0x202d, 0x202e, 0x2066, 0x2067, 0x2068, 0x2069})
+      assertEquals("a�b", Reports.terminal("a" + Character.toString(cp) + "b"));
+    assertEquals("日本語 العربية אבג", Reports.terminal("日本語 العربية אבג"));
+  }
+
   Map<String, Object> report() throws Exception {
     Path p = dir.resolve("a.log");
     Files.writeString(
