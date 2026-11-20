@@ -1,0 +1,135 @@
+[
+  {
+    "artifact": "info/picocli/picocli",
+    "version": "4.7.7",
+    "sha256": "f86e30fffd10d2b13b8caa8d4b237a7ee61f2ffccf5b1941de718b765d235bf8",
+    "licenses": [
+      "LICENSE"
+    ],
+    "license_source": "https://raw.githubusercontent.com/remkop/picocli/v4.7.7/LICENSE",
+    "license_files": {
+      "LICENSE": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    }
+  },
+  {
+    "artifact": "tools/jackson/core/jackson-databind",
+    "version": "3.3.0",
+    "sha256": "856b7348bd08efe5791cf617cc3bed21f5f4a02569507c61e946666d13c33ba4",
+    "licenses": [
+      "META-INF/LICENSE",
+      "META-INF/NOTICE"
+    ],
+    "license_files": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "NOTICE": "d3fa47349b4ba4a3763bf635b930f8877073aa3915a3f3e45fe4b1842fc60302"
+    }
+  },
+  {
+    "artifact": "com/fasterxml/jackson/core/jackson-annotations",
+    "version": "2.23",
+    "sha256": "e5b60c3088e0887b290ff9226394354589a1dad583743944b7f5538661056b4c",
+    "licenses": [
+      "META-INF/LICENSE",
+      "META-INF/NOTICE"
+    ],
+    "license_files": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "NOTICE": "612b14bc77c944ce229cbba0d14919162cfea8ed802cbf06a8e865e032d03201"
+    }
+  },
+  {
+    "artifact": "tools/jackson/core/jackson-core",
+    "version": "3.3.0",
+    "sha256": "1496eda4c353276416bd4f672fb3f98be95fb4c86707e8ffcebe04425d63aa63",
+    "licenses": [
+      "META-INF/FastDoubleParser-LICENSE",
+      "META-INF/FastDoubleParser-ThirdParty-LICENSE",
+      "META-INF/LICENSE",
+      "META-INF/NOTICE",
+      "META-INF/jsoniter-scala-LICENSE",
+      "META-INF/xjb-LICENSE"
+    ],
+    "license_files": {
+      "FastDoubleParser-LICENSE": "59067508e44346bf93dc9c5e4d673a67ecd77988c2020bb5e0f8667eb199f396",
+      "FastDoubleParser-ThirdParty-LICENSE": "dbc36f9422a40d58d1a214080583667cfd37d61c2fae1657d981edda2a60727f",
+      "jsoniter-scala-LICENSE": "1d827e11e21a5f51f0b13ba37268515cbb312f2e39476744327a76726ca16084",
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "NOTICE": "96c0763228bb6ce86d55be586e1cf60b947b1d2efd84f953201ab809fee35a57",
+      "xjb-LICENSE": "5655de88c9d5a29e358f67884af12a1ffbd46449e53a331c449c55beaee29784"
+    }
+  },
+  {
+    "artifact": "com/google/re2j/re2j",
+    "version": "1.8",
+    "sha256": "7b52c72156dd7f98b3237a5b35c1d34fba381b21048c89208913ad80a45dfbd7",
+    "licenses": [
+      "LICENSE"
+    ],
+    "license_source": "https://raw.githubusercontent.com/google/re2j/re2j-1.8/LICENSE",
+    "license_files": {
+      "LICENSE": "26a6133577cc8e48d7c002ac4d4a554786e7c0e1732e10f2db205e5e494c411b"
+    }
+  },
+  {
+    "artifact": "com/maxmind/db/maxmind-db",
+    "version": "4.2.0",
+    "sha256": "85ac1d4e7aff61dd274b723e403aae3f49ca68f23f931a5003953b3e908e2ccf",
+    "licenses": [
+      "LICENSE"
+    ],
+    "license_source": "https://raw.githubusercontent.com/maxmind/MaxMind-DB-Reader-java/v4.2.0/LICENSE",
+    "license_files": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    }
+  },
+  {
+    "artifact": "org/freemarker/freemarker",
+    "version": "2.3.35",
+    "sha256": "0fac87dddd78f1223139e8ef88e819c7f483c0a3835cdf5982ad5e4576d1d896",
+    "licenses": [
+      "META-INF/LICENSE"
+    ],
+    "license_files": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    }
+  },
+  {
+    "artifact": "org/apache/commons/commons-csv",
+    "version": "1.14.1",
+    "sha256": "32be0e1e76673092f5d12cb790bd2acb6c2ab04c4ea6efc69ea5ee17911c24fe",
+    "licenses": [
+      "META-INF/LICENSE.txt",
+      "META-INF/NOTICE.txt"
+    ],
+    "license_files": {
+      "LICENSE.txt": "b1d2870f1a00e4d7f56576e5f0870cba109e041f8af66866cf5b499478e654e7",
+      "NOTICE.txt": "a9118eadc1011eb8358bb0bb76b5eca09b3adcdc70e93ea958d531e55e45bc91"
+    }
+  },
+  {
+    "artifact": "commons-io/commons-io",
+    "version": "2.20.0",
+    "sha256": "df90bba0fe3cb586b7f164e78fe8f8f4da3f2dd5c27fa645f888100ccc25dd72",
+    "licenses": [
+      "META-INF/LICENSE.txt",
+      "META-INF/NOTICE.txt"
+    ],
+    "license_files": {
+      "LICENSE.txt": "c1d1a38c99c48ccad170890ade6066e2e240bb6ce59861d4eb7f672eddd2a4c6",
+      "NOTICE.txt": "b54b0db6c617273efff79ba193bb01b05eadcddfff55c24063b38b2acef714c3"
+    }
+  },
+  {
+    "artifact": "commons-codec/commons-codec",
+    "version": "1.19.0",
+    "sha256": "5c3881e4f556855e9c532927ee0c9dfde94cc66760d5805c031a59887070af5f",
+    "licenses": [
+      "META-INF/LICENSE.txt",
+      "META-INF/NOTICE.txt"
+    ],
+    "license_files": {
+      "LICENSE.txt": "b1d2870f1a00e4d7f56576e5f0870cba109e041f8af66866cf5b499478e654e7",
+      "NOTICE.txt": "b64933ee1d36d14659156223a2604edadb60bffdd465d5368ff422d7689db5fb"
+    }
+  }
+]

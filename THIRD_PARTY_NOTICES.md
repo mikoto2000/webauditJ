@@ -1,254 +1,41 @@
-# Third-party notices
+# Third Party Notices
 
-WebAudit uses only the Go standard library (Go distribution: BSD-3-Clause). No runtime module dependencies. The Go engine is independently implemented. Aura signature definitions, Hub scenario definitions/test fixtures and sec-lists dictionaries are redistributed under their notices. No Python or CrowdSec runtime is bundled. The exact input snapshots and hashes are in audit/upstream/manifest.json.
+WebAuditJ is a Java port of [mikoto2000/webaudit](https://github.com/mikoto2000/webaudit), based on commit `95148ba4e22d9001d34fbb0e4d59f072efd3e95c`. The application and the ported source are distributed under the MIT license in `LICENSE` and `META-INF/licenses/webauditJ-LICENSE`.
 
-## AuraDFIR @ 23d4ec28381b77a6080d3d883adfc43d6decdc5e
+## Runtime libraries
 
-Reference license (root LICENSE; checked target files contain no overriding notices):
+| Artifact | Version | License |
+|---|---|---|
+| info.picocli:picocli | 4.7.7 | Apache 2.0 |
+| tools.jackson.core:jackson-databind | 3.3.0 | Apache 2.0 |
+| tools.jackson.core:jackson-core | 3.3.0 | Apache 2.0 and bundled third-party notices |
+| com.fasterxml.jackson.core:jackson-annotations | 2.23 | Apache 2.0 |
+| com.google.re2j:re2j | 1.8 | Go BSD license and included RE2/J notices |
+| com.maxmind.db:maxmind-db | 4.2.0 | Apache 2.0 |
+| org.freemarker:freemarker | 2.3.35 | Apache 2.0 and included FreeMarker notices |
+| org.apache.commons:commons-csv | 1.14.1 | Apache 2.0 |
+| commons-io:commons-io | 2.20.0 | Apache 2.0 |
+| commons-codec:commons-codec | 1.19.0 | Apache 2.0 |
 
-```text
-MIT License
+Full license texts and available NOTICE files are included under `META-INF/licenses/<artifact>-<version>/` in the executable JAR. `META-INF/licenses/dependencies.json` records the artifact versions, JAR SHA-256 values, license-file hashes, and official license sources when the original JAR does not contain the text. Jackson's embedded third-party license files are retained separately.
 
-Copyright (c) 2026 Aura DFIR contributors
+## Detection data and reference fixtures
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+The pinned source revisions and file hashes are in `upstream/manifest.json` in the JAR, and in `src/main/resources/upstream/manifest.json` in the source tree:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+- AuraDFIR `23d4ec28381b77a6080d3d883adfc43d6decdc5e`: MIT. Full text: `upstream/AURADFIR-LICENSE`.
+- CrowdSec `8f653d0c23ece719cce9ca7a4a942fe06fad6842`: MIT. Original reference notices are retained in `META-INF/GO_THIRD_PARTY_NOTICES.md`.
+- CrowdSec Hub `626d9a38c208ab594ac0078437598257042a59be`: MIT. Full text: `upstream/HUB-LICENSE`.
+- SecLists `81734435645b603991fb31f6dbedc9b6b6f5f50c`: full original notices in `upstream/SEC-LISTS-LICENSE`.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Go-derived reference fixtures and reports are used only in tests and are excluded from the executable JAR. Their provenance is recorded in `docs/reference/baseline.json` and `src/test/resources/fixtures/upstream/manifest.json`. The original Go project's notices are preserved in `docs/reference/GO_THIRD_PARTY_NOTICES.md`; descriptions of Go runtime libraries in that historical file do not describe Java runtime dependencies. Go, CrowdSec, Python, and Elasticsearch are not bundled or required for normal Java execution.
 
-```
+## GeoIP database attribution
 
-## crowdsec @ 8f653d0c23ece719cce9ca7a4a942fe06fad6842
+DB-IP Lite databases are obtained separately from [DB-IP](https://db-ip.com/db/lite.php), are licensed under [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/), and are not distributed inside this repository or JAR. When enabled, the reports identify the database provider, source URL when managed, publication version, build time, download time, and attribution: **IP Geolocation by DB-IP — https://db-ip.com — CC BY 4.0**.
 
-Reference license (root LICENSE; checked target files contain no overriding notices):
+The small MMDB files under `src/test/resources/geoip/` contain synthetic records generated by `generate.py`. They contain no third-party geolocation dataset and are not included in the application JAR.
 
-```text
-MIT License
+## Development tooling
 
-Copyright (c) 2020-2023 Crowdsec
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-```
-
-## hub @ 626d9a38c208ab594ac0078437598257042a59be
-
-Reference license (root LICENSE; checked target files contain no overriding notices):
-
-```text
-MIT License
-
-Copyright (c) 2025 CrowdSecurity
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-```
-
-## Go standard library
-
-```text
-Copyright 2009 The Go Authors.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-   * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
-   * Neither the name of Google LLC nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-```
-
-Development-only CI references actions/checkout v7.0.1 and actions/setup-go v7.1.0, both MIT, pinned to verified commits in ci.yml. They are fetched by GitHub Actions and are not bundled in WebAudit binaries. Official releases: https://github.com/actions/checkout/releases/tag/v7.0.1 and https://github.com/actions/setup-go/releases/tag/v7.1.0 .
-
-## crowdsecurity/sec-lists @ 81734435645b603991fb31f6dbedc9b6b6f5f50c
-
-Embedded dictionaries in audit/upstream/data retain original headers and bytes. Root license:
-
-```text
-MIT License
-
-Copyright (c) 2020 crowdsecurity
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-```
-
-The bad_user_agents files additionally carry this file-level notice (preserved in the embedded data):
-
-```text
-MIT License
-
-Copyright (c) 2017 Mitchell Krog - mitchellkrog@gmail.com
-https://github.com/mitchellkrogza
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-```
-
-## Optional GeoIP / ASN data and MMDB reader
-
-DB-IP Lite is the preferred separately supplied Country / ASN MMDB source:
-[DB-IP Lite](https://db-ip.com/db/lite.php). Copyright DB-IP.com;
-[Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/).
-Attribution: [IP Geolocation by DB-IP](https://db-ip.com).
-Lite has reduced accuracy/coverage and monthly updates. No provider DB is bundled. Only the explicit `geoip download` / `geoip update`
-commands fetch data from the official HTTPS distribution; analysis and status stay offline. Values are used as supplied; grouping into report
-summaries is performed by WebAudit. Reports record database type and build date
-from MMDB metadata, not filesystem modification time. Other user-supplied databases
-remain subject to their provider's terms. Synthetic MMDB test fixtures contain no
-DB-IP data and are distributed under this project's MIT license.
-
-Runtime dependencies (vendored for offline builds):
-
-- github.com/oschwald/maxminddb-golang/v2 v2.9.1, ISC;
-  https://github.com/oschwald/maxminddb-golang/tree/v2.9.1
-- golang.org/x/sys v0.50.0, BSD-3-Clause; https://cs.opensource.google/go/x/sys
-  (includes its PATENTS grant in vendor/golang.org/x/sys/PATENTS).
-
-### maxminddb-golang license
-
-```text
-ISC License
-
-Copyright (c) 2015, Gregory J. Oschwald <oschwald@gmail.com>
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-```
-
-### golang.org/x/sys license
-
-```text
-Copyright 2009 The Go Authors.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-   * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
-   * Neither the name of Google LLC nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-```
+Maven Wrapper scripts carry their Apache 2.0 notices. JUnit Jupiter is a test dependency and is not included in the application JAR. Developer-local Maven, Go, JDK and google-java-format distributions are not redistributed with the application.
