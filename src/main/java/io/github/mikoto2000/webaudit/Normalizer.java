@@ -17,8 +17,13 @@ public final class Normalizer {
       List<String> steps,
       List<String> warnings,
       List<byte[]> rawVariants) {
-    public Normalized(String original, List<String> variants, List<String> steps, List<String> warnings) {
-      this(original, variants, steps, warnings,
+    public Normalized(
+        String original, List<String> variants, List<String> steps, List<String> warnings) {
+      this(
+          original,
+          variants,
+          steps,
+          warnings,
           variants.stream().map(s -> s.getBytes(StandardCharsets.UTF_8)).toList());
     }
   }
@@ -70,7 +75,8 @@ public final class Normalizer {
     }
     for (byte[] v : List.copyOf(variants)) {
       String x = lower(Utf8.decode(v).replace('\\', '/'));
-      if (!Arrays.equals(x.getBytes(StandardCharsets.UTF_8), v)) steps.add("case-fold/backslash detection variant");
+      if (!Arrays.equals(x.getBytes(StandardCharsets.UTF_8), v))
+        steps.add("case-fold/backslash detection variant");
       int q = x.indexOf('?');
       if (q >= 0 && x.substring(q).contains("+")) {
         x = x.substring(0, q) + x.substring(q).replace('+', ' ');
@@ -88,12 +94,17 @@ public final class Normalizer {
     }
     if (lower(input).contains("%u")) warnings.add("Nonstandard %u encoding is not decoded");
     if (Utf8.decode(cur).contains("%25")) warnings.add("Maximum decode depth is two");
-    return new Normalized(input, variants.stream().map(Utf8::decode).toList(),
-        List.copyOf(steps), List.copyOf(warnings), List.copyOf(variants));
+    return new Normalized(
+        input,
+        variants.stream().map(Utf8::decode).toList(),
+        List.copyOf(steps),
+        List.copyOf(warnings),
+        List.copyOf(variants));
   }
 
   private static void add(List<byte[]> values, byte[] s) {
-    if (values.size() < 7 && values.stream().noneMatch(value -> Arrays.equals(value, s))) values.add(s);
+    if (values.size() < 7 && values.stream().noneMatch(value -> Arrays.equals(value, s)))
+      values.add(s);
   }
 
   private static int hex(byte c) {

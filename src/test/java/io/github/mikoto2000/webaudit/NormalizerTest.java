@@ -13,6 +13,7 @@ class NormalizerTest {
     var longValue = Normalizer.normalize("/.env?q=%ff" + "x".repeat(1200));
     assertEquals("/.env?q=", Core.compact(longValue).variants().get(1));
   }
+
   @Test
   void decodesTwoLevelsAndPreservesOriginal() {
     var n = Normalizer.normalize("/%253Cscript%253E?q=a+b");

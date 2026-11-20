@@ -3,6 +3,7 @@ package io.github.mikoto2000.webaudit;
 import java.nio.ByteBuffer;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 final class Utf8 {
   private Utf8() {}
@@ -40,5 +41,17 @@ final class Utf8 {
       i++;
     }
     return result.toString();
+  }
+
+  static byte[] clip(byte[] bytes, int max) {
+    if (bytes.length <= max) return bytes;
+    var input = java.nio.ByteBuffer.wrap(bytes, 0, max);
+    var output = java.nio.CharBuffer.allocate(max);
+    var decoder =
+        StandardCharsets.UTF_8
+            .newDecoder()
+            .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT);
+    var result = decoder.decode(input, output, true);
+    return Arrays.copyOf(bytes, result.isError() ? input.position() : max);
   }
 }
