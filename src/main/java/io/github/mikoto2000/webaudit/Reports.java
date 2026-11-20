@@ -23,6 +23,12 @@ final class Reports {
   }
 
   static void write(Writer out, Map<String, Object> report, String format) throws IOException {
+    write(out, report, format, "ja");
+  }
+
+  static void write(Writer out, Map<String, Object> report, String format, String language)
+      throws IOException {
+    if (!Set.of("ja", "en").contains(language)) throw new IOException("--lang must be ja or en");
     switch (format) {
       case "json" -> {
         try {
@@ -34,6 +40,15 @@ final class Reports {
       }
       case "html" -> {
         var model = new HashMap<String, Object>(report);
+        var translator = new ReportLanguage(language);
+        model.put("lang", language);
+        model.put("t", (TemplateMethodModelEx) args -> translator.text(args.getFirst().toString()));
+        model.put(
+            "diagnostic",
+            (TemplateMethodModelEx) args -> translator.diagnostic(args.getFirst().toString()));
+        model.put(
+            "outcome",
+            (TemplateMethodModelEx) args -> translator.outcome(args.getFirst().toString()));
         model.put(
             "json_report", Json.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(report));
         try {
@@ -187,6 +202,20 @@ final class Reports {
               terminal(Json.string(f.get("ip"))),
               Json.obj(f.get("outcome")).get("verdict"),
               Json.number(f.get("count"))));
+      for (var g : rows(Json.obj(f.get("outcome")).get("investigation"))) {
+        line(out, "    成否不明・成否確認の案内 [" + terminal(Json.string(g.get("category"))) + "]");
+        line(out, "      不明な理由: " + terminal(Json.string(g.get("why_unknown"))));
+        line(
+            out,
+            "      確認する場所: "
+                + terminal(
+                    String.join(
+                        "; ",
+                        ((List<?>) g.get("where_to_check"))
+                            .stream().map(Object::toString).toList())));
+        line(out, "      何が見つかれば判断できるか（成功）: " + terminal(Json.string(g.get("success_evidence"))));
+        line(out, "      何が見つかれば判断できるか（失敗）: " + terminal(Json.string(g.get("failure_evidence"))));
+      }
     }
     line(
         out,

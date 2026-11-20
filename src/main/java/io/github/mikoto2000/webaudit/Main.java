@@ -42,6 +42,11 @@ public final class Main {
     @CommandLine.Option(names = {"--format", "-format"})
     String format = "";
 
+    @CommandLine.Option(
+        names = {"--lang", "-lang"},
+        description = "HTML report language: ja or en (default: ja)")
+    String language = "ja";
+
     @CommandLine.Option(names = {"--verbose", "-verbose"})
     boolean verbose;
 
@@ -136,6 +141,10 @@ public final class Main {
         line(err, "--format must be html, json or csv");
         return 2;
       }
+      if (!Set.of("ja", "en").contains(a.language)) {
+        line(err, "--lang must be ja or en");
+        return 2;
+      }
       if (!a.regex.isEmpty()) {
         try {
           var regex = com.google.re2j.Pattern.compile(a.regex);
@@ -215,14 +224,14 @@ public final class Main {
             return 2;
           }
           try (file) {
-            Reports.write(file, report, mode);
+            Reports.write(file, report, mode, a.language);
           } catch (IOException ex) {
             line(err, "Report write failed: " + Reports.terminal(ex.getMessage()));
             return 1;
           }
           Reports.write(out, report, "summary");
           line(out, "\nReport: " + Reports.terminal(a.output.toString()));
-        } else Reports.write(out, report, mode);
+        } else Reports.write(out, report, mode, a.language);
         return Json.bool(report.get("partial")) ? 1 : 0;
       }
     } catch (IOException | RuntimeException ex) {

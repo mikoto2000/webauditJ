@@ -12,6 +12,20 @@ class InvestigationTest {
   @TempDir Path dir;
 
   @Test
+  void matchesGoGuidanceForEverySignatureBehaviorAndFallbackCategory() {
+    var expected = Json.rows(Json.resource("investigation-golden.json"));
+    for (var guide : expected) {
+      var f = new Correlator.Incident();
+      f.sample = CorrelatorTest.event(0, 200);
+      f.categories.add(guide.get("category").toString());
+      UpstreamTest.equalJson(List.of(guide), Outcomes.infer(f).get("investigation"));
+    }
+    var covered = expected.stream().map(g -> g.get("category")).toList();
+    for (var rule : Json.rows(Json.resource("rules.json")))
+      assertTrue(covered.contains(rule.get("category")));
+  }
+
+  @Test
   void sortsDeduplicatesAndKeepsUnknownTimezoneAndVerdicts() {
     var f = new Correlator.Incident();
     f.sample = CorrelatorTest.event(0, 200);
@@ -19,14 +33,17 @@ class InvestigationTest {
     f.categories.addAll(List.of("xss", "sqli", "xss", "future-category"));
     var outcome = Outcomes.infer(f);
     var guides = Json.rows(outcome.get("investigation"));
-    assertEquals(List.of("future-category", "sqli", "xss"), guides.stream().map(g -> g.get("category")).toList());
+    assertEquals(
+        List.of("future-category", "sqli", "xss"),
+        guides.stream().map(g -> g.get("category")).toList());
     assertEquals(List.of("xss", "sqli", "xss", "future-category"), f.categories);
     assertEquals("unknown", outcome.get("verdict"));
     assertTrue(outcome.get("missing").toString().contains("timezone"));
     assertTrue(guides.get(1).get("where_to_check").toString().contains("DB"));
     assertTrue(guides.get(2).get("success_evidence").toString().contains("スクリプト"));
     f.categories.clear();
-    assertEquals("unknown", Json.rows(Outcomes.infer(f).get("investigation")).getFirst().get("category"));
+    assertEquals(
+        "unknown", Json.rows(Outcomes.infer(f).get("investigation")).getFirst().get("category"));
   }
 
   @Test
@@ -38,10 +55,12 @@ class InvestigationTest {
       var out = new StringWriter();
       Reports.write(out, r, format);
       assertTrue(out.toString().contains("ファイル"), format);
-      if (format.equals("json") || format.equals("csv")) assertTrue(out.toString().contains("where_to_check"));
+      if (format.equals("json") || format.equals("csv"))
+        assertTrue(out.toString().contains("where_to_check"));
       else assertTrue(out.toString().contains("何が見つかれば判断できるか"), format);
     }
     for (String set : List.of("upstream_alerts", "aura_matches", "aura_analysis"))
-      if (r.get(set) != null) for (var a : Json.rows(r.get(set))) assertFalse(a.containsKey("investigation"));
+      if (r.get(set) != null)
+        for (var a : Json.rows(r.get(set))) assertFalse(a.containsKey("investigation"));
   }
 }

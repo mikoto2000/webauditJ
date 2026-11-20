@@ -18,7 +18,16 @@ class ReportLanguageTest {
     args.addAll(List.of(options));
     var out = new StringWriter();
     var err = new StringWriter();
-    assertEquals(0, Main.run(args.toArray(String[]::new), out, err, Map.of("XDG_DATA_HOME", dir.toString()), null, null), err.toString());
+    assertEquals(
+        0,
+        Main.run(
+            args.toArray(String[]::new),
+            out,
+            err,
+            Map.of("XDG_DATA_HOME", dir.toString()),
+            null,
+            null),
+        err.toString());
     return out.toString();
   }
 
@@ -43,7 +52,19 @@ class ReportLanguageTest {
       Path output = dir.resolve("must-not-exist.html");
       var out = new StringWriter();
       var err = new StringWriter();
-      assertEquals(2, Main.run(new String[] {dir.resolve("missing.log").toString(), "--lang=" + lang, "--format", "json", "-o", output.toString()}, out, err));
+      assertEquals(
+          2,
+          Main.run(
+              new String[] {
+                dir.resolve("missing.log").toString(),
+                "--lang=" + lang,
+                "--format",
+                "json",
+                "-o",
+                output.toString()
+              },
+              out,
+              err));
       assertTrue(err.toString().contains("--lang"));
       assertEquals("", out.toString());
       assertFalse(Files.exists(output));
@@ -60,7 +81,10 @@ class ReportLanguageTest {
       args.set(args.size() - 1, "en");
       String en = render(args.toArray(String[]::new));
       // Only the execution timestamp differs between analyses.
-      assertEquals(ja.replaceAll("\"analyzed_at\"[^\\n]*", "TIMESTAMP"), en.replaceAll("\"analyzed_at\"[^\\n]*", "TIMESTAMP"), format);
+      assertEquals(
+          ja.replaceAll("\"analyzed_at\"[^\\n]*", "TIMESTAMP"),
+          en.replaceAll("\"analyzed_at\"[^\\n]*", "TIMESTAMP"),
+          format);
     }
   }
 }

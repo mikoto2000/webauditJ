@@ -3,8 +3,9 @@
   "commit": "95148ba4e22d9001d34fbb0e4d59f072efd3e95c",
   "files": {
     "corpus-golden.json": {
-      "sha256": "fbb2c7f81d435146be325bf686ee21173997b375b3efd01274702de39b0d4037",
-      "cases": 71
+      "sha256": "aaf376de8162d44e23fec75237ee0e9464d8ba4b55a3b91c8f7e9e82f2b68e63",
+      "cases": 71,
+      "commit": "a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459"
     },
     "detection-golden.json": {
       "sha256": "7ca8122845cffbc6a64ba65e67bc3f664ea551da21bb0c01de36bd13a4233405",
@@ -15,8 +16,15 @@
       "cases": 1321
     },
     "upstream-golden.json": {
-      "sha256": "eff6a13893f0dfbe5f36920c7099a127d8416f3fc61c11d84fe255400c69524e",
-      "cases": 107
+      "sha256": "03e40389fc2b8b9e0d18b198a9aa9495d02eab8cdac47b2196a971a6903e86d1",
+      "cases": 107,
+      "commit": "a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459"
+    },
+    "investigation-golden.json": {
+      "sha256": "42d07d2ef5470954842b92c5e0500041eefb823d7dd4b71fcdcd2d0ee5df0a7d",
+      "cases": 44,
+      "commit": "a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459"
     }
-  }
+  },
+  "main_port_commit": "a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459"
 }

@@ -62,6 +62,8 @@ final class Outcomes {
         "missing",
         missing,
         "next",
-        next);
+        next,
+        "investigation",
+        Investigations.forCategories(f.categories));
   }
 }
