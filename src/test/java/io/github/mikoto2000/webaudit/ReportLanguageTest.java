@@ -5,11 +5,93 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
 class ReportLanguageTest {
   @TempDir Path dir;
+
+  @Test
+  void catalogCoversTemplateRulesAndEnglishInvestigation() throws Exception {
+    var ja = Json.obj(Json.resource("locales/ja.json"));
+    String template;
+    try (var in = Reports.class.getResourceAsStream("/report.ftlh")) {
+      template = new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+    }
+    var keys = Pattern.compile("\\$\\{t\\(\"([^\"]*)\"\\)").matcher(template);
+    while (keys.find()) assertTrue(ja.containsKey(keys.group(1)), keys.group(1));
+    String visible = template.replaceAll("(?s)<style>.*?</style>|\\$\\{.*?}|<[^>]*>", "");
+    assertFalse(Pattern.compile("[A-Za-z]").matcher(visible).find(), visible);
+    for (var rule : Json.rows(Json.resource("rules.json"))) {
+      assertTrue(ja.containsKey(rule.get("description")), rule.toString());
+      assertTrue(ja.containsKey(rule.get("category")), rule.toString());
+    }
+    var en = new ReportLanguage("en");
+    for (var guide : Json.rows(Json.resource("investigation-golden.json"))) {
+      var values =
+          new ArrayList<>(
+              List.of(
+                  guide.get("why_unknown"),
+                  guide.get("success_evidence"),
+                  guide.get("failure_evidence")));
+      values.addAll((List<?>) guide.get("where_to_check"));
+      for (Object text : values)
+        assertFalse(
+            Pattern.compile("\\p{IsHan}").matcher(en.text(text.toString())).find(),
+            text.toString());
+    }
+  }
+
+  @Test
+  void diagnosticsTranslateKnownPartsAndKeepExternalDetails() {
+    var ja = new ReportLanguage("ja");
+    var en = new ReportLanguage("en");
+    for (var pair :
+        List.of(
+            List.of(
+                "C:\\logs\\a.log:3: duplicate JSON field host",
+                "C:\\logs\\a.log:3: 重複したJSONフィールド: host"),
+            List.of("GeoIP asn lookup failed: bad metadata", "GeoIP ASNの検索に失敗"),
+            List.of("directory C:\\logs: Access denied", "ディレクトリ C:\\logsの読み込みエラー"),
+            List.of("open C:\\logs: Access denied", "診断情報（原文）: open C:\\logs: Access denied"))) {
+      assertTrue(ja.diagnostic(pair.get(0)).contains(pair.get(1)));
+      assertEquals(pair.get(0), en.diagnostic(pair.get(0)));
+    }
+  }
+
+  @Test
+  void concurrentRendersDoNotLeakLanguageOrMutateMachineReports() throws Exception {
+    Path input = dir.resolve("sample.log");
+    Files.writeString(input, CorrelatorTest.event(0, 404).raw);
+    var r = Engine.analyze(List.of(input), new Options());
+    String before = Json.MAPPER.writeValueAsString(r);
+    IntStream.range(0, 12)
+        .parallel()
+        .forEach(i -> {
+          String lang = i % 2 == 0 ? "ja" : "en";
+          var out = new StringWriter();
+          try {
+            Reports.write(out, r, "html", lang);
+          } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+          }
+          assertTrue(out.toString().contains("lang=\"" + lang + "\""));
+          assertEquals(lang.equals("ja"), out.toString().contains("成否を確認するには"));
+        });
+    assertEquals(before, Json.MAPPER.writeValueAsString(r));
+    for (String format : List.of("json", "csv", "summary")) {
+      var ja = new StringWriter();
+      var en = new StringWriter();
+      Reports.write(ja, r, format, "ja");
+      Reports.write(en, r, format, "en");
+      assertEquals(ja.toString(), en.toString(), format);
+    }
+    var out = new StringWriter();
+    assertThrows(IOException.class, () -> Reports.write(out, r, "html", "fr"));
+    assertEquals("", out.toString());
+  }
 
   String render(String... options) throws Exception {
     Path input = dir.resolve("access.log");
@@ -82,8 +164,8 @@ class ReportLanguageTest {
       String en = render(args.toArray(String[]::new));
       // Only the execution timestamp differs between analyses.
       assertEquals(
-          ja.replaceAll("\"analyzed_at\"[^\\n]*", "TIMESTAMP"),
-          en.replaceAll("\"analyzed_at\"[^\\n]*", "TIMESTAMP"),
+          ja.replaceAll("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z", "TIMESTAMP"),
+          en.replaceAll("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z", "TIMESTAMP"),
           format);
     }
   }

@@ -12,6 +12,61 @@ class MainTest {
   @TempDir Path dir;
 
   @Test
+  void removesIncompleteReportsAndRetainsBothWriteAndCloseFailures() throws Exception {
+    Path path = dir.resolve("incomplete.html");
+    Files.writeString(path, "partial");
+    var file =
+        new StringWriter() {
+          @Override
+          public void close() throws IOException {
+            throw new IOException("close failed");
+          }
+        };
+    var error =
+        assertThrows(
+            IOException.class,
+            () ->
+                Main.writeAndCloseReport(
+                    path,
+                    file,
+                    out -> {
+                      throw new IOException("write failed");
+                    }));
+    assertEquals("write failed", error.getMessage());
+    assertEquals("close failed", error.getSuppressed()[0].getMessage());
+    assertFalse(Files.exists(path));
+    Files.writeString(path, "complete but close failed");
+    assertThrows(IOException.class, () -> Main.writeAndCloseReport(path, file, out -> {}));
+    assertFalse(Files.exists(path));
+  }
+
+  @Test
+  void completedReportSurvivesSummaryOutputFailure() throws Exception {
+    Path input = dir.resolve("a.log"), output = dir.resolve("report.html");
+    Files.writeString(input, CorrelatorTest.event(0, 404).raw);
+    Writer broken =
+        new Writer() {
+          public void write(char[] c, int a, int b) throws IOException {
+            throw new IOException("broken stdout");
+          }
+
+          public void flush() {}
+
+          public void close() {}
+        };
+    assertEquals(
+        1,
+        Main.run(
+            new String[] {input.toString(), "-o", output.toString()},
+            broken,
+            new StringWriter(),
+            Map.of("XDG_DATA_HOME", dir.toString()),
+            null,
+            null));
+    assertTrue(Files.readString(output).contains("</html>"));
+  }
+
+  @Test
   void validatesGoTimezoneNamesIncludingLocalAndRejectsOffsetAliases() throws Exception {
     Path input = dir.resolve("zone.log");
     Files.writeString(input, CorrelatorTest.event(0, 404).raw);

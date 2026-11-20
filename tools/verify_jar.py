@@ -18,6 +18,7 @@ def check_jar(jar):
             "tools/jackson/databind/json/JsonMapper.class", "org/apache/commons/csv/CSVPrinter.class",
             "META-INF/THIRD_PARTY_NOTICES.md", "META-INF/licenses/webauditJ-LICENSE",
             "META-INF/licenses/dependencies.json",
+            "locales/ja.json", "locales/investigation_en.json", "locales/investigation.json",
         ]
         for name in required:
             assert name in entries, name

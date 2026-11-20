@@ -18,6 +18,7 @@ final class Investigations {
               var guide = new LinkedHashMap<String, Object>();
               guide.put("category", category);
               guide.putAll(Json.obj(GUIDES.getOrDefault(category, GUIDES.get("unknown"))));
+              guide.put("where_to_check", List.copyOf((List<?>) guide.get("where_to_check")));
               return (Map<String, Object>) guide;
             })
             .toList();

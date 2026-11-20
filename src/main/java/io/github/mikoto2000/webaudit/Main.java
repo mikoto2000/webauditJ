@@ -198,9 +198,7 @@ public final class Main {
         o.geoIP = geo;
         var report = Engine.analyze(a.inputs, o);
         for (String warning : geoWarnings) {
-          @SuppressWarnings("unchecked")
-          var warnings = (List<String>) report.get("warnings");
-          warnings.add(warning);
+          Engine.warn(report, warning);
           line(err, Reports.terminal(warning));
         }
         if (a.verbose)
@@ -223,8 +221,8 @@ public final class Main {
             line(err, Reports.terminal(ex.getMessage()));
             return 2;
           }
-          try (file) {
-            Reports.write(file, report, mode, a.language);
+          try {
+            writeAndCloseReport(a.output, file, w -> Reports.write(w, report, mode, a.language));
           } catch (IOException ex) {
             line(err, "Report write failed: " + Reports.terminal(ex.getMessage()));
             return 1;
@@ -242,6 +240,25 @@ public final class Main {
       } catch (IOException ignored) {
       }
       return 1;
+    }
+  }
+
+  @FunctionalInterface
+  interface ReportWriter {
+    void write(Writer out) throws IOException;
+  }
+
+  /** The caller owns a freshly created exclusive file. Keep only a completed report. */
+  static void writeAndCloseReport(Path path, Writer file, ReportWriter write) throws IOException {
+    try (file) {
+      write.write(file);
+    } catch (IOException | RuntimeException ex) {
+      try {
+        Files.delete(path);
+      } catch (IOException removeError) {
+        ex.addSuppressed(removeError);
+      }
+      throw ex;
     }
   }
 

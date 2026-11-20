@@ -28,6 +28,7 @@ final class Reports {
 
   static void write(Writer out, Map<String, Object> report, String format, String language)
       throws IOException {
+    if (language.isEmpty()) language = "ja";
     if (!Set.of("ja", "en").contains(language)) throw new IOException("--lang must be ja or en");
     switch (format) {
       case "json" -> {
@@ -69,8 +70,10 @@ final class Reports {
         .forEach(cp ->
             out.appendCodePoint(
                 Character.getType(cp) == Character.CONTROL
-                        || cp == 0x202e
-                        || cp == 0x202d
+                        || cp == 0x061c
+                        || cp == 0x200e
+                        || cp == 0x200f
+                        || cp >= 0x202a && cp <= 0x202e
                         || cp >= 0x2066 && cp <= 0x2069
                     ? 0xfffd
                     : cp));
@@ -203,7 +206,7 @@ final class Reports {
               Json.obj(f.get("outcome")).get("verdict"),
               Json.number(f.get("count"))));
       for (var g : rows(Json.obj(f.get("outcome")).get("investigation"))) {
-        line(out, "    成否不明・成否確認の案内 [" + terminal(Json.string(g.get("category"))) + "]");
+        line(out, "    成否の確認 [" + terminal(Json.string(g.get("category"))) + "]");
         line(out, "      不明な理由: " + terminal(Json.string(g.get("why_unknown"))));
         line(
             out,
@@ -217,6 +220,11 @@ final class Reports {
         line(out, "      何が見つかれば判断できるか（失敗）: " + terminal(Json.string(g.get("failure_evidence"))));
       }
     }
+    if (!findings.isEmpty())
+      line(
+          out,
+          "\n"
+              + "成否の確認は時刻・タイムゾーン・対象ホスト・URL、可能ならリクエストIDで照合してください。IPだけで同じ要求とは断定できません。証拠がないだけでは失敗と判断できず、記録がなければ成否不明が続きます。失敗の証拠は確認した要求の範囲に限られます。現在の再現結果だけでは当時の成否を確定できません。追加証拠による自動再判定は行いません。");
     line(
         out,
         "\nUpstream detections:\n  Hub alerts: "
