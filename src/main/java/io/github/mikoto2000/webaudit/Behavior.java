@@ -1,6 +1,7 @@
 package io.github.mikoto2000.webaudit;
 
 import java.util.*;
+import static io.github.mikoto2000.webaudit.RobustStats.outlier;
 import java.time.*;
 import static io.github.mikoto2000.webaudit.Core.*;
 
@@ -38,8 +39,6 @@ final class Behavior {
         if(e.bytes!=null&&e.status!=null){double value=e.bytes;String uk=digest(host+"\0"+s(e.method)+"\0"+e.path+"\0"+e.status);Baseline b=urls.get(uk);if(b==null&&allow(urls.size())){b=new Baseline();urls.put(uk,b);}if(b!=null){if(outlier(value,b.values,4096,5))emit("WS-url-size","Response differs from same URL/status baseline",e,1,"At least 20 prior size samples; >median+6*MAD, >5x median and >4096 bytes difference",e.time,e.time);b.add(value);}
             if(outlier(value,global.values,1<<20,10))emit("WS-size","Unusually large response",e,1,"At least 20 prior samples; robust size threshold plus 1 MiB and 10x effect floors",e.time,e.time);global.add(value);}
     }
-    private static double median(List<Double> v){if(v.isEmpty())return 0;double[] a=v.stream().mapToDouble(Double::doubleValue).sorted().toArray();int i=a.length/2;return a.length%2==0?(a[i-1]+a[i])/2:a[i];}
-    static boolean outlier(double value,List<Double> base,double floor,double ratio){if(base.size()<20)return false;double m=median(base),mad=median(base.stream().map(v->Math.abs(v-m)).toList());return value>m+Math.max(floor,6*1.4826*mad)&&value>m*ratio;}
     private void windowSignal(Window w,String id,String description,long n){emit(id,description,w.sample,n,n+" observations in overlapping five-minute event-time window; diversity bounded at 64",w.first,w.last);}
     List<Signal> finish() {
         for(Window w:windows.values()){
