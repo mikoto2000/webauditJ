@@ -1,8 +1,11 @@
 package io.github.mikoto2000.webaudit;
 
 import java.io.*;
+import java.nio.channels.Channels;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
 
 final class ManagedFiles {
   private ManagedFiles() {}
@@ -19,6 +22,19 @@ final class ManagedFiles {
       return Files.createFile(
           path, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")));
     return Files.createFile(path);
+  }
+
+  static Writer newReportWriter(Path path) throws IOException {
+    Set<OpenOption> options =
+        Set.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS);
+    var channel =
+        FileSystems.getDefault().supportedFileAttributeViews().contains("posix")
+            ? Files.newByteChannel(
+                path,
+                options,
+                PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")))
+            : Files.newByteChannel(path, options);
+    return new BufferedWriter(Channels.newWriter(channel, StandardCharsets.UTF_8));
   }
 
   static void deleteTree(Path root, Path target) throws IOException {

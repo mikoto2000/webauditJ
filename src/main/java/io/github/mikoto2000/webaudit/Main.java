@@ -209,9 +209,7 @@ public final class Main {
         if (a.output != null) {
           Writer file;
           try {
-            ManagedFiles.createFile(a.output);
-            file =
-                Files.newBufferedWriter(a.output, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+            file = ManagedFiles.newReportWriter(a.output);
           } catch (IOException ex) {
             line(err, Reports.terminal(ex.getMessage()));
             return 2;
