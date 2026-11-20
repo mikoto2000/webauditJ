@@ -9,7 +9,7 @@ class GeoIPTest {
     static String db(String role)throws Exception{return Path.of(GeoIPTest.class.getResource("/geoip/"+role+".mmdb").toURI()).toString();}
     @Test void readsV4V6AndCachesHitsAndMisses()throws Exception{
         try(var g=GeoIP.open(db("country"),db("asn"),null,2)){
-            var hit=g.lookup("8.8.8.8");assertEquals("found",hit.get("status"));assertEquals("ZZ",hit.get("country_code"));assertEquals(64500,Json.number(hit.get("asn")));
+            var hit=g.lookup("8.8.8.8");assertEquals("found",hit.get("status"));assertEquals("US",hit.get("country_code"));assertEquals(64500,Json.number(hit.get("asn")));
             assertEquals(hit,g.lookup("::ffff:8.8.8.8"));assertEquals("found",g.lookup("2606:4700::1").get("status"));
             g.lookup("1.1.1.1");g.lookup("1.1.1.1");assertTrue(Json.number(g.metrics().get("cached_ips"))<=2);assertTrue(Json.number(g.metrics().get("lru_hits"))>=2);
         }

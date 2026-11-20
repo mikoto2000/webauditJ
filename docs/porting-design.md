@@ -56,6 +56,8 @@ Country/ASNを不変世代に配置し、`metadata.json` を一度だけ原子�
 
 検索はIP単位の上限付きLRUで未収録も保持する。peer表とLRUの上限を維持し、超過は部分解析と下限集計を明示する。検索状態はfound / not_found / non_public / invalid_ip / db_not_installed / read_error、役割別のnot_queriedを区別する。ASN類似性は既知ASN、パス、host、技法、5分UTC区間の一致を必要とする。
 
+Windows の MaxMind Java reader は MEMORY モードとする。メモリマップでは破損DBのコンストラクター失敗後にもWindowsのファイルロックが残り、削除できないことをテストで確認したため、利用者の判断で選択した。DBサイズ分のJavaヒープを使う。Linux/macOSはMEMORY_MAPPEDを維持する。実際のDBサイズとキャッシュ以外の保持メモリも性能測定に含める。
+
 ## バイトと日時
 
 行・ファイル展開量・証拠の上限はUTF-8バイト単位。巨大行は保持せず次行へ進む。不正なpercent encodingと不正な復号バイトを検知用表現として扱う処理を独立させる。URLDecoderで一括置換しない。大小文字変換はロケールに依存させない。
