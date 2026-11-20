@@ -8,11 +8,16 @@ final class ManagedGeoIP {
         if(dir==null||!country.isEmpty()&&!asn.isEmpty())return new Opened(GeoIP.open(country,asn,legacy,capacity),List.of());
         try{
             return GeoStore.withCurrent(dir,meta->{
-                String c=country,a=asn;for(var d:Json.rows(Json.obj(meta.get("current")).get("databases"))){if("country".equals(d.get("role"))&&c.isEmpty())c=dir.resolve((String)d.get("file")).toString();if("asn".equals(d.get("role"))&&a.isEmpty())a=dir.resolve((String)d.get("file")).toString();}
+                String c=selected(meta,dir,"country",country),a=selected(meta,dir,"asn",asn);
                 GeoIP g=GeoIP.open(c,a,null,capacity);try{apply(g,meta,country,asn);return new Opened(g,List.of());}catch(RuntimeException ex){if(g!=null)g.close();throw ex;}
             });
         }catch(GeoStore.NotInstalled ex){GeoIP g=GeoIP.open(country,asn,legacy,capacity);if(g!=null&&!g.hasReaders()){var warnings=List.copyOf(g.warnings);g.close();return new Opened(null,warnings);}return new Opened(g,List.of());}
         catch(IOException ex){return new Opened(GeoIP.open(country,asn,null,capacity),List.of("Managed GeoIP unavailable; analysis continues without automatic GeoIP: "+ex.getMessage()));}
+    }
+    private static String selected(Map<String,Object> meta,Path dir,String role,String explicit){
+        if(!explicit.isEmpty())return explicit;
+        for(var d:Json.rows(Json.obj(meta.get("current")).get("databases")))if(role.equals(d.get("role")))return dir.resolve((String)d.get("file")).toString();
+        return "";
     }
     private static void apply(GeoIP g,Map<String,Object> meta,String country,String asn){
         var current=Json.obj(meta.get("current"));for(var row:g.metadata()){
