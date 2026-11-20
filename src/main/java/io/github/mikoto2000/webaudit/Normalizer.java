@@ -23,7 +23,7 @@ public final class Normalizer {
                 } else b.write(cur[i]);
             }
             if (!Arrays.equals(cur, b.toByteArray())) {
-                cur = b.toByteArray(); add(variants, decode(cur));
+                cur = b.toByteArray(); add(variants, Utf8.decode(cur));
                 steps.add("log hexadecimal escape detection variant");
             }
         }
@@ -41,7 +41,7 @@ public final class Normalizer {
             if (bad) warnings.add("Invalid percent encoding preserved");
             byte[] next = b.toByteArray();
             if (Arrays.equals(next, cur)) break;
-            steps.add("percent-decode detection variant"); add(variants, decode(next)); cur = next;
+            steps.add("percent-decode detection variant"); add(variants, Utf8.decode(next)); cur = next;
         }
         for (String v : List.copyOf(variants)) {
             String x = lower(v.replace('\\', '/'));
@@ -56,25 +56,10 @@ public final class Normalizer {
         try { StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(cur)); }
         catch (java.nio.charset.CharacterCodingException ex) { warnings.add("Decoded bytes are not valid UTF-8; no Unicode repair inferred"); }
         if (lower(input).contains("%u")) warnings.add("Nonstandard %u encoding is not decoded");
-        if (decode(cur).contains("%25")) warnings.add("Maximum decode depth is two");
+        if (Utf8.decode(cur).contains("%25")) warnings.add("Maximum decode depth is two");
         return new Normalized(input, List.copyOf(variants), List.copyOf(steps), List.copyOf(warnings));
     }
     private static void add(List<String> values, String s) { if (values.size() < 7 && !values.contains(s)) values.add(s); }
     private static int hex(byte c) { return c >= '0' && c <= '9' ? c-'0' : c >= 'a' && c <= 'f' ? c-'a'+10 : c >= 'A' && c <= 'F' ? c-'A'+10 : -1; }
     static String lower(String s) { var b = new StringBuilder(); s.codePoints().map(Character::toLowerCase).forEach(b::appendCodePoint); return b.toString(); }
-    static String decode(byte[] bytes) {
-        // Go consumes one byte for each invalid UTF-8 rune; retain that behavior.
-        var result = new StringBuilder();
-        for (int i = 0; i < bytes.length;) {
-            int first = Byte.toUnsignedInt(bytes[i]), n = first < 128 ? 1 : first >= 0xc2 && first < 0xe0 ? 2 : first >= 0xe0 && first < 0xf0 ? 3 : first >= 0xf0 && first < 0xf5 ? 4 : 0;
-            if (n > 0 && i+n <= bytes.length) {
-                try {
-                    var text = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes,i,n));
-                    result.append(text); i += n; continue;
-                } catch (java.nio.charset.CharacterCodingException ignored) {}
-            }
-            result.append('\ufffd'); i++;
-        }
-        return result.toString();
-    }
 }
