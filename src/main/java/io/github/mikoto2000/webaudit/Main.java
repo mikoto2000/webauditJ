@@ -33,7 +33,7 @@ public final class Main {
     private static void line(Writer out,String text)throws IOException{out.write(text);out.write('\n');}
     static int run(String[] args,Writer out,Writer err,Map<String,String> environment,Path legacy,GeoSource source){
         try{
-            if(args.length>0&&args[0].equals("geoip"))return geoip(Arrays.copyOfRange(args,1,args.length),out,err,environment,source);
+            if(args.length>0&&args[0].equals("geoip"))return GeoCommands.run(Arrays.copyOfRange(args,1,args.length),out,err,environment,source);
             var a=new Arguments();var command=new CommandLine(a).setPosixClusteredShortOptionsAllowed(false).setExpandAtFiles(false).setOut(new PrintWriter(out)).setErr(new PrintWriter(err));
             try{command.parseArgs(args);}catch(CommandLine.ParameterException ex){line(err,Reports.terminal(ex.getMessage()));return 2;}
             if(a.version){line(out,"WebAuditJ "+Engine.VERSION+" (rules "+Engine.RULES_VERSION+")");return 0;}
@@ -58,22 +58,5 @@ public final class Main {
     }
     static String os(){return System.getProperty("os.name").startsWith("Windows")?"windows":System.getProperty("os.name").startsWith("Mac")?"darwin":"linux";}
     static Path legacyDirectory(){try{var location=Main.class.getProtectionDomain().getCodeSource().getLocation();Path path=Path.of(location.toURI());return (Files.isRegularFile(path)?path.getParent():path).resolve("geoip");}catch(Exception ex){return null;}}
-    private static int geoip(String[] args,Writer out,Writer err,Map<String,String> environment,GeoSource source)throws IOException{
-        String usage="Usage: webauditJ geoip download|update|status|rollback";
-        if(args.length==1&&(args[0].equals("--help")||args[0].equals("-h"))){line(out,usage);return 0;}
-        if(args.length!=1||!Set.of("download","update","status","rollback").contains(args[0])){line(err,usage);return 2;}
-        Path dir;try{dir=Path.of(GeoPaths.resolve(os(),environment));}catch(IllegalArgumentException ex){line(err,ex.getMessage());return 1;}line(out,"WebAuditJ GeoIP "+args[0]+"\nDirectory: "+Reports.terminal(dir.toString()));
-        try{
-            if(args[0].equals("status")){try{GeoStore.withCurrent(dir,meta->{status(out,meta);return null;});line(out,"Integrity: OK");return 0;}catch(GeoStore.NotInstalled ex){line(out,"Not installed. Run: webauditJ geoip download");return 0;}catch(IOException ex){line(err,"Integrity: FAILED: "+Reports.terminal(ex.getMessage()));return 1;}}
-            GeoSource actual=source!=null?source:new GeoSource(){private DBIPProvider p;private DBIPProvider provider(){if(p==null)p=new DBIPProvider();return p;}public Release latest(String role,long deadline)throws IOException{return provider().latest(role,deadline);}public void fetch(Release release,OutputStream output,long deadline)throws IOException{provider().fetch(release,output,deadline);}};
-            var manager=new DatabaseManager(dir,actual);
-            if(args[0].equals("rollback")){manager.rollback();line(out,"Previous validated GeoIP generation restored.");return 0;}
-            var result=manager.reconcile(args[0].equals("update"));status(out,result.metadata());if(result.changed().isEmpty())line(out,args[0].equals("download")?"Already installed. Use 'webauditJ geoip update' to check for updates.":"No updates available.");else{for(String role:result.changed())line(out,role+": downloaded, validated and activated");line(out,"GeoIP databases ready.");}for(String w:result.warnings())line(err,Reports.terminal(w));return 0;
-        }catch(IOException ex){line(err,"GeoIP operation failed: "+Reports.terminal(ex.getMessage()));return 1;}
-    }
-    private static void status(Writer out,Map<String,Object> meta)throws IOException{
-        var current=Json.obj(meta.get("current"));line(out,"Generation: "+Reports.terminal(Json.string(current.get("id")))+"\nLast update check: "+meta.get("last_checked_at"));
-        for(var d:Json.rows(current.get("databases"))){line(out,"\n"+d.get("role")+":");for(String field:List.of("provider","version","type","build_time","downloaded_at","size","sha256","url"))line(out,"  "+field+": "+Reports.terminal(Objects.toString(d.get(field),"unknown")));}
-        line(out,"\nIP Geolocation by DB-IP — https://db-ip.com — CC BY 4.0");
-    }
+
 }
