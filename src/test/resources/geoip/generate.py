@@ -49,4 +49,4 @@ write("ASN", {"autonomous_system_number":(6,64500), "autonomous_system_organizat
 
 write("Country", {"country":{"iso_code":"US", "names":{"en":(6,42)}}}, "country-bad-names.mmdb")
 write("Country", {"country":(6,42)}, "country-bad-container.mmdb")
-write("ASN", {"autonomous_system_number":(9,18446744073709551617)}, "asn-overflow.mmdb")
+write("ASN", {"autonomous_system_number":(10,18446744073709551617)}, "asn-overflow.mmdb")

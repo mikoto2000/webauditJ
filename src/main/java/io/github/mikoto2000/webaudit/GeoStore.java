@@ -192,11 +192,7 @@ final class GeoStore {
           Object number = r.get("autonomous_system_number"),
               org = r.get("autonomous_system_organization");
           if (number != null
-                  && (!(number instanceof Number)
-                      || number instanceof Float
-                      || number instanceof Double
-                      || ((Number) number).longValue() < 0
-                      || ((Number) number).longValue() > 0xffffffffL)
+                  && !GeoIP.validAsn(number)
               || org != null && !(org instanceof String))
             throw new IOException("invalid ASN schema");
           found |= number != null || org != null;

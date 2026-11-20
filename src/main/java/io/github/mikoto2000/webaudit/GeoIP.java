@@ -154,10 +154,18 @@ public final class GeoIP implements AutoCloseable {
       lookups++;
       try {
         Map<?, ?> r = country.get(IP.parse(ip), Map.class);
+        if (r != null && r.get("country") != null && !(r.get("country") instanceof Map)) {
+          throw new IOException("invalid country schema");
+        }
         if (r != null && r.get("country") instanceof Map<?, ?> c) {
           Object code = c.get("iso_code"), names = c.get("names");
           if (code != null && !(code instanceof String) || names != null && !(names instanceof Map))
             throw new IOException("invalid country schema");
+          if (names instanceof Map<?, ?> m) {
+            for (Object value : m.values()) {
+              if (!(value instanceof String)) throw new IOException("invalid country names");
+            }
+          }
           if (code instanceof String value && !value.isEmpty()) x.put("country_code", value);
           if (x.get("country_code") != null || names instanceof Map<?, ?> m && !m.isEmpty())
             x.put("country_status", "found");
@@ -179,9 +187,7 @@ public final class GeoIP implements AutoCloseable {
           Object number = r.get("autonomous_system_number"),
               org = r.get("autonomous_system_organization");
           if (number != null
-                  && (!(number instanceof Number)
-                      || ((Number) number).longValue() < 0
-                      || ((Number) number).longValue() > 0xffffffffL)
+                  && !validAsn(number)
               || org != null && !(org instanceof String))
             throw new IOException("invalid ASN schema");
           if (number != null) x.put("asn", ((Number) number).longValue());
@@ -207,6 +213,12 @@ public final class GeoIP implements AutoCloseable {
   private void lookupError(String role, Exception ex) {
     if (warnings.size() < 10)
       unique(warnings, "GeoIP " + role + " lookup failed: " + ex.getMessage());
+  }
+
+  static boolean validAsn(Object value) {
+    if (value instanceof java.math.BigInteger n) return n.signum() >= 0 && n.bitLength() <= 32;
+    return (value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long)
+        && ((Number) value).longValue() >= 0 && ((Number) value).longValue() <= 0xffffffffL;
   }
 
   public List<Map<String, Object>> metadata() {
