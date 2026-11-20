@@ -66,7 +66,7 @@ final class Reports {
     int i = 0;
     while (i < s.length()) {
       int cp = s.codePointAt(i);
-      if (!Character.isWhitespace(cp) && !Character.isSpaceChar(cp)) break;
+      if (!Core.space(cp)) break;
       i += Character.charCount(cp);
     }
     if (i < s.length() && "=+-@".indexOf(s.charAt(i)) >= 0

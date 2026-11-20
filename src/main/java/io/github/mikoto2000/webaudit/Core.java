@@ -7,6 +7,20 @@ import java.util.*;
 final class Core {
   private Core() {}
 
+  static boolean space(int cp) {
+    return cp >= 9 && cp <= 13
+        || cp == 0x20
+        || cp == 0x85
+        || cp == 0xa0
+        || cp == 0x1680
+        || cp >= 0x2000 && cp <= 0x200a
+        || cp == 0x2028
+        || cp == 0x2029
+        || cp == 0x202f
+        || cp == 0x205f
+        || cp == 0x3000;
+  }
+
   static String s(String value) {
     return Objects.requireNonNullElse(value, "");
   }

@@ -63,7 +63,7 @@ final class LogInput {
     ZoneId errorZone = null;
     if (!o.errorTimezone.isEmpty()) {
       try {
-        errorZone = ZoneId.of(o.errorTimezone);
+        errorZone = TimeZones.resolve(o.errorTimezone);
         report.put("error_timezone", o.errorTimezone);
       } catch (DateTimeException e) {
         partial();
@@ -135,7 +135,7 @@ final class LogInput {
                 bad(in, p, line, "invalid UTF-8 or control line");
                 return;
               }
-              if (text.isBlank()) return;
+              if (text.codePoints().allMatch(Core::space)) return;
               Event e;
               try {
                 e = LogParser.parse(text, p.toString(), line, o.logRegex);

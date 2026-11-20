@@ -151,7 +151,7 @@ public final class Main {
       }
       if (!a.timezone.isEmpty())
         try {
-          ZoneId.of(a.timezone);
+          TimeZones.resolve(a.timezone);
         } catch (DateTimeException ex) {
           line(err, "Invalid --error-timezone: " + ex.getMessage());
           return 2;
