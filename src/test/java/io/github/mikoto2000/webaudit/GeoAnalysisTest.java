@@ -11,6 +11,19 @@ class GeoAnalysisTest {
   @TempDir Path dir;
 
   @Test
+  void lookupSchemaFailureStillMakesAnalysisPartial() throws Exception {
+    Path input = dir.resolve("a.log");
+    Files.writeString(input, CorrelatorTest.event(0, 200).raw.replace("192.0.2.1", "8.8.8.8"));
+    var o = new Options();
+    try (var g = GeoIP.open(GeoIPTest.db("country-bad-names"), "", null, 4)) {
+      o.geoIP = g;
+      var report = Engine.analyze(List.of(input), o);
+      assertTrue(Json.bool(report.get("partial")));
+      assertTrue(report.get("warnings").toString().contains("lookup failed"));
+    }
+  }
+
+  @Test
   void enrichesAndCorrelatesWithoutChangingDetection() throws Exception {
     Path p = dir.resolve("a.log");
     Files.writeString(

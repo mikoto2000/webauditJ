@@ -3,11 +3,35 @@ package io.github.mikoto2000.webaudit;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.*;
+import java.util.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
 class ManagedGeoIPTest {
   @TempDir Path dir;
+
+  @Test
+  void discoveryWarningsRemainStartupOnlyWithOrWithoutAHealthyRole() throws Exception {
+    for (boolean healthyAsn : List.of(false, true)) {
+      for (boolean managedDirectory : List.of(false, true)) {
+        Path legacy = Files.createTempDirectory(dir, "legacy");
+        Files.writeString(legacy.resolve("country.mmdb"), "broken");
+        if (healthyAsn) Files.copy(Path.of(GeoIPTest.db("asn")), legacy.resolve("asn.mmdb"));
+        var opened = ManagedGeoIP.open("", "", managedDirectory ? dir.resolve("uninstalled") : null, legacy, 4);
+        assertEquals(1, opened.warnings().size());
+        try (var g = opened.geo()) {
+          assertEquals(healthyAsn, g != null);
+          Path input = dir.resolve("a.log");
+          Files.writeString(input, CorrelatorTest.event(0, 200).raw);
+          var o = new Options();
+          o.geoIP = g;
+          var report = Engine.analyze(List.of(input), o);
+          assertFalse(Json.bool(report.get("partial")));
+          if (g != null) assertEquals("found", g.lookup("8.8.8.8").get("asn_status"));
+        }
+      }
+    }
+  }
 
   @Test
   void opensManagedSnapshotAndKeepsExplicitRolePriority() throws Exception {
