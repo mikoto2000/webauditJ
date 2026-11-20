@@ -8,4 +8,5 @@ public final class Options {
     public boolean deduplicateFiles;
     public String logRegex="",errorTimezone="";
     public Clock clock=Clock.systemUTC();
+    public GeoIP geoIP;
 }
