@@ -30,6 +30,12 @@ jobs:
         run: ./mvnw -B -ntp -s .mvn/settings.xml verify
       - name: Inspect executable JAR
         run: python tools/verify_jar.py
+      - name: Verify release version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          version=$(java -jar target/webauditJ.jar --version | cut -d ' ' -f 2)
+          test "$version" = "${RELEASE_TAG#v}"
       - name: Verify offline execution
         run: python tools/verify_offline.py
       - name: Create release with executable JAR
@@ -37,8 +43,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
-        run: >-
-          gh release create "$RELEASE_TAG" target/webauditJ.jar
-          --verify-tag
-          --title "$RELEASE_TAG"
-          --generate-notes
+        run: |
+          notes="docs/releases/$RELEASE_TAG.md"
+          if [ -f "$notes" ]; then
+            gh release create "$RELEASE_TAG" target/webauditJ.jar --verify-tag --title "$RELEASE_TAG" --notes-file "$notes"
+          else
+            gh release create "$RELEASE_TAG" target/webauditJ.jar --verify-tag --title "$RELEASE_TAG" --generate-notes
+          fi
