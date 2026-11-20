@@ -10,8 +10,10 @@ public final class Engine {
     public static Map<String,Object> analyze(List<Path> paths,Options o){
         var report=Json.map("schema","webaudit/2","version",VERSION,"rules_version",RULES_VERSION,"analyzed_at",Times.instant(o.clock.instant()),"warnings",new ArrayList<String>(),"partial",false);
         var behavior=new Behavior(o);var upstream=new Upstream(o);var aura=new AuraAnalysis(o);var correlator=new Correlator(o);
+        var geo=o.geoIP==null?null:new GeoAnalysis(o.geoIP,o.maxKeys);
         var order=new TimeOrder();
         new LogInput(o,report,e->{
+            if(geo!=null)geo.observe(e.ip);
             order.observe(e);
             upstream.observe(e);aura.observe(e);var detection=Signatures.detect(e);correlator.add(e,detection);if(!e.timezoneUnknown)behavior.observe(e,detection.hits());
         }).stream(paths);
@@ -25,6 +27,6 @@ public final class Engine {
         for(var collection:List.of(behavior.warnings,correlator.warnings))for(String w:collection){warn(report,w);if(w.contains("limit reached"))report.put("partial",true);}
         if(order.outOfOrder){report.put("partial",true);warn(report,"Input time order is incomplete; upstream stateful parity requires chronological input; WebAudit correlations use fixed event-time partitions");}
         Json.obj(report.get("missing_fields")).forEach((field,count)->{if(Json.number(count)>0)warn(report,"Missing "+field+" in "+count+" parsed requests reduces related detection coverage");});
-        return report;
+        if(geo!=null)geo.finish(report);return report;
     }
 }
