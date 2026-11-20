@@ -1,0 +1,7 @@
+/target/
+/.build/
+/.workflow/
+*.class
+*.log
+!src/test/resources/**/*.log
+!examples/*.log
