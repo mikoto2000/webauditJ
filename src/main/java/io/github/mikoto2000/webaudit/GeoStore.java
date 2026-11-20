@@ -12,11 +12,9 @@ final class GeoStore {
     interface LockedRead<T>{T read(Map<String,Object> metadata)throws IOException;}
     static final com.google.re2j.Pattern GENERATION=com.google.re2j.Pattern.compile("^gen-[a-zA-Z0-9_-]{1,80}$");
     static final class Lock implements AutoCloseable {private final FileChannel channel;private final FileLock lock;Lock(FileChannel channel,FileLock lock){this.channel=channel;this.lock=lock;}public void close()throws IOException{try{lock.release();}finally{channel.close();}}}
-    static void directories(Path path)throws IOException{if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix"))Files.createDirectories(path,PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------")));else Files.createDirectories(path);}
-    static Path createFile(Path path)throws IOException{if(FileSystems.getDefault().supportedFileAttributeViews().contains("posix"))return Files.createFile(path,PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")));return Files.createFile(path);}
     static void safe(Path dir)throws IOException{for(String name:List.of("versions",".lock","metadata.json"))if(Files.isSymbolicLink(dir.resolve(name)))throw new IOException("GeoIP managed "+name+" must not be a symlink");}
     static Lock lock(Path dir)throws IOException{
-        safe(dir);Path path=dir.resolve(".lock");if(!Files.exists(path,LinkOption.NOFOLLOW_LINKS))try{createFile(path);}catch(FileAlreadyExistsException ignored){}
+        safe(dir);Path path=dir.resolve(".lock");if(!Files.exists(path,LinkOption.NOFOLLOW_LINKS))try{ManagedFiles.createFile(path);}catch(FileAlreadyExistsException ignored){}
         var channel=FileChannel.open(path,StandardOpenOption.READ,StandardOpenOption.WRITE);
         try{FileLock lock=channel.tryLock(0,1,false);if(lock==null)throw new IOException("another GeoIP writer is running (retry after it exits)");return new Lock(channel,lock);}
         catch(IOException|OverlappingFileLockException ex){channel.close();throw new IOException("another GeoIP writer is running (retry after it exits)",ex);}
@@ -59,9 +57,5 @@ final class GeoStore {
             return Json.map("role",role,"provider","DB-IP Lite","type",type,"build_time",db.getMetadata().buildEpoch().signum()>0?Times.instant(db.getMetadata().buildTime()):null,"size",size,"sha256",HexFormat.of().formatHex(sha256.digest()),"source_sha1",HexFormat.of().formatHex(sha1.digest()));
         }catch(IOException ex){throw ex;}catch(Exception ex){throw new IOException("GeoIP "+role+" MMDB validation",ex);}
     }
-    static void deleteTree(Path root,Path target)throws IOException{
-        Path absolute=root.toAbsolutePath().normalize(),candidate=target.toAbsolutePath().normalize();if(candidate.equals(absolute)||!candidate.startsWith(absolute))throw new IOException("cleanup path outside GeoIP directory");
-        if(!Files.exists(candidate,LinkOption.NOFOLLOW_LINKS))return;
-        Files.walkFileTree(candidate,new SimpleFileVisitor<>(){public FileVisitResult visitFile(Path file,java.nio.file.attribute.BasicFileAttributes attributes)throws IOException{Files.delete(file);return FileVisitResult.CONTINUE;}public FileVisitResult postVisitDirectory(Path directory,IOException error)throws IOException{if(error!=null)throw error;Files.delete(directory);return FileVisitResult.CONTINUE;}});
-    }
+
 }
