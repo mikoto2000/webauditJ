@@ -38,7 +38,7 @@ final class DatabaseManager {
         Path packed=Files.createTempFile(path.getParent(),"compressed-","");
         try{
             try(var out=Files.newOutputStream(packed)){source.fetch(release,out,deadline);}check(deadline);if(Files.size(packed)>64L<<20)throw new IOException("GeoIP compressed download exceeds size limit");
-            ManagedFiles.createFile(path);try(var in=new GZIPInputStream(Files.newInputStream(packed),65536);var channel=FileChannel.open(path,StandardOpenOption.WRITE);var out=Channels.newOutputStream(channel)){
+            ManagedFiles.createFile(path);try(var in=new StrictGzipInputStream(Files.newInputStream(packed));var channel=FileChannel.open(path,StandardOpenOption.WRITE);var out=Channels.newOutputStream(channel)){
                 long total=0;byte[] b=new byte[65536];int n;while((n=in.read(b))!=-1){check(deadline);total+=n;if(total>maxDatabase)throw new IOException("decompressed database exceeds size limit");out.write(b,0,n);}out.flush();channel.force(true);
             }
             var d=GeoStore.inspect(path,release.role());if(!release.sha1().equals(d.get("source_sha1")))throw new IOException("official decompressed MMDB SHA1 mismatch");d.put("version",release.version());d.put("url",release.url());d.put("downloaded_at",Times.instant(clock.instant()));return d;

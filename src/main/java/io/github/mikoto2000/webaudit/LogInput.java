@@ -66,7 +66,7 @@ final class LogInput {
     @FunctionalInterface private interface Line {void accept(byte[] bytes,long line,boolean tooLong);}
     private void read(Path p,Line line)throws IOException{
         try(var raw=new BufferedInputStream(Files.newInputStream(p),65536)){
-            raw.mark(2);int a=raw.read(),b=raw.read();raw.reset();InputStream body=a==0x1f&&b==0x8b?new GZIPInputStream(raw,65536):raw;
+            raw.mark(2);int a=raw.read(),b=raw.read();raw.reset();InputStream body=a==0x1f&&b==0x8b?new StrictGzipInputStream(raw):raw;
             try(var input=body){byte[] buffer=new byte[65536];var data=new ByteArrayOutputStream();long total=0,lineNumber=0;boolean tooLong=false;int count;
                 while((count=input.read(buffer,0,(int)Math.min(buffer.length,o.maxFileBytes-total+1)))!=-1){
                     for(int i=0;i<count;i++){total++;if(total>o.maxFileBytes)throw new IOException("decompressed file limit reached; analysis incomplete");int c=buffer[i]&255;
