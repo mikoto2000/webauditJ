@@ -21,6 +21,12 @@ def check_jar(jar):
         ]
         for name in required:
             assert name in entries, name
+        for dependency in json.loads(archive.read("META-INF/licenses/dependencies.json")):
+            folder = dependency["artifact"].rsplit("/", 1)[-1] + "-" + dependency["version"]
+            for name, expected in dependency["license_files"].items():
+                entry = "META-INF/licenses/" + folder + "/" + name
+                assert entry in entries, entry
+                assert hashlib.sha256(archive.read(entry)).hexdigest() == expected, entry
         assert not any(name.endswith(".mmdb") for name in entries), "Provider databases must not be shipped"
         assert not any(name.endswith("-golden.json") for name in entries), "Test fixtures leaked into JAR"
     return dict(jar=str(jar), bytes=jar.stat().st_size,

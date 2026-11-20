@@ -11,6 +11,7 @@ import os
 import platform
 import resource
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -43,7 +44,7 @@ with tempfile.TemporaryDirectory(prefix="webauditJ-offline-") as temporary:
     guard_args = [java, "-Xmx256m", "-XX:+DisableAttachMechanism", "--enable-native-access=ALL-UNNAMED", "-javaagent:" + str(agent)]
     probe = subprocess.run([*guard_args[:-1], guard_args[-1] + "=probe", "-version"],
                            preexec_fn=disable_core, capture_output=True)
-    assert probe.returncode < 0, ("Network guard did not stop socket creation", probe.returncode, probe.stderr[-2000:])
+    assert probe.returncode == -signal.SIGSYS, ("Network guard did not stop socket creation with SIGSYS", probe.returncode, probe.stderr[-2000:])
     app = base / "webauditJ.jar"
     shutil.copyfile(jar, app)
     env = dict(os.environ, XDG_DATA_HOME=str(base / "data"))

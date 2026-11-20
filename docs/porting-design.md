@@ -2,6 +2,8 @@
 
 WebAudit のオフライン解析機能と GeoIP DB 管理機能を Java 25 に移植する。最初の配布物は依存と検知データを同梱した実行可能 JAR とし、検知結果と CLI の互換性を確立した後、jpackage、GraalVM Native Image の順に配布を拡張する。
 
+実行可能 JAR の実装を完了した。実装範囲と検証の根拠は [検証記録](validation.md)、実行方法は [README](../README.md) に記録する。後続の配布方式は初期 JAR と分けて進める。
+
 ## 基準と互換性
 
 基準は Go 版 `95148ba4e22d9001d34fbb0e4d59f072efd3e95c`。GeoIP 改修完了後のコード、テスト、辞書、出典を対象とする。元リポジトリは変更しない。
