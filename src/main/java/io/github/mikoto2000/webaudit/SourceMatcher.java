@@ -7,7 +7,7 @@ import com.google.re2j.Pattern;
 import static io.github.mikoto2000.webaudit.Core.*;
 
 final class SourceMatcher {
-    static final List<Map<String,Object>> RULES=Json.rows(Json.resource("upstream/hub.json"));
+    static final List<Map<String,Object>> RULES=loadRules();
     static final Map<String,Object> AURA=Json.obj(Json.resource("upstream/aura.json"));
     static final Map<String,Object> SOURCES=Json.obj(Json.resource("upstream/manifest.json"));
     private static final Map<String,List<String>> LISTS=new HashMap<>();
@@ -26,6 +26,12 @@ final class SourceMatcher {
         for(var r:Json.rows(AURA.get("signatures")))REGEX.put("(?i)"+r.get("pattern"),Pattern.compile("(?i)"+r.get("pattern")));
     }
     private SourceMatcher() {}
+    private static List<Map<String,Object>> loadRules(){
+        return Json.rows(Json.resource("upstream/hub.json")).stream().map(raw->{var r=new LinkedHashMap<String,Object>();
+            for(String key:List.of("name","type","leakspeed","blackhole","distinct","groupby","description","file","filter"))r.put(key,Json.string(raw.get(key)));
+            r.put("capacity",Json.number(raw.get("capacity")));r.put("supported",Json.bool(raw.get("supported")));if(Json.number(raw.get("cache_size"))>0)r.put("cache_size",raw.get("cache_size"));return (Map<String,Object>)r;
+        }).toList();
+    }
     private static final Pattern FILE_PATTERN=Pattern.compile("^(.*/)(?:([^/].*?)(\\.[^.]*$|$))?");
     record View(String full,String req,String args,String lower,String upper,String dir,String frag,String filename,String ext,String qu,String pu,boolean isStatic) {}
     static View view(Event e) {

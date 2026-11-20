@@ -22,4 +22,9 @@ class CorrelatorTest {
         var o=new Options();o.maxEvidenceBytes=100;var c=new Correlator(o);var e=event(0,200);e.timezoneUnknown=true;c.add(e,Signatures.detect(e));
         var f=c.finish().getFirst();assertNull(f.get("first"));assertEquals("unknown",Json.obj(f.get("outcome")).get("verdict"));assertFalse(c.warnings.isEmpty());
     }
+    @Test void unknownClockIdsDependOnSourceFile(){
+        Event a=event(0,404);a.timezoneUnknown=true;Event b=a.copy();b.file="other.log";
+        var c=new Correlator(new Options());c.add(a,Signatures.detect(a));c.add(b,Signatures.detect(b));assertEquals(2,c.finish().size());
+        assertNotEquals(c.finish().get(0).get("id"),c.finish().get(1).get("id"));
+    }
 }

@@ -37,7 +37,8 @@ public final class LogParser {
     static Event fromFields(Map<String,String> f,String raw,String file,long line) {
         Event e=new Event();e.file=file;e.line=line;e.raw=raw;e.ip=f.getOrDefault("ip","");
         if(f.containsKey("ua"))e.recordedUA=f.get("ua");if(f.containsKey("referer"))e.recordedReferer=f.get("referer");
-        IP.parse(e.ip);e.time=Times.parse(f.getOrDefault("time",""));
+        try{IP.parse(e.ip);}catch(IllegalArgumentException ex){throw new IllegalArgumentException("invalid/missing client IP (recognized time/request/status); hostnames and XFF not trusted");}
+        try{e.time=Times.parse(f.getOrDefault("time",""));}catch(DateTimeException ex){throw new IllegalArgumentException("invalid/missing timestamp");}
         String req=f.getOrDefault("request","");
         if(!req.isEmpty()) {
             String[] parts=req.split(" ",-1);e.rawRequest=req;

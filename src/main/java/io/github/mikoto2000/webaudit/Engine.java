@@ -1,7 +1,31 @@
 package io.github.mikoto2000.webaudit;
 import java.util.*;
 import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import static io.github.mikoto2000.webaudit.Core.*;
 public final class Engine {
+    public static final String VERSION="1.0.0", RULES_VERSION="2026.11.20.2";
     private Engine() {}
-    public static Map<String,Object> analyze(List<Path> paths,Options options){return Map.of();}
+    @SuppressWarnings("unchecked") static void warn(Map<String,Object> report,String text){var warnings=(List<String>)report.get("warnings");if(warnings.size()<50&&!warnings.contains(text))warnings.add(text);}
+    public static Map<String,Object> analyze(List<Path> paths,Options o){
+        var report=Json.map("schema","webaudit/2","version",VERSION,"rules_version",RULES_VERSION,"analyzed_at",Times.instant(o.clock.instant()),"warnings",new ArrayList<String>(),"partial",false);
+        var behavior=new Behavior(o);var upstream=new Upstream(o);var aura=new AuraAnalysis(o);var correlator=new Correlator(o);
+        var previous=new OffsetDateTime[2];var wallFile=new String[]{""};var outOfOrder=new boolean[1];
+        new LogInput(o,report,e->{
+            if(e.timezoneUnknown){if(wallFile[0].equals(e.file)&&previous[1]!=null&&e.time.isBefore(previous[1]))outOfOrder[0]=true;wallFile[0]=e.file;previous[1]=e.time;}
+            else{if(previous[0]!=null&&e.time.isBefore(previous[0]))outOfOrder[0]=true;previous[0]=e.time;}
+            upstream.observe(e);aura.observe(e);var detection=Signatures.detect(e);correlator.add(e,detection);if(!e.timezoneUnknown)behavior.observe(e,detection.hits());
+        }).stream(paths);
+        for(var signal:behavior.finish())correlator.addSignal(signal);
+        var findings=correlator.finish();report.put("findings",findings);report.put("upstream_alerts",nullable(upstream.alerts));report.put("aura_matches",nullable(upstream.auraMatches()));report.put("aura_analysis",nullable(aura.finish()));report.put("upstream_rules",SourceMatcher.RULES);
+        var sources=new TreeMap<String,Object>();for(String key:List.of("hub","crowdsec","AuraDFIR","sec-lists"))sources.put(key,SourceMatcher.SOURCES.get(key));report.put("upstream_sources",sources);
+        for(String w:aura.warnings){warn(report,w);report.put("partial",true);}for(String w:upstream.warnings){warn(report,w);report.put("partial",true);}
+        var outcomes=Json.map("confirmed_success",0,"possible_success",0,"unknown",0,"likely_failed",0,"confirmed_failure",0);var categories=new TreeMap<String,Long>();var severities=new TreeMap<String,Long>();
+        for(var f:findings){String verdict=Json.string(Json.obj(f.get("outcome")).get("verdict"));outcomes.put(verdict,Json.number(outcomes.get(verdict))+1);severities.merge(Json.string(f.get("severity")),1L,Long::sum);for(Object cat:(List<?>)f.get("categories"))categories.merge((String)cat,1L,Long::sum);}
+        report.put("outcomes",outcomes);report.put("categories",categories);report.put("severities",severities);
+        for(var collection:List.of(behavior.warnings,correlator.warnings))for(String w:collection){warn(report,w);if(w.contains("limit reached"))report.put("partial",true);}
+        if(outOfOrder[0]){report.put("partial",true);warn(report,"Input time order is incomplete; upstream stateful parity requires chronological input; WebAudit correlations use fixed event-time partitions");}
+        Json.obj(report.get("missing_fields")).forEach((field,count)->{if(Json.number(count)>0)warn(report,"Missing "+field+" in "+count+" parsed requests reduces related detection coverage");});
+        return report;
+    }
 }
