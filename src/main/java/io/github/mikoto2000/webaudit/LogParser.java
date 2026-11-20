@@ -1,20 +1,13 @@
 package io.github.mikoto2000.webaudit;
 
 import com.google.re2j.Pattern;
+import static io.github.mikoto2000.webaudit.LogLayouts.*;
 import com.google.re2j.Matcher;
 import java.time.*;
 import java.util.*;
 
 public final class LogParser {
     private LogParser() {}
-    private static final Map<String,Pattern> PATTERNS = new HashMap<>();
-    static { Json.obj(Json.resource("parser-patterns.json")).forEach((k,v)->PATTERNS.put(k,Pattern.compile((String)v))); }
-    static Pattern pattern(String name) { return PATTERNS.get(name); }
-    private static Matcher match(String name,String s) { var m=pattern(name).matcher(s);return m.find()?m:null; }
-    static Map<String,String> fields(Pattern p,String s) {
-        var m=p.matcher(s);if(!m.find())return null;var f=new HashMap<String,String>();
-        p.namedGroups().forEach((name,index)->f.put(name,Objects.requireNonNullElse(m.group(index),"")));return f;
-    }
     public static Event parse(String text, String file, long line, String custom) {
         try { return parseChecked(text,file,line,custom); }
         catch (IllegalArgumentException ex) {throw ex;}

@@ -11,6 +11,7 @@ final class Utf8 {
         var result = new StringBuilder();
         for (int i = 0; i < bytes.length;) {
             int first = Byte.toUnsignedInt(bytes[i]), n = first < 128 ? 1 : first >= 0xc2 && first < 0xe0 ? 2 : first >= 0xe0 && first < 0xf0 ? 3 : first >= 0xf0 && first < 0xf5 ? 4 : 0;
+            if (n == 1) { result.append((char) first); i++; continue; }
             if (n > 0 && i+n <= bytes.length) {
                 try {
                     var text = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes,i,n));
