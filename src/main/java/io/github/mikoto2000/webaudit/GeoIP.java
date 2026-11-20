@@ -43,6 +43,7 @@ public final class GeoIP implements AutoCloseable {
     }
     private void lookupError(String role,Exception ex){if(warnings.size()<10)unique(warnings,"GeoIP "+role+" lookup failed: "+ex.getMessage());}
     public List<Map<String,Object>> metadata(){return List.copyOf(metadata);}
+    boolean hasReaders(){return country!=null||asn!=null;}
     Map<String,Object> metrics(){return Json.map("public_lookup_calls",calls,"lru_hits",hits,"peer_cache_hits",peerHits,"reader_lookups",lookups,"cached_ips",cache.size(),"untracked_requests",skipped,"cache_hit_rate",calls+peerHits==0?0.0:(double)(hits+peerHits)/(calls+peerHits));}
     public void close()throws IOException{IOException error=null;for(Reader reader:new Reader[]{country,asn})if(reader!=null)try{reader.close();}catch(IOException ex){error=ex;}if(error!=null)throw error;}
 }
