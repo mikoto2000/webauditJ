@@ -10,10 +10,9 @@ public final class Engine {
     public static Map<String,Object> analyze(List<Path> paths,Options o){
         var report=Json.map("schema","webaudit/2","version",VERSION,"rules_version",RULES_VERSION,"analyzed_at",Times.instant(o.clock.instant()),"warnings",new ArrayList<String>(),"partial",false);
         var behavior=new Behavior(o);var upstream=new Upstream(o);var aura=new AuraAnalysis(o);var correlator=new Correlator(o);
-        var previous=new OffsetDateTime[2];var wallFile=new String[]{""};var outOfOrder=new boolean[1];
+        var order=new TimeOrder();
         new LogInput(o,report,e->{
-            if(e.timezoneUnknown){if(wallFile[0].equals(e.file)&&previous[1]!=null&&e.time.isBefore(previous[1]))outOfOrder[0]=true;wallFile[0]=e.file;previous[1]=e.time;}
-            else{if(previous[0]!=null&&e.time.isBefore(previous[0]))outOfOrder[0]=true;previous[0]=e.time;}
+            order.observe(e);
             upstream.observe(e);aura.observe(e);var detection=Signatures.detect(e);correlator.add(e,detection);if(!e.timezoneUnknown)behavior.observe(e,detection.hits());
         }).stream(paths);
         for(var signal:behavior.finish())correlator.addSignal(signal);
@@ -24,7 +23,7 @@ public final class Engine {
         for(var f:findings){String verdict=Json.string(Json.obj(f.get("outcome")).get("verdict"));outcomes.put(verdict,Json.number(outcomes.get(verdict))+1);severities.merge(Json.string(f.get("severity")),1L,Long::sum);for(Object cat:(List<?>)f.get("categories"))categories.merge((String)cat,1L,Long::sum);}
         report.put("outcomes",outcomes);report.put("categories",categories);report.put("severities",severities);
         for(var collection:List.of(behavior.warnings,correlator.warnings))for(String w:collection){warn(report,w);if(w.contains("limit reached"))report.put("partial",true);}
-        if(outOfOrder[0]){report.put("partial",true);warn(report,"Input time order is incomplete; upstream stateful parity requires chronological input; WebAudit correlations use fixed event-time partitions");}
+        if(order.outOfOrder){report.put("partial",true);warn(report,"Input time order is incomplete; upstream stateful parity requires chronological input; WebAudit correlations use fixed event-time partitions");}
         Json.obj(report.get("missing_fields")).forEach((field,count)->{if(Json.number(count)>0)warn(report,"Missing "+field+" in "+count+" parsed requests reduces related detection coverage");});
         return report;
     }
