@@ -3,3 +3,4 @@
 mvnw text eol=lf
 *.cmd text eol=crlf
 *.mmdb binary
+src/main/resources/META-INF/licenses/** -text
