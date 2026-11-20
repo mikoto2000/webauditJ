@@ -186,8 +186,7 @@ public final class GeoIP implements AutoCloseable {
         if (r != null) {
           Object number = r.get("autonomous_system_number"),
               org = r.get("autonomous_system_organization");
-          if (number != null
-                  && !validAsn(number)
+          if (number != null && !MmdbSchema.validAsn(number)
               || org != null && !(org instanceof String))
             throw new IOException("invalid ASN schema");
           if (number != null) x.put("asn", ((Number) number).longValue());
@@ -213,12 +212,6 @@ public final class GeoIP implements AutoCloseable {
   private void lookupError(String role, Exception ex) {
     if (warnings.size() < 10)
       unique(warnings, "GeoIP " + role + " lookup failed: " + ex.getMessage());
-  }
-
-  static boolean validAsn(Object value) {
-    if (value instanceof java.math.BigInteger n) return n.signum() >= 0 && n.bitLength() <= 32;
-    return (value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long)
-        && ((Number) value).longValue() >= 0 && ((Number) value).longValue() <= 0xffffffffL;
   }
 
   public List<Map<String, Object>> metadata() {

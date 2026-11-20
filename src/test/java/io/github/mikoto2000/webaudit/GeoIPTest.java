@@ -19,6 +19,7 @@ class GeoIPTest {
       assertEquals("read_error", geo.lookup("8.8.8.8").get("asn_status"));
     }
   }
+
   @TempDir Path dir;
 
   static String db(String role) throws Exception {
