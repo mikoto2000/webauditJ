@@ -12,6 +12,16 @@ import org.junit.jupiter.api.io.TempDir;
 class InputSecurityTest {
   @TempDir Path dir;
 
+  @Test
+  void preservesGoUnicodeWhitespaceAndDoesNotSkipRecordSeparators() throws Exception {
+    Path p = dir.resolve("whitespace.log");
+    Files.writeString(p, "\u00a0\n\u0085\n\u001c\n" + CorrelatorTest.event(0, 404).raw);
+    var report = Engine.analyze(List.of(p), new Options());
+    assertEquals(1, Json.number(report.get("requests")));
+    assertEquals(1, Json.number(report.get("unparsed")));
+    assertTrue(Reports.csvSafe("\u0085=1+1").startsWith("'"));
+  }
+
   static byte[] gzip(byte[] data) throws Exception {
     var out = new ByteArrayOutputStream();
     try (var gzip = new GZIPOutputStream(out)) {

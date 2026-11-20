@@ -11,6 +11,15 @@ import org.junit.jupiter.api.io.TempDir;
 class MainTest {
   @TempDir Path dir;
 
+  @Test
+  void validatesGoTimezoneNamesIncludingLocalAndRejectsOffsetAliases() throws Exception {
+    Path input = dir.resolve("zone.log");
+    Files.writeString(input, CorrelatorTest.event(0, 404).raw);
+    assertEquals(0, run(input.toString(), "--error-timezone", "Local"));
+    assertEquals(2, run(input.toString(), "--error-timezone", "Z"));
+    assertEquals(2, run(input.toString(), "--error-timezone", "+09:00"));
+  }
+
   int run(String... args) {
     return Main.run(
         args,
