@@ -6,6 +6,14 @@ import org.junit.jupiter.api.Test;
 
 class NormalizerTest {
   @Test
+  void distinguishesRawInvalidBytesFromTheirUtf8DisplayAndClipsBytesLikeGo() {
+    var n = Normalizer.normalize("/%ff%fe");
+    assertEquals(java.util.List.of("/%ff%fe", "/\ufffd\ufffd", "/\ufffd\ufffd"), n.variants());
+    assertEquals(2, n.steps().size());
+    var longValue = Normalizer.normalize("/.env?q=%ff" + "x".repeat(1200));
+    assertEquals("/.env?q=", Core.compact(longValue).variants().get(1));
+  }
+  @Test
   void decodesTwoLevelsAndPreservesOriginal() {
     var n = Normalizer.normalize("/%253Cscript%253E?q=a+b");
     assertEquals("/%253Cscript%253E?q=a+b", n.original());
