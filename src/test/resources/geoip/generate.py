@@ -17,7 +17,7 @@ def enc(x):
     if isinstance(x, list): return head(11, len(x)) + b"".join(enc(v) for v in x)
     t, n = x; b = n.to_bytes((n.bit_length()+7)//8, "big"); return head(t, len(b)) + b
 
-def write(kind, record):
+def write(kind, record, filename=None):
     root = {}
     for cidr in ["8.8.8.0/24", "2606:4700::/32"]:
         net = ipaddress.ip_network(cidr); bits = bin(int(net.network_address))[2:].zfill(net.max_prefixlen)
@@ -42,7 +42,11 @@ def write(kind, record):
             "build_epoch":(9,1793491200), "database_type":"DBIP-"+kind+"-Lite",
             "description":{"en":"Synthetic DB-IP-compatible test fixture (not DB-IP data)"},
             "ip_version":(5,6), "languages":["en"], "node_count":(6,count), "record_size":(5,24)}
-    Path(__file__).with_name(kind.lower()+".mmdb").write_bytes(tree + bytes(16) + enc(record) + bytes.fromhex("abcdef") + b"MaxMind.com" + enc(meta))
+    Path(__file__).with_name(filename or kind.lower()+".mmdb").write_bytes(tree + bytes(16) + enc(record) + bytes.fromhex("abcdef") + b"MaxMind.com" + enc(meta))
 
 write("Country", {"country":{"iso_code":"US", "names":{"en":"Example Country"}}})
 write("ASN", {"autonomous_system_number":(6,64500), "autonomous_system_organization":"Example Network"})
+
+write("Country", {"country":{"iso_code":"US", "names":{"en":(6,42)}}}, "country-bad-names.mmdb")
+write("Country", {"country":(6,42)}, "country-bad-container.mmdb")
+write("ASN", {"autonomous_system_number":(9,18446744073709551617)}, "asn-overflow.mmdb")

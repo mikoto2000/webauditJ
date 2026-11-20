@@ -8,6 +8,17 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
 class GeoIPTest {
+  @Test
+  void explicitSchemaErrorsRemainReadErrorsRatherThanMissingRecords() throws Exception {
+    for (String name : List.of("country-bad-names", "country-bad-container")) {
+      try (var geo = GeoIP.open(db(name), "", null, 2)) {
+        assertEquals("read_error", geo.lookup("8.8.8.8").get("country_status"), name);
+      }
+    }
+    try (var geo = GeoIP.open("", db("asn-overflow"), null, 2)) {
+      assertEquals("read_error", geo.lookup("8.8.8.8").get("asn_status"));
+    }
+  }
   @TempDir Path dir;
 
   static String db(String role) throws Exception {
