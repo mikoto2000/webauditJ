@@ -11,11 +11,11 @@ final class Upstream {
     private final Options options;
     private final Map<String,Bucket> buckets=new HashMap<>();
     private final Map<String,Suppression> blocked=new HashMap<>();
-    private final Map<String,Map<String,Object>> aura=new HashMap<>();
+    private final AuraSignatures aura;
     private long observed;private int distinctCount;
     private static final class Bucket {int capacity;double leak,tokens;String domain;OffsetDateTime first,last;long count;final Set<String> seen=new HashSet<>();final List<Map<String,Object>> refs=new ArrayList<>();}
     private record Suppression(OffsetDateTime until,String domain) {}
-    Upstream(Options options) {this.options=options;}
+    Upstream(Options options) {this.options=options;this.aura=new AuraSignatures(options,warnings);}
     private static double duration(String s){if(s.isEmpty()||s.equals("0"))return 0;var m=com.google.re2j.Pattern.compile("([0-9.]+)(ns|us|µs|ms|s|m|h)").matcher(s);double sum=0;int end=0;while(m.find()){if(m.start()!=end)return 0;end=m.end();sum+=Double.parseDouble(m.group(1))*switch(m.group(2)){case "ns"->1e-9;case "us","µs"->1e-6;case "ms"->0.001;case "m"->60;case "h"->3600;default->1;};}return end==s.length()?sum:0;}
     private static double seconds(OffsetDateTime a,OffsetDateTime b){var d=Duration.between(a,b);return d.getSeconds()+d.getNano()/1e9;}
     private void reset(String key){Bucket b=buckets.remove(key);if(b!=null)distinctCount-=b.seen.size();}
@@ -27,7 +27,7 @@ final class Upstream {
     void observe(Event e) {
         observed++;String domain=domain(e);
         if(observed%5000==0){for(String key:new ArrayList<>(buckets.keySet())){Bucket b=buckets.get(key);if(!b.domain.equals(domain)||b.leak<=0)continue;double tokens=b.tokens;if(e.time.isAfter(b.last))tokens+=seconds(b.last,e.time)/b.leak;if(tokens+1e-9>=b.capacity)reset(key);}}
-        observeAura(e);View view=view(e);
+        aura.observe(e);View view=view(e);
         for(var r:RULES){if(!Json.bool(r.get("supported"))||!matches(r,e,view))continue;
             String id=Json.string(r.get("name")),group=group(e,Json.string(r.get("groupby"))),key=digest(id+"\0"+group+(e.timezoneUnknown?"\0"+domain:""));
             int capacity=(int)Json.number(r.get("capacity"));double leak=duration(Json.string(r.get("leakspeed"))),blackhole=duration(Json.string(r.get("blackhole")));
@@ -47,19 +47,6 @@ final class Upstream {
         }
         blocked.entrySet().removeIf(entry->entry.getValue().domain().equals(domain)&&!e.time.isBefore(entry.getValue().until()));
     }
-    private void auraAdd(Event e,String id){
-        String key=id+"\0"+e.ip+(e.timezoneUnknown?"\0wall:"+e.file:"");var a=aura.get(key);
-        if(a==null){if(aura.size()>=options.maxKeys){unique(warnings,"Aura match limit reached; source matches are incomplete");return;}var b=new Bucket();b.first=e.time;b.last=e.time;a=alert(e,id,e.ip,b);a.put("source","AuraDFIR");aura.put(key,a);}
-        a.put("count",Json.number(a.get("count"))+1);
-        if(a.get("last")!=null){if(e.time.isBefore(Times.parse((String)a.get("first"))))a.put("first",Times.text(e.time));if(e.time.isAfter(Times.parse((String)a.get("last"))))a.put("last",Times.text(e.time));}
-        else {String wall=Times.wall(e.time);if(wall.compareTo((String)a.get("wall_first"))<0)a.put("wall_first",wall);if(wall.compareTo((String)a.get("wall_last"))>0)a.put("wall_last",wall);}
-        if(a.get("events")==null)a.put("events",new ArrayList<Map<String,Object>>());var refs=Json.rows(a.get("events"));if(refs.size()<8)refs.add(Json.map("file",e.file,"line",e.line));else a.put("evidence_truncated",true);
-    }
-    private void observeAura(Event e){
-        String target=e.target.replace('İ','i').replace('ı','i');
-        for(var r:Json.rows(AURA.get("signatures")))if(re("(?i)"+r.get("pattern"),target))auraAdd(e,Json.string(r.get("id")));
-        String low=lower(s(e.ua).replace("İ","i\u0307"));for(Object ua:(List<?>)AURA.get("scanner_uas"))if(low.contains((String)ua)){auraAdd(e,"scanner_ua");break;}
-        for(Object method:(List<?>)AURA.get("methods"))if(s(e.method).equals(method)){auraAdd(e,"dangerous_method");break;}
-    }
-    List<Map<String,Object>> auraMatches(){return aura.values().stream().sorted(Comparator.comparing((Map<String,Object> r)->Json.string(r.get("rule_id"))).thenComparing(r->Json.string(r.get("ip")))).toList();}
+    List<Map<String,Object>> auraMatches(){return aura.finish();}
+
 }

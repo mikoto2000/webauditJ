@@ -26,10 +26,11 @@ final class SourceMatcher {
         for(var r:Json.rows(AURA.get("signatures")))REGEX.put("(?i)"+r.get("pattern"),Pattern.compile("(?i)"+r.get("pattern")));
     }
     private SourceMatcher() {}
+    private static final Pattern FILE_PATTERN=Pattern.compile("^(.*/)(?:([^/].*?)(\\.[^.]*$|$))?");
     record View(String full,String req,String args,String lower,String upper,String dir,String frag,String filename,String ext,String qu,String pu,boolean isStatic) {}
     static View view(Event e) {
         String full=field(e,"evt.Meta.http_path"),req=field(e,"evt.Parsed.request"),args=field(e,"evt.Parsed.http_args");
-        var m=Pattern.compile("^(.*/)(?:([^/].*?)(\\.[^.]*$|$))?").matcher(req);String dir="",frag="",extension="";
+        var m=FILE_PATTERN.matcher(req);String dir="",frag="",extension="";
         if(m.find()){dir=s(m.group(1));frag=s(m.group(2));extension=s(m.group(3));}
         String ext=extension.startsWith(".")?extension.substring(1):extension;
         boolean isStatic=!ext.isEmpty()&&"|JPG|CSS|JS|JPEG|PNG|SVG|MAP|ICO|OTF|GIF|MP3|MP4|WOFF|WOFF2|TTF|EOT|WEBP|WAV|GZ|BROTLI|BVR|TS|BMP|AVIF|MJS|TGZ|".contains("|"+upper(ext)+"|");
