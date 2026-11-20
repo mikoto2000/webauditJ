@@ -3,7 +3,7 @@ package io.github.mikoto2000.webaudit;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
-public final class Event {
+public final class Event implements Cloneable {
     public String ip="", target="", path="", file="", logType="http_access-log";
     public String recordedUA, recordedReferer, sourceRequest, subType, rawRequest, wallTime, envelope, suffix;
     public String host, method, query, protocol, ua, referer, raw="";
@@ -12,6 +12,7 @@ public final class Event {
     public Integer status;
     public Long bytes;
     public long line;
+    Event copy() { try { return (Event)clone(); } catch(CloneNotSupportedException e) {throw new AssertionError(e);} }
     public Map<String,Object> toMap() {
         var m = Json.map("raw_request",rawRequest,"log_type",logType,"time",timezoneUnknown ? null : Times.text(time),
                 "ip",ip,"host",host,"method",method,"target",target,"path",path,"query",query,"protocol",protocol,
