@@ -19,7 +19,8 @@ class EngineTest {
         if(value instanceof List<?> list)return list.stream().map(v->normalize(v,input)).toList();
         if(value instanceof Map<?,?> map){var out=new TreeMap<String,Object>();map.forEach((k,v)->out.put((String)k,normalize(v,input)));if(out.get("warnings") instanceof List<?> warnings)out.put("warnings",warnings.stream().map(Object::toString).sorted().toList());
             // Wall-clock incident IDs intentionally include the absolute input file.
-            if(Boolean.TRUE.equals(out.get("timezone_unknown"))&&out.containsKey("id"))out.put("id","<PATH-DEPENDENT-ID>");return out;}
+            if(Boolean.TRUE.equals(out.get("timezone_unknown"))&&out.containsKey("id"))out.put("id","<PATH-DEPENDENT-ID>");
+            if("webaudit/2".equals(out.get("schema")))out.put("version","<IMPLEMENTATION-VERSION>");return out;}
         return value;
     }
     @Test void skipsHugeAndInvalidUtf8LinesButRecovers()throws Exception{
