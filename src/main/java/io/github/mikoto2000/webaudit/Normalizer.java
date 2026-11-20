@@ -12,11 +12,20 @@ public final class Normalizer {
   private Normalizer() {}
 
   public record Normalized(
-      String original, List<String> variants, List<String> steps, List<String> warnings) {}
+      String original,
+      List<String> variants,
+      List<String> steps,
+      List<String> warnings,
+      List<byte[]> rawVariants) {
+    public Normalized(String original, List<String> variants, List<String> steps, List<String> warnings) {
+      this(original, variants, steps, warnings,
+          variants.stream().map(s -> s.getBytes(StandardCharsets.UTF_8)).toList());
+    }
+  }
 
   public static Normalized normalize(String input) {
-    var variants = new ArrayList<String>();
-    variants.add(input);
+    var variants = new ArrayList<byte[]>();
+    variants.add(input.getBytes(StandardCharsets.UTF_8));
     var steps = new ArrayList<String>();
     var warnings = new ArrayList<String>();
     byte[] cur = input.getBytes(StandardCharsets.UTF_8);
@@ -34,7 +43,7 @@ public final class Normalizer {
       }
       if (!Arrays.equals(cur, b.toByteArray())) {
         cur = b.toByteArray();
-        add(variants, Utf8.decode(cur));
+        add(variants, cur);
         steps.add("log hexadecimal escape detection variant");
       }
     }
@@ -56,18 +65,18 @@ public final class Normalizer {
       byte[] next = b.toByteArray();
       if (Arrays.equals(next, cur)) break;
       steps.add("percent-decode detection variant");
-      add(variants, Utf8.decode(next));
+      add(variants, next);
       cur = next;
     }
-    for (String v : List.copyOf(variants)) {
-      String x = lower(v.replace('\\', '/'));
-      if (!x.equals(v)) steps.add("case-fold/backslash detection variant");
+    for (byte[] v : List.copyOf(variants)) {
+      String x = lower(Utf8.decode(v).replace('\\', '/'));
+      if (!Arrays.equals(x.getBytes(StandardCharsets.UTF_8), v)) steps.add("case-fold/backslash detection variant");
       int q = x.indexOf('?');
       if (q >= 0 && x.substring(q).contains("+")) {
         x = x.substring(0, q) + x.substring(q).replace('+', ' ');
         steps.add("query plus-to-space detection variant");
       }
-      add(variants, x);
+      add(variants, x.getBytes(StandardCharsets.UTF_8));
     }
     try {
       StandardCharsets.UTF_8
@@ -79,11 +88,12 @@ public final class Normalizer {
     }
     if (lower(input).contains("%u")) warnings.add("Nonstandard %u encoding is not decoded");
     if (Utf8.decode(cur).contains("%25")) warnings.add("Maximum decode depth is two");
-    return new Normalized(input, List.copyOf(variants), List.copyOf(steps), List.copyOf(warnings));
+    return new Normalized(input, variants.stream().map(Utf8::decode).toList(),
+        List.copyOf(steps), List.copyOf(warnings), List.copyOf(variants));
   }
 
-  private static void add(List<String> values, String s) {
-    if (values.size() < 7 && !values.contains(s)) values.add(s);
+  private static void add(List<byte[]> values, byte[] s) {
+    if (values.size() < 7 && values.stream().noneMatch(value -> Arrays.equals(value, s))) values.add(s);
   }
 
   private static int hex(byte c) {

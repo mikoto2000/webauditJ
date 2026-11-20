@@ -84,11 +84,19 @@ final class Core {
   }
 
   static Normalizer.Normalized compact(Normalizer.Normalized n) {
-    return new Normalizer.Normalized(
-        clip(n.original(), 4096),
-        n.variants().stream().map(v -> clip(v, 1024)).toList(),
-        n.steps(),
-        n.warnings());
+    var bytes = n.rawVariants().stream().map(v -> clipDecodedBytes(v, 1024)).toList();
+    return new Normalizer.Normalized(clip(n.original(), 4096),
+        bytes.stream().map(Utf8::decode).toList(), n.steps(), n.warnings(), bytes);
+  }
+
+  private static byte[] clipDecodedBytes(byte[] bytes, int max) {
+    if (bytes.length <= max) return bytes;
+    var input = java.nio.ByteBuffer.wrap(bytes, 0, max);
+    var output = java.nio.CharBuffer.allocate(max);
+    var decoder = StandardCharsets.UTF_8.newDecoder()
+        .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT);
+    var result = decoder.decode(input, output, true);
+    return Arrays.copyOf(bytes, result.isError() ? input.position() : max);
   }
 
   static Map<String, Object> normalized(Normalizer.Normalized n) {
@@ -121,7 +129,7 @@ final class Core {
             + size(e.sourceRequest)
             + size(e.recordedUA)
             + size(e.recordedReferer);
-    return total + n.variants().stream().mapToInt(Core::size).sum();
+    return total + n.rawVariants().stream().mapToInt(v -> v.length).sum();
   }
 
   static int weight(String severity) {
