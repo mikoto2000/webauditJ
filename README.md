@@ -2,6 +2,8 @@
 
 HTTP サーバーのログをオフラインで調査する Java 版 WebAudit。Go 版の `95148ba4e22d9001d34fbb0e4d59f072efd3e95c` を基準に、独自検知、Hub/Aura 互換検知、事案の関連付け、GeoIP/ASN 補足情報と DB 管理を移植しています。
 
+Go 版 main `a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459` までの追加機能にも対応しています（参照値は [baseline.json](docs/reference/baseline.json)）。攻撃別の追加調査ガイド、HTML の日本語表示と言語選択、集約上限・GeoIP 警告・端末表示・不完全なレポートの削除に関する修正を含みます。
+
 Java **25 以上**が必要です。配布形式は依存ライブラリ・ルール・HTML テンプレートを含む実行可能 JAR です。jpackage と GraalVM Native Image は後続工程です。
 
 ## ビルドと実行
@@ -33,6 +35,22 @@ java -jar target/webauditJ.jar --version
 ディレクトリは再帰的にファイル名順で読み、gzip は内容で判別します。同じ観測を繰り返し入力した場合も集計します。`--dedup-files` を指定したときだけ、ファイル全体の SHA-256 で重複を除きます。出力先を省略すると端末向け要約を、`--format json|csv|html` を指定するとその形式を標準出力へ出します。`-o` の既定形式は HTML です。
 
 Apache/Nginx のアクセス・エラーログ、JSON、syslog/journald、Nginx Proxy Manager と明示正規表現に対応します。独自形式の `--log-regex` は RE2 構文で、`(?P<ip>...)`、`(?P<time>...)`、`(?P<target>...)` が必須です。タイムゾーンのないエラーログには必要に応じて `--error-timezone Asia/Tokyo` を指定します。
+
+## HTML の言語と追加調査ガイド
+
+HTML は既定で日本語です。英語で出力する場合は `--lang en` を指定します。
+
+```sh
+java -jar target/webauditJ.jar access.log -o report-ja.html
+java -jar target/webauditJ.jar access.log --lang en -o report-en.html
+java -jar target/webauditJ.jar access.log --format html --lang ja
+```
+
+指定値は小文字の `ja` / `en` だけです。空・未対応値は入力解析や出力ファイル作成前に終了コード 2 で拒否します。`--lang` は HTML にだけ適用し、端末要約・ヘルプ・JSON・CSV の内容や判定コードは変更しません。ログ、URL、IP、ホスト名、User-Agent、ルール ID、DB の国名・組織名、構造化レポートとライセンス本文は原文を保持します。OS・外部ライブラリの診断も詳細を原文で表示します。
+
+事案の詳細には、SQL インジェクション、コマンド実行、機密ファイル、XSS、認証、大量アクセスなど、検出の種類に応じた「不明な理由」「確認する場所」「何が見つかれば判断できるか」を表示します。複数の種類を検出した場合は各種類を案内します。成功・失敗の疑いがある場合やタイムゾーンが不明の場合も案内を保持します。端末の上位 5 事案、JSON の `outcome.investigation`、CSV の `details_json` にも含めます。Hub/Aura の独立した検出には追加しません。
+
+案内は証拠を探す目安です。時刻・タイムゾーン・対象ホスト・URL、可能ならリクエスト ID で当時の記録と照合してください。痕跡がないだけでは失敗と判断できず、失敗の証拠は確認した要求の範囲に限られます。現在の環境での再現だけでは当時の成否を確定できません。追加証拠による自動再判定は行いません。
 
 ## GeoIP / ASN
 
