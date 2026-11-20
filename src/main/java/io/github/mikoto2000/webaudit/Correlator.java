@@ -59,26 +59,13 @@ public final class Correlator {
         if(evidenceBytes+delta>options.maxEvidenceBytes){unique(warnings,"Evidence-byte limit reached; samples are incomplete, use file/line references and original input logs");return;}
         evidenceBytes+=delta;if(f.evidence.size()<8)f.evidence.add(value);else f.evidence.set(7,value);
     }
-    private static Map<String,Object> outcome(Incident f) {
-        var reasons=new ArrayList<>(List.of("Access logs show requests and response metadata, not server-side execution or returned content"));
-        var missing=new ArrayList<>(List.of("Response content and expected resource semantics","Request body, application/authentication audit trail","Backend/proxy status mapping and filesystem/process/network evidence"));
-        var next=new ArrayList<>(List.of("Inspect the referenced original logs and confirm request routing and proxy configuration","Correlate application/authentication and error logs for the same time and resource","For payload probes inspect server files, processes and outbound connections"));
-        String verdict="unknown";double confidence=0.2;
-        if(f.sample.timezoneUnknown)missing.add("Verified timezone and cross-log time alignment");
-        else {
-            boolean possible=f.resources.values().stream().anyMatch(r->r.blocked!=null&&r.good.stream().filter(t->t.isAfter(r.blocked)).count()>=2);
-            if(possible){verdict="possible_success";confidence=0.55;reasons.add("Same sensitive resource changed from blocked/not-found to repeated nonempty 2xx responses; soft-404, redirects, generic pages or legitimate changes remain possible");next.add("Verify actual returned sensitive bytes against a nonexistent-path response; preserve response/application evidence");}
-            else if(f.blocked>=3&&f.blocked==f.count){verdict="likely_failed";confidence=0.5;reasons.add("All observed responses in this activity were blocked/not-found, with at least three observations; status mapping and unobserved attempts prevent confirmation");}
-        }
-        return Json.map("verdict",verdict,"confidence",confidence,"reasons",reasons,"missing",missing,"next",next);
-    }
     private static Map<String,Object> toMap(Incident f) {
         var rules=f.rules.stream().sorted(Comparator.comparing(r->Json.string(r.get("id")))).toList();var categories=f.categories.stream().sorted().toList();
-        var m=Json.map("id",f.id,"ip",f.sample.ip,"host",f.sample.host,"user_agent",f.sample.ua,"first",f.sample.timezoneUnknown?null:Times.text(f.first),"last",f.sample.timezoneUnknown?null:Times.text(f.last),"count",f.count,"severity",f.severity,"attack_score",f.score,"phase",f.phase,"rules",nullable(rules),"categories",nullable(categories),"correlation",List.of("Same recorded peer IP, target host (when available), User-Agent, technique family and five-minute event-time partition; this is a hypothesis, not verified identity"),"reasons",nullable(f.reasons),"evidence",nullable(f.evidence.stream().map(Sample::map).toList()),"outcome",outcome(f));
+        var m=Json.map("id",f.id,"ip",f.sample.ip,"host",f.sample.host,"user_agent",f.sample.ua,"first",f.sample.timezoneUnknown?null:Times.text(f.first),"last",f.sample.timezoneUnknown?null:Times.text(f.last),"count",f.count,"severity",f.severity,"attack_score",f.score,"phase",f.phase,"rules",nullable(rules),"categories",nullable(categories),"correlation",List.of("Same recorded peer IP, target host (when available), User-Agent, technique family and five-minute event-time partition; this is a hypothesis, not verified identity"),"reasons",nullable(f.reasons),"evidence",nullable(f.evidence.stream().map(Sample::map).toList()),"outcome",Outcomes.infer(f));
         if(f.sample.timezoneUnknown)m.put("timezone_unknown",true);return m;
     }
     public List<Map<String,Object>> finish() {
-        var values=new ArrayList<>(items.values());values.sort((a,b)->{boolean ap=outcome(a).get("verdict").equals("possible_success"),bp=outcome(b).get("verdict").equals("possible_success");if(ap!=bp)return ap?-1:1;if(a.score!=b.score)return Integer.compare(b.score,a.score);int t=a.first.toInstant().compareTo(b.first.toInstant());return t!=0?t:a.id.compareTo(b.id);});
+        var values=new ArrayList<>(items.values());values.sort((a,b)->{boolean ap=Outcomes.infer(a).get("verdict").equals("possible_success"),bp=Outcomes.infer(b).get("verdict").equals("possible_success");if(ap!=bp)return ap?-1:1;if(a.score!=b.score)return Integer.compare(b.score,a.score);int t=a.first.toInstant().compareTo(b.first.toInstant());return t!=0?t:a.id.compareTo(b.id);});
         return values.stream().map(Correlator::toMap).toList();
     }
 }
