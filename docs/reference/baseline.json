@@ -1,0 +1,22 @@
+{
+  "source": "https://github.com/mikoto2000/webaudit",
+  "commit": "95148ba4e22d9001d34fbb0e4d59f072efd3e95c",
+  "files": {
+    "corpus-golden.json": {
+      "sha256": "fbb2c7f81d435146be325bf686ee21173997b375b3efd01274702de39b0d4037",
+      "cases": 71
+    },
+    "detection-golden.json": {
+      "sha256": "7ca8122845cffbc6a64ba65e67bc3f664ea551da21bb0c01de36bd13a4233405",
+      "cases": 1042
+    },
+    "parser-golden.json": {
+      "sha256": "7f066d04427e209ec5994522ecffcfe784c0aec73ade1670baed059a18b6d146",
+      "cases": 1321
+    },
+    "upstream-golden.json": {
+      "sha256": "eff6a13893f0dfbe5f36920c7099a127d8416f3fc61c11d84fe255400c69524e",
+      "cases": 107
+    }
+  }
+}

@@ -21,6 +21,8 @@ class SignaturesTest {
                           Json.string(r.get("custom")));
                   var d = Signatures.detect(e);
                   assertEquals(r.get("hits"), d.hits().stream().map(h -> h.get("id")).toList());
+                  UpstreamTest.equalJson(
+                      r.get("normalization"), Core.normalized(d.normalization()));
                 }));
   }
 
