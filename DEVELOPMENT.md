@@ -60,3 +60,11 @@ java -jar /path/to/google-java-format-2.0.0-all-deps.jar --replace $files
 ```
 
 CI は Windows/Linux/macOS の JDK 25 で Maven 検証と JAR 検査を行い、Linux amd64 では通信禁止検証も行う構成です。ローカルで確認済みの OS と実測結果は [検証記録](docs/validation.md) を参照してください。
+
+## v2.0.0監視機能
+
+watchのOS連携はJDK 25のForeign Function & Memory APIを使います。実行可能JARには`Enable-Native-Access: ALL-UNNAMED`を設定しています。テストJVMにも同じオプションを設定し、通常の`java -jar`では追加フラグは不要です。Windowsはvolume/file indexでログの同一性を確認し、HookをJob Objectに収容します。UnixのHookは専用session/process groupで実行します。
+
+Go版とのイベント参照値は`src/test/resources/watch-golden.json`、生成手順は`python tools/reference/generate_watch.py /path/to/webaudit --go /path/to/go`です。指定checkoutはv2.0.0のコミットに固定しています。生成用の一時ソースだけをGo側tools配下に作成し、終了時に削除します。通常のテストはGoを必要としません。
+
+`python tools/measure_watch.py --seconds 10 --lines 100`で隔離した状態ディレクトリを使い、短時間の起動・追記監視・状態サイズを測定できます。Windowsの測定終了は強制終了なので、正常終了・Ctrl+Cの検証とは区別してください。Linuxの通信禁止試験にもwatchの保存・復元を追加しています。

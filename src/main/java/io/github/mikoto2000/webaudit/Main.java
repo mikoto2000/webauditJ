@@ -31,7 +31,9 @@ public final class Main {
 
   @CommandLine.Command(
       name = "webauditJ",
-      description = "Offline HTTP log investigation. Inputs: files, gzip files or directories.")
+      description =
+          "Offline HTTP log investigation. Inputs: files, gzip files or directories. Use watch"
+              + " INPUT... for continuous monitoring (watch --help).")
   static final class Arguments {
     @CommandLine.Parameters(arity = "0..*", paramLabel = "INPUT")
     List<Path> inputs = new ArrayList<>();
@@ -100,6 +102,9 @@ public final class Main {
       Path legacy,
       GeoSource source) {
     try {
+      if (args.length > 0 && args[0].equals("watch"))
+        return WatchCommand.run(
+            Arrays.copyOfRange(args, 1, args.length), out, err, environment, legacy);
       if (args.length > 0 && args[0].equals("geoip"))
         return GeoCommands.run(
             Arrays.copyOfRange(args, 1, args.length), out, err, environment, source);

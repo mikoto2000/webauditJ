@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mikoto2000/webauditJ/blob/main/docs/watch-event.schema.json",
+  "title": "WebAudit watch event and Hook payload version 1",
+  "type": "object",
+  "required": ["schema_version", "event_type", "event_id", "sequence", "incident_id", "revision", "created_at", "updated_at", "first_event_at", "last_event_at", "severity", "category", "outcome", "confidence", "source_ips", "evidence", "rule_ids", "count"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "event_type": {"enum": ["incident_created", "incident_updated", "incident_closed"]},
+    "event_id": {"type": "string", "minLength": 1},
+    "sequence": {"type": "integer", "minimum": 1},
+    "incident_id": {"type": "string", "minLength": 1},
+    "revision": {"type": "integer", "minimum": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "first_event_at": {"type": "string", "format": "date-time"},
+    "last_event_at": {"type": "string", "format": "date-time"},
+    "severity": {"enum": ["low", "medium", "high", "critical"]},
+    "category": {"type": "string"},
+    "outcome": {"enum": ["unknown", "likely_failed", "possible_success", "confirmed_success", "confirmed_failure"]},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "source_ips": {"type": "array", "items": {"type": "string"}},
+    "evidence": {"type": "array", "items": {"type": "object", "required": ["file", "line"], "properties": {"file": {"type": "string"}, "line": {"type": "integer", "minimum": 0}}, "additionalProperties": true}},
+    "rule_ids": {"type": "array", "items": {"type": "string"}},
+    "count": {"type": "integer", "minimum": 0},
+    "geoip": {"type": "object", "additionalProperties": true},
+    "hook_id": {"type": "string", "minLength": 1},
+    "notification_id": {"type": "string", "minLength": 1}
+  },
+  "dependentRequired": {"hook_id": ["notification_id"], "notification_id": ["hook_id"]},
+  "additionalProperties": true
+}

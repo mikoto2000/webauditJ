@@ -6,6 +6,14 @@ HTTP サーバーのログをオフラインで調査する Java 版 WebAudit。
 
 Go 版 main `a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459` までの追加機能にも対応しています（参照値は [baseline.json](docs/reference/baseline.json)）。攻撃別の追加調査ガイド、HTML の日本語表示と言語選択、集約上限・GeoIP 警告・端末表示・不完全なレポートの削除に関する修正を含みます。
 
+Go 版 **v2.0.0** のリアルタイム監視・JSONL事案イベント・チェックポイント復元・外部コマンドHook・ローカルGeoIP補足に対応しました。詳細は [監視・Hookガイド](docs/watch.md)、[移植検証記録](docs/watch-validation.md)を参照してください。
+
+```sh
+java -jar target/webauditJ.jar watch access.log
+java -jar target/webauditJ.jar watch access.log --from beginning --format jsonl
+java -jar target/webauditJ.jar watch access.log --on-detect ./examples/notify.sh
+```
+
 Java **25 以上**が必要です。配布形式は依存ライブラリ・ルール・HTML テンプレートを含む実行可能 JAR です。jpackage と GraalVM Native Image は後続工程です。
 
 ## ビルドと実行
