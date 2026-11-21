@@ -11,6 +11,7 @@ def check_jar(jar):
         manifest = archive.read("META-INF/MANIFEST.MF").decode()
         assert "Main-Class: io.github.mikoto2000.webaudit.Main" in manifest
         assert "Multi-Release: true" in manifest, "Shaded multi-release dependencies must be enabled"
+        assert "Enable-Native-Access: ALL-UNNAMED" in manifest, "Watch OS operations require native access"
         required = [
             "rules.json", "parser-patterns.json", "report.ftlh", "upstream/manifest.json",
             "picocli/CommandLine.class", "com/google/re2j/Pattern.class",
@@ -19,6 +20,7 @@ def check_jar(jar):
             "META-INF/THIRD_PARTY_NOTICES.md", "META-INF/licenses/webauditJ-LICENSE",
             "META-INF/licenses/dependencies.json",
             "locales/ja.json", "locales/investigation_en.json", "locales/investigation.json",
+            "io/github/mikoto2000/webaudit/WatchHookChild.class",
         ]
         for name in required:
             assert name in entries, name

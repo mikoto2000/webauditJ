@@ -24,7 +24,18 @@
       "sha256": "42d07d2ef5470954842b92c5e0500041eefb823d7dd4b71fcdcd2d0ee5df0a7d",
       "cases": 44,
       "commit": "a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459"
+    },
+    "watch-golden.json": {
+      "sha256": "d6cc9b886a3a8a26713aaaca14717f7d6b33c0a3e345a5dd8307c48c574665f5",
+      "cases": 33,
+      "commit": "96e3c8a3148d1684d60abac22d3aa2939354e891"
     }
   },
-  "main_port_commit": "a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459"
+  "main_port_commit": "a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459",
+  "watch_port": {
+    "tag": "v2.0.0",
+    "commit": "96e3c8a3148d1684d60abac22d3aa2939354e891",
+    "schema_version": 1,
+    "state_format": "Java-specific; not interchangeable with Go checkpoints"
+  }
 }

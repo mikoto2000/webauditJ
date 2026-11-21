@@ -47,7 +47,7 @@ with tempfile.TemporaryDirectory(prefix="webauditJ-offline-") as temporary:
     assert probe.returncode == -signal.SIGSYS, ("Network guard did not stop socket creation with SIGSYS", probe.returncode, probe.stderr[-2000:])
     app = base / "webauditJ.jar"
     shutil.copyfile(jar, app)
-    env = dict(os.environ, XDG_DATA_HOME=str(base / "data"))
+    env = dict(os.environ, XDG_DATA_HOME=str(base / "data"), XDG_STATE_HOME=str(base / "state"))
     log = base / "access.log"
     log.write_text("".join(f'{ip} - - [01/Nov/2026:00:00:00 +0000] "GET /.env HTTP/1.1" 404 0\n'
                            for ip in ["8.8.8.8", "8.8.8.8", "2606:4700::1111", "1.1.1.1", "10.0.0.1"]),
@@ -100,6 +100,27 @@ with tempfile.TemporaryDirectory(prefix="webauditJ-offline-") as temporary:
         assert "2026-11" in result.stdout
         if fmt == "json":
             assert json.loads(result.stdout)["geoip"]["databases"][0]["generation"] == "gen-offline"
+    # Foreground watch, state save/restore and local GeoIP under the same syscall guard.
+    for extra in [[], explicit]:
+        for attempt in range(2):
+            proc = subprocess.Popen([*guard_args, "-jar", str(app), "watch", str(log),
+                                     "--from", "beginning", "--format", "jsonl", *extra],
+                                    cwd="/", env=env, preexec_fn=disable_core,
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            import time
+            time.sleep(2)
+            proc.send_signal(signal.SIGINT)
+            stdout, stderr = proc.communicate(timeout=15)
+            assert proc.returncode in (0, 130), (proc.returncode, stderr[-2000:])
+            assert "WebAuditJ Watch: monitoring" in stderr, stderr
+            events = [json.loads(line) for line in stdout.splitlines()]
+            if attempt == 0 and not extra:
+                assert events and events[0]["schema_version"] == 1
+                assert all("geoip" in event for event in events)
+            else:
+                assert not events, "restored watch duplicated unchanged incidents"
+            assert list((base / "state/webauditJ/watch").glob("*.json"))
+            count += 1
     (generation / "country.mmdb").write_bytes(b"corrupt")
     assert "FAILED" in run(["geoip", "status"], 1).stderr
     result = run([str(log), "--format", "json"])
