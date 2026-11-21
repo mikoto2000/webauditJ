@@ -11,6 +11,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 class WatchIntegrationTest {
+  @Test
+  void userSymlinksRemainRejectedWithSystemAliases() throws Exception {
+    if (Main.os().equals("windows")) return;
+    if (Main.os().equals("darwin")) {
+      for (String alias : List.of("/var", "/tmp", "/etc")) WatchReader.noLinks(Path.of(alias));
+    }
+    Path target = Files.createDirectory(dir.resolve("real"));
+    Path link = Files.createSymbolicLink(dir.resolve("link"), target);
+    assertThrows(IOException.class, () -> WatchReader.noLinks(link.resolve("access.log")));
+    assertThrows(
+        IOException.class,
+        () ->
+            new WatchStore(
+                link.resolve("state"),
+                List.of(target.resolve("access.log").toString()),
+                "config",
+                false));
+  }
+
   @TempDir Path dir;
 
   static void until(java.util.function.BooleanSupplier test) throws Exception {

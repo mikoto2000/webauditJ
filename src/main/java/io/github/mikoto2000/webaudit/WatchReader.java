@@ -64,7 +64,17 @@ final class WatchReader implements AutoCloseable {
 
   static void noLinks(Path path) throws IOException {
     for (Path p = path; p != null; p = p.getParent())
-      if (Files.isSymbolicLink(p)) throw new InvalidInput("symlink path rejected: " + path);
+      if (Files.isSymbolicLink(p) && !macSystemAlias(p))
+        throw new InvalidInput("symlink path rejected: " + path);
+  }
+
+  private static boolean macSystemAlias(Path path) throws IOException {
+    if (!Main.os().equals("darwin")) return false;
+    Path absolute = path.toAbsolutePath().normalize();
+    if (!Set.of(Path.of("/var"), Path.of("/tmp"), Path.of("/etc")).contains(absolute)) return false;
+    // macOS owns these root-level aliases. Do not relax checks for user-created links.
+    Path target = absolute.getParent().resolve(Files.readSymbolicLink(absolute)).normalize();
+    return target.equals(Path.of("/private").resolve(absolute.getFileName()));
   }
 
   static BasicFileAttributes attrs(Path p) throws IOException {
