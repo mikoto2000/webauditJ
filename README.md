@@ -38,6 +38,8 @@ java -jar target/webauditJ.jar --version
 
 Apache/Nginx のアクセス・エラーログ、JSON、syslog/journald、Nginx Proxy Manager と明示正規表現に対応します。独自形式の `--log-regex` は RE2 構文で、`(?P<ip>...)`、`(?P<time>...)`、`(?P<target>...)` が必須です。タイムゾーンのないエラーログには必要に応じて `--error-timezone Asia/Tokyo` を指定します。
 
+LB / CDN / リバースプロキシ配下では、Apache / Nginx 側で信頼する中継元から元 IP を復元し、解析対象の IP 欄に記録してください。[LB 配下での設定ガイド](docs/load-balancer.md)に、Apache / Nginx の XFF・PROXY protocol 設定例、動作確認手順、IP 集計・GeoIP への影響と過去ログの限界をまとめています。
+
 ## HTML の言語と追加調査ガイド
 
 HTML は既定で日本語です。英語で出力する場合は `--lang en` を指定します。
