@@ -4,7 +4,9 @@
 
 ## 確認済み
 
-2026-11-21、Windows / OpenJDK 25 で Maven `verify` が成功しました。全 **2,872 テスト**、失敗・エラー・skip は 0。既存の 2,823 件と watch の 49 件を含みます。
+2026-11-21、Windows / OpenJDK 25 のローカル検証に続き、GitHub Actions の **Windows / Linux / macOS** で Maven `verify` と JAR 検査が成功しました。各 OS で **2,873 テスト**、失敗・エラー・skip は 0。既存の 2,823 件と watch の 50 件を含みます。macOS は arm64 runner で、標準の `/var`・`/tmp`・`/etc` 別名と利用者作成リンクの拒否も検証しています。
+
+CI 対象コミットは `56aa841f8dd89275816f7cb416e994cb3f8f1f03`、結果は [PR #1 の検証 run](https://github.com/mikoto2000/webauditJ/actions/runs/44870124925) を参照してください。Linux amd64 の通信 syscall 禁止試験は **19 実行すべて成功**し、watch の状態保存・復元・ローカル GeoIP を含みます。
 
 - Go v2.0.0 の独立した実行結果を保存した `watch-golden.json` の 4 シナリオ・33 ステップに対し、JSONL の全フィールドを比較。事案 ID、イベント ID、revision、sequence、証拠、成否・確信度、重要度が一致。
 - 末尾開始、既存部分行の破棄、追記部分行の連結、オフセット・部分行の復元、rename、停止中の rename と旧ファイル検索、copytruncate、同サイズ以上の書き換えを検証。
@@ -33,7 +35,7 @@ worktree で元リポジトリの依存キャッシュを共有する場合は M
 
 ## 未実施と互換性の範囲
 
-この作業環境で Linux / macOS は実行していません。既存の OS 別 CI が全 Java テストを実行し、Linux の `tools/verify_offline.py` は監視・状態復元・ローカル GeoIP を含む通信 syscall 禁止試験を実行する構成です。今回、その CI の成功や Linux の通信禁止試験の実行成功は主張しません。複数日耐久・高負荷持続も未実施です。
+ローカル作業環境は Windows です。Linux / macOS の実行と Linux の通信禁止試験は上記 CI で確認しました。複数日耐久・高負荷持続は未実施です。
 
 チェックポイントは Java 版専用形式・`webauditJ/watch` 配下です。Go 版との相互復元はできません。Hook は収容のゲートを持つ補助 JVM を通知ごとに起動するため、Go 版と起動コストが異なります。実行可能 JAR の native access は Manifest で有効化します。
 
