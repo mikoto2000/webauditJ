@@ -12,12 +12,46 @@ import org.junit.jupiter.api.io.TempDir;
 class BundleRequestsTest {
   @TempDir Path dir;
 
-  @Test void preservesNativeHourMembershipBeforeUnixEpoch() {
-    Event e=LogParser.parse(BundleTest.LINE.replace("01/Nov/2026:00:00:00","31/Dec/1969:23:59:59"),"access.log",1,"");
-    var row=BundleRequests.baseDetection("DET-hour","webaudit","WS-hour","related","WS-hour","medium","hour",Times.text(e.time),Times.text(e.time),e.ip,e.host,Json.map("count_quality","exact"));
-    var group=new BundleRequests.Group(row,new Signal(Map.of("id","WS-hour"),e,1,"hour",e.time,e.time),null,"");
-    var snapshot=Json.map("event",e.toMap(),"_time",Times.text(e.time),"hits",List.of(),"source_detections",List.of());
-    assertEquals(1,BundleRequests.match(snapshot,e,new BundleRequests.Index(List.of(group))).related().size());
+  @Test
+  void preservesNativeHourMembershipBeforeUnixEpoch() {
+    Event e =
+        LogParser.parse(
+            BundleTest.LINE.replace("01/Nov/2026:00:00:00", "31/Dec/1969:23:59:59"),
+            "access.log",
+            1,
+            "");
+    var row =
+        BundleRequests.baseDetection(
+            "DET-hour",
+            "webaudit",
+            "WS-hour",
+            "related",
+            "WS-hour",
+            "medium",
+            "hour",
+            Times.text(e.time),
+            Times.text(e.time),
+            e.ip,
+            e.host,
+            Json.map("count_quality", "exact"));
+    var group =
+        new BundleRequests.Group(
+            row, new Signal(Map.of("id", "WS-hour"), e, 1, "hour", e.time, e.time), null, "");
+    var snapshot =
+        Json.map(
+            "event",
+            e.toMap(),
+            "_time",
+            Times.text(e.time),
+            "hits",
+            List.of(),
+            "source_detections",
+            List.of());
+    assertEquals(
+        1,
+        BundleRequests.match(snapshot, e, new BundleRequests.Index(List.of(group)))
+            .related()
+            .size());
   }
 
   @Test

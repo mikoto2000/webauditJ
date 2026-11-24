@@ -311,7 +311,7 @@ final class BundleRequests {
         points = new HashMap<>(),
         ips = new HashMap<>(),
         uas = new HashMap<>();
-    final Map<Long, List<Group>> hours = new HashMap<>();
+    final Map<Long, List<Group>> hours = new HashMap<>(), nativeHours = new HashMap<>();
 
     static <K> void add(Map<K, List<Group>> map, K key, Group group) {
       map.computeIfAbsent(key, _ -> new ArrayList<>()).add(group);
@@ -327,7 +327,7 @@ final class BundleRequests {
           var signal = group.signal;
           if (group.direct()) add(points, signal.event().file + "\0" + signal.event().line, group);
           else if (group.rule().equals("WS-hour"))
-            add(hours, signal.event().time.toEpochSecond() / 3600, group);
+            add(nativeHours, signal.event().time.toEpochSecond() / 3600, group);
           else if (group.rule().startsWith("WB-")
               && signal.end().toEpochSecond() - signal.start().toEpochSecond() <= 900) {
             long lo = Math.floorDiv(signal.start().toEpochSecond(), 300),
@@ -367,6 +367,7 @@ final class BundleRequests {
         out.addAll(ips.getOrDefault(e.ip, List.of()));
         out.addAll(uas.getOrDefault(digest(SourceMatcher.sourceUA(e)), List.of()));
         out.addAll(hours.getOrDefault(Math.floorDiv(e.time.toEpochSecond(), 3600), List.of()));
+        out.addAll(nativeHours.getOrDefault(e.time.toEpochSecond() / 3600, List.of()));
       }
       return out;
     }
