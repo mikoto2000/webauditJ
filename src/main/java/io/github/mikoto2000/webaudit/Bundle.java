@@ -140,6 +140,7 @@ public final class Bundle {
               .getBytes(StandardCharsets.UTF_8));
     }
     var writer = new BundleWriter(target, b.maxOutputBytes);
+    writer.maskSecrets = !b.includeSensitiveEvidence;
     var capture = new BundleCapture(o);
     try (var spool = new RequestSpool(target, b.maxSpoolBytes)) {
       capture.requests = new BundleRequests(capture, spool);
@@ -222,6 +223,12 @@ public final class Bundle {
       capture.statistics.write(writer, statistics);
       spool.close();
       capture.coverage.write(writer, report);
+      BundlePresentation.prepare(report, o.maxFindings);
+      @SuppressWarnings("unchecked")
+      var transformed = (Map<String, Object>) BundleMask.tree(report, !b.includeSensitiveEvidence);
+      report.clear();
+      report.putAll(transformed);
+      BundlePresentation.recommendations(writer, report);
       writer.csv(
           "log-inventory.csv",
           List.of(
@@ -298,14 +305,14 @@ public final class Bundle {
                   + report.get("status")
                   + "\n");
       for (Object warning : (List<?>) analysis.get("warnings"))
-        log.append(Reports.terminal(warning.toString())).append('\n');
+        log.append(BundleMask.text(warning.toString(), !b.includeSensitiveEvidence)).append('\n');
       writer.text("diagnostics/execution-log.txt", log.toString());
       writer.json("report.json", report);
       writer.write(
           "report.html",
           out -> {
             var html = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-            Reports.write(html, analysis, "html", b.language);
+            BundleHTML.write(html, report);
             html.flush();
           });
       var manifest =
@@ -333,13 +340,13 @@ public final class Bundle {
               "rules_sha256",
               rulesHash(),
               "geoip",
-              analysis.get("geoip"),
+              Json.obj(report.get("analysis")).get("geoip"),
               "inputs",
-              inventory,
+              report.get("inventory"),
               "complete",
               report.get("complete"),
               "warnings",
-              analysis.get("warnings"),
+              Json.obj(report.get("analysis")).get("warnings"),
               "artifacts",
               writer.artifacts(),
               "artifact_hash_scope",

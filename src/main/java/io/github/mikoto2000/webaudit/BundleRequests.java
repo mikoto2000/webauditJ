@@ -789,7 +789,7 @@ final class BundleRequests {
                 Long.toString(metrics.detections),
                 Bundle.cell(finding, "severity"),
                 "unknown",
-                Bundle.cell(finding, "score"),
+                Bundle.cell(finding, "attack_score"),
                 Bundle.cell(outcome, "verdict"),
                 Bundle.cell(outcome, "confidence"),
                 quality,

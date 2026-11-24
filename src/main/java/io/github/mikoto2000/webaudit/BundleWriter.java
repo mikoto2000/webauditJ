@@ -11,6 +11,7 @@ final class BundleWriter {
   final Path dir;
   final long limit;
   long used;
+  boolean maskSecrets = true;
   final List<String> files = new ArrayList<>();
 
   BundleWriter(Path dir, long limit) {
@@ -91,8 +92,15 @@ final class BundleWriter {
                   new CSVPrinter(
                       writer, CSVFormat.DEFAULT.builder().setRecordSeparator("\n").get())) {
             csv.printRecord(header);
-            rows.accept(
-                cells -> csv.printRecord(Arrays.stream(cells).map(Reports::csvSafe).toList()));
+            rows.accept(cells -> {
+              var safe = new ArrayList<String>();
+              for (int i = 0; i < cells.length; i++)
+                safe.add(
+                    Reports.csvSafe(
+                        BundleMask.csv(
+                            cells[i], i < header.size() ? header.get(i) : "", maskSecrets)));
+              csv.printRecord(safe);
+            });
           }
         });
   }
