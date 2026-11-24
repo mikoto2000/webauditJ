@@ -18,6 +18,7 @@ final class AuraSignatures {
   }
 
   private void add(Event e, String id) {
+    if (options.bundle != null) options.bundle.coverage.hit("aura", id);
     String key = id + "\0" + e.ip + (e.timezoneUnknown ? "\0wall:" + e.file : "");
     var a = aura.get(key);
     if (a == null) {

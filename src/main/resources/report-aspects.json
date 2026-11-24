@@ -1,0 +1,337 @@
+[
+  {
+    "id": "sqli",
+    "name": "SQL injection",
+    "rules": [
+      "WA-sqli"
+    ],
+    "partial": false
+  },
+  {
+    "id": "nosqli",
+    "name": "NoSQL injection",
+    "rules": [
+      "WA-nosqli"
+    ],
+    "partial": false
+  },
+  {
+    "id": "xss",
+    "name": "Cross-site scripting",
+    "rules": [
+      "WA-xss"
+    ],
+    "partial": false
+  },
+  {
+    "id": "command_injection",
+    "name": "OS command injection",
+    "rules": [
+      "WA-command_injection"
+    ],
+    "partial": false
+  },
+  {
+    "id": "rce",
+    "name": "Remote code execution",
+    "rules": [
+      "WA-command_injection",
+      "WA-deserialization",
+      "WA-struts_ognl"
+    ],
+    "partial": true
+  },
+  {
+    "id": "traversal",
+    "name": "Directory traversal",
+    "rules": [
+      "WA-lfi_traversal"
+    ],
+    "partial": true
+  },
+  {
+    "id": "lfi",
+    "name": "Local file inclusion",
+    "rules": [
+      "WA-lfi_traversal"
+    ],
+    "partial": true
+  },
+  {
+    "id": "rfi",
+    "name": "Remote file inclusion",
+    "rules": [
+      "WA-rfi"
+    ],
+    "partial": false
+  },
+  {
+    "id": "ssrf",
+    "name": "Server-side request forgery",
+    "rules": [
+      "WA-ssrf"
+    ],
+    "partial": false
+  },
+  {
+    "id": "ssti",
+    "name": "Server-side template injection",
+    "rules": [
+      "WA-ssti"
+    ],
+    "partial": false
+  },
+  {
+    "id": "ldap_injection",
+    "name": "LDAP injection",
+    "rules": [
+      "WA-ldap_injection"
+    ],
+    "partial": false
+  },
+  {
+    "id": "xpath_injection",
+    "name": "XPath injection",
+    "rules": [
+      "WA-xpath_injection"
+    ],
+    "partial": false
+  },
+  {
+    "id": "xxe",
+    "name": "XML external entity injection",
+    "rules": [
+      "WA-xxe"
+    ],
+    "partial": false
+  },
+  {
+    "id": "deserialization",
+    "name": "Deserialization attacks",
+    "rules": [
+      "WA-deserialization"
+    ],
+    "partial": false
+  },
+  {
+    "id": "crlf_injection",
+    "name": "CRLF injection",
+    "rules": [
+      "WA-crlf_injection"
+    ],
+    "partial": false
+  },
+  {
+    "id": "cve_probe",
+    "name": "Known vulnerability probes",
+    "rules": [
+      "WA-cve_probe"
+    ],
+    "partial": true
+  },
+  {
+    "id": "log4shell",
+    "name": "Log4Shell",
+    "rules": [
+      "WA-log4shell"
+    ],
+    "partial": false
+  },
+  {
+    "id": "spring4shell",
+    "name": "Spring4Shell",
+    "rules": [
+      "WA-spring4shell"
+    ],
+    "partial": false
+  },
+  {
+    "id": "shellshock",
+    "name": "Shellshock",
+    "rules": [
+      "WA-shellshock"
+    ],
+    "partial": false
+  },
+  {
+    "id": "struts_ognl",
+    "name": "Struts attacks",
+    "rules": [
+      "WA-struts_ognl"
+    ],
+    "partial": false
+  },
+  {
+    "id": "webshell",
+    "name": "WebShell-related access",
+    "rules": [
+      "WA-webshell"
+    ],
+    "partial": false
+  },
+  {
+    "id": "sensitive_file",
+    "name": "Sensitive file access",
+    "rules": [
+      "WA-sensitive_file"
+    ],
+    "partial": false
+  },
+  {
+    "id": "admin_probing",
+    "name": "Administrative interface probing",
+    "rules": [
+      "WB-paths"
+    ],
+    "partial": true
+  },
+  {
+    "id": "recon_probe",
+    "name": "Directory and file probing",
+    "rules": [
+      "WA-recon_probe",
+      "WB-paths",
+      "WB-sensitive"
+    ],
+    "partial": true
+  },
+  {
+    "id": "brute_force",
+    "name": "Brute-force indicators",
+    "rules": [
+      "WB-auth",
+      "WB-login"
+    ],
+    "partial": false
+  },
+  {
+    "id": "method",
+    "name": "Unusual HTTP methods",
+    "rules": [
+      "WA-method"
+    ],
+    "partial": false
+  },
+  {
+    "id": "unusual_protocol",
+    "name": "Unusual HTTP protocols",
+    "rules": [
+      "WA-protocol"
+    ],
+    "partial": false
+  },
+  {
+    "id": "scanner",
+    "name": "Suspicious User-Agent",
+    "rules": [
+      "WA-scanner",
+      "WB-ua"
+    ],
+    "partial": true
+  },
+  {
+    "id": "rate",
+    "name": "High request rate",
+    "rules": [
+      "WB-rate",
+      "WB-burst"
+    ],
+    "partial": false
+  },
+  {
+    "id": "errors4xx",
+    "name": "Unusual 4xx responses",
+    "rules": [
+      "WB-404",
+      "WB-auth",
+      "WS-errors"
+    ],
+    "partial": true
+  },
+  {
+    "id": "errors5xx",
+    "name": "Unusual 5xx responses",
+    "rules": [
+      "WS-errors"
+    ],
+    "partial": true
+  },
+  {
+    "id": "response_size",
+    "name": "Unusual response size",
+    "rules": [
+      "WS-url-size",
+      "WS-size",
+      "WS-ip"
+    ],
+    "partial": true
+  },
+  {
+    "id": "follow_up",
+    "name": "Suspicious access following probes",
+    "rules": [
+      "WB-multi"
+    ],
+    "partial": true
+  },
+  {
+    "id": "multi_ip",
+    "name": "Similar activity from multiple IPs",
+    "rules": [
+      "geoip-similarity"
+    ],
+    "partial": true
+  },
+  {
+    "id": "ip_reputation",
+    "name": "IP reputation",
+    "rules": [],
+    "partial": false
+  },
+  {
+    "id": "request_body",
+    "name": "Attacks in request bodies",
+    "rules": [],
+    "partial": false
+  },
+  {
+    "id": "open_redirect",
+    "name": "Open redirect",
+    "rules": [
+      "WA-open_redirect"
+    ],
+    "partial": false
+  },
+  {
+    "id": "access_bypass",
+    "name": "Access bypass",
+    "rules": [
+      "WA-access_bypass"
+    ],
+    "partial": false
+  },
+  {
+    "id": "null_byte",
+    "name": "Null byte injection",
+    "rules": [
+      "WA-null_byte"
+    ],
+    "partial": false
+  },
+  {
+    "id": "iis_aspnet",
+    "name": "IIS and ASP.NET probes",
+    "rules": [
+      "WA-iis_aspnet"
+    ],
+    "partial": false
+  },
+  {
+    "id": "hourly_anomaly",
+    "name": "Hourly traffic anomaly",
+    "rules": [
+      "WS-hour"
+    ],
+    "partial": false
+  }
+]

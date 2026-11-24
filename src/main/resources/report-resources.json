@@ -1,4 +1,6 @@
 [
+  "report-aggregate-rules.json",
+  "report-aspects.json",
   "rules.json",
   "upstream/AURADFIR-LICENSE",
   "upstream/HUB-LICENSE",
