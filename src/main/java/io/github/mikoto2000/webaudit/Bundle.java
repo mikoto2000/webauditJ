@@ -208,6 +208,18 @@ public final class Bundle {
               complete ? "exact" : "lower_bound");
       capture.coverage.build(report);
       capture.requests.export(writer, report);
+      var statistics = capture.statistics.model(report);
+      report.put("statistics", statistics);
+      if (capture.statistics.truncated) {
+        report.put("complete", false);
+        if (!report.get("status").equals("failed")) report.put("status", "partial");
+        analysis.put("partial", true);
+        Engine.warn(
+            analysis,
+            "Statistics detail limit reached; inspect other buckets, unique-IP quality and"
+                + " truncated labels");
+      }
+      capture.statistics.write(writer, statistics);
       spool.close();
       capture.coverage.write(writer, report);
       writer.csv(

@@ -47,6 +47,8 @@ public final class LogParser {
       format = "nginx-json";
       var object = Json.object(text);
       f = new HashMap<>();
+      if (object.get("request_time") != null)
+        f.put("duration_seconds", Json.string(object.get("request_time")));
       var keys =
           Json.map(
               "remote_addr",
@@ -95,6 +97,15 @@ public final class LogParser {
           "unrecognized layout; expected ip/time/request/status/bytes; use --log-regex with named"
               + " groups for custom fields");
     Event e = fromFields(f, original, file, line);
+    if (f.get("duration_seconds") != null) {
+      try {
+        double value = Double.parseDouble(f.get("duration_seconds"));
+        if (!Double.isFinite(value) || value < 0) e.invalidDuration = true;
+        else e.duration = value;
+      } catch (NumberFormatException ex) {
+        e.invalidDuration = true;
+      }
+    }
     e.envelope = envelope;
     e.format = (envelope == null ? "" : "syslog/") + format;
     return e;

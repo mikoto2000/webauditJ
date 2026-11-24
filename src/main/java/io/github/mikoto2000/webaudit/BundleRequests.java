@@ -64,6 +64,9 @@ final class BundleRequests {
             List.copyOf(pending),
             "geoip",
             capture.options.geoIP == null ? null : capture.options.geoIP.lookup(e.ip));
+    snapshot.put("request_duration", e.duration);
+    snapshot.put("invalid_duration", e.invalidDuration);
+    capture.statistics.observe(snapshot, e);
     spool.write(snapshot);
   }
 
@@ -620,6 +623,7 @@ final class BundleRequests {
               var matches = match(snapshot, e, index);
               if (!matches.direct.isEmpty()) {
                 totals[0]++;
+                capture.statistics.suspicious(snapshot, e);
                 write.accept(requestRow(snapshot, e, matches, quality));
               }
               if (!matches.related.isEmpty()) totals[1]++;

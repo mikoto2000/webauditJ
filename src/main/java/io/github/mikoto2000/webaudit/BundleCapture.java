@@ -10,12 +10,16 @@ final class BundleCapture {
   final Options options;
   BundleRequests requests;
   final BundleCoverage coverage = new BundleCoverage();
+  final BundleStatistics statistics;
   final Map<String, Map<String, Object>> inputs = new LinkedHashMap<>();
   final List<Map<String, Object>> diagnostics = new ArrayList<>(), excluded = new ArrayList<>();
   boolean diagnosticsTruncated;
 
   BundleCapture(Options options) {
     this.options = options;
+    statistics =
+        new BundleStatistics(
+            options.maxKeys, options.geoIP != null && !options.geoIP.metadata().isEmpty());
   }
 
   static String path(Path p) {
@@ -143,6 +147,7 @@ final class BundleCapture {
     var fields = (Set<String>) row.get("available_fields");
     fields.add("source_ip");
     fields.add("raw");
+    if (e.duration != null) fields.add("request_duration_seconds");
     fields.add("recorded_time");
     if (!e.timezoneUnknown) fields.add("timestamp");
     for (var entry :

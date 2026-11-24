@@ -12,8 +12,10 @@ final class ObservationMetrics {
   final Map<String, Long> statuses = new TreeMap<>(), methods = new TreeMap<>();
   final Map<String, Map<String, Object>> uris = new LinkedHashMap<>();
   boolean truncated;
+  final BundleTimeline timeline = new BundleTimeline(64);
 
   void observe(Event e, boolean isDirect, boolean isRelated) {
+    timeline.observe(e, isDirect);
     requests++;
     if (isDirect) direct++;
     if (isRelated) related++;
@@ -106,6 +108,7 @@ final class ObservationMetrics {
                 / (Duration.between(first, last).getSeconds()
                     + Duration.between(first, last).getNano() / 1e9)
             : null;
+    timeline.finish();
     return Json.map(
         "finding_id",
         findingID,
@@ -147,6 +150,10 @@ final class ObservationMetrics {
         "last",
         Times.text(last),
         "request_rate_per_second",
-        rate);
+        rate,
+        "timeline",
+        timeline.rows(),
+        "timeline_resolution_seconds",
+        timeline.resolution);
   }
 }
