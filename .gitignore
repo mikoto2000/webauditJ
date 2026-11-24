@@ -7,3 +7,4 @@ __pycache__/
 *.log
 !src/test/resources/**/*.log
 !examples/*.log
+/.worktrees/
