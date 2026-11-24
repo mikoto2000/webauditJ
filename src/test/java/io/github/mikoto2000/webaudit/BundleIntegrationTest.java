@@ -79,6 +79,25 @@ class BundleIntegrationTest {
   }
 
   @Test
+  void publishedSamplesKeepArtifactHashesAndSharedSummary() throws Exception {
+    for (String language : List.of("ja", "en")) {
+      Path sample = Path.of("examples", "investigation-" + language);
+      var manifest = Json.object(Files.readString(sample.resolve("manifest.json")));
+      for (var artifact : Json.rows(manifest.get("artifacts"))) {
+        Path file = sample.resolve(Json.string(artifact.get("path")));
+        assertEquals(
+            artifact.get("sha256"), BundleTest.hash(Files.readAllBytes(file)), file.toString());
+        assertEquals(Json.number(artifact.get("bytes")), Files.size(file), file.toString());
+      }
+      var report = Json.object(Files.readString(sample.resolve("report.json")));
+      assertEquals(9, Json.number(Json.obj(report.get("summary")).get("total_requests")));
+      assertFalse(Files.exists(sample.resolve("INCOMPLETE")));
+      String html = Files.readString(sample.resolve("report.html"));
+      assertTrue(html.contains("<html lang=\"" + language + "\""));
+    }
+  }
+
+  @Test
   void disclosesWhetherTheBuildArtifactCanBeFingerprinted() throws Exception {
     Path input = dir.resolve("build.log");
     Files.writeString(input, BundleTest.LINE + "\n");
