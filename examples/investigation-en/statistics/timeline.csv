@@ -1,0 +1,2 @@
+time_utc,resolution_seconds,requests,suspicious_requests,4xx,5xx,suspicious_count_quality
+2026-11-01T00:00:00Z,60,9,8,4,1,exact

@@ -1,0 +1,4 @@
+key,value,name,organization,missing,other,requests,suspicious_requests,suspicious_count_quality,request_percent,suspicious_within_group_percent,unique_ips,unique_ip_quality,label_truncated,count_quality
+VALUE-8a5edab282632443219e051e4ade2d1d,/,,,false,false,3,2,exact,33.333333333333336,66.66666666666667,,unavailable,false,exact
+VALUE-aef81e7735de8f42b73e111497498c8b,/.env,,,false,false,3,3,exact,33.333333333333336,100.0,,unavailable,false,exact
+VALUE-d1ab3772812ed1ea615682eebf8e3c9a,/a/../../etc/passwd,,,false,false,3,3,exact,33.333333333333336,100.0,,unavailable,false,exact

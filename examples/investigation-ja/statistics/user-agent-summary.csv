@@ -1,0 +1,6 @@
+key,value,name,organization,missing,other,requests,suspicious_requests,suspicious_count_quality,request_percent,suspicious_within_group_percent,unique_ips,unique_ip_quality,label_truncated,count_quality
+VALUE-8c908754dc26e39aff788a5a0c096830,BrowserA,,,false,false,3,3,exact,33.333333333333336,100.0,,unavailable,false,exact
+VALUE-e996ffbdeb4684e15acff909c1e441ac,BrowserC,,,false,false,3,3,exact,33.333333333333336,100.0,,unavailable,false,exact
+VALUE-1066b48224bb188ceb955605f4fcff98,Mozilla/5.0,,,false,false,1,0,exact,11.11111111111111,0.0,,unavailable,false,exact
+VALUE-63e05366492399a5d37c39d74587ef3d,<script>alert('untrusted')</script>,,,false,false,1,1,exact,11.11111111111111,100.0,,unavailable,false,exact
+VALUE-944d29de9e6901ae266b9287997cbd98,BrowserB,,,false,false,1,1,exact,11.11111111111111,100.0,,unavailable,false,exact

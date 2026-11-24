@@ -1,0 +1,285 @@
+rule_id,engine,kind,category,severity,description,supported,enabled,required_fields,conditions
+access_bypass,aura,signature,access_bypass,high,Authentication / access-control bypass technique,true,true,target,(\.\.;/|%2e%2e;|/\.\.;|;/\.\.|/%2e%2e/|/\.;/|/;/|/\.%2e/|%2e%2e%2f%2e%2e|/manager/\.\.;|/j_security_check|/\.%00|/\.\./\.\./;|/;jsessionid|x-original-url|x-rewrite-url|/%2e/)
+command_injection,aura,signature,command_injection,critical,OS command injection,true,true,target,(;[ +]?(id|whoami|uname|cat|ls|dir|ping|curl|wget|nc|bash|sh|powershell|cmd)[ +;/]|\|[ +]?(id|whoami|uname|cat|ls|nc|bash|sh|curl|wget)|\$\([ ]?(id|whoami|uname|cat|ls)|%24%28|%60|%0a(id|whoami|uname|cat|ls|ping)|/bin/(sh|bash|dash|zsh|busybox)|bash[ +]-i|nc[ +]-e|/dev/tcp/|chmod[ +]+[0-9x]|%3b(id|whoami|uname)|%7c(id|whoami)|\$\{ifs\}|\$ifs|/etc/cron)
+crlf_injection,aura,signature,crlf_injection,medium,CRLF injection / HTTP response splitting,true,true,target,(%0d%0a|%0a%0d|%250d%250a|%0d%0aset-cookie|%0aset-cookie|%0alocation:|%0acontent-type|%0acontent-length|%3f%0d%0a|%23%0d%0a|%e5%98%8a%e5%98%8d)
+cve_probe,aura,signature,cve_probe,medium,"Probes for known-vulnerable components, panels or CVEs",true,true,target,(/vendor/phpunit|/phpunit/src/util/php/eval-stdin|xmlrpc\.php|/wp-login\.php|/wp-admin/|/wp-json/wp/|/wp-content/plugins/|/administrator/|/user/register\?|\?author=[0-9]|/cgi-bin/|/manager/html|/host-manager|/actuator|/actuator/env|/actuator/gateway|/solr/admin|/jenkins|/thinkphp|/tp/public|/index\.php\?s=|/hnap1|/boaform|/setup\.cgi|/currentsetting\.htm|/goform/|/api/jsonws/invoke|/druid/|/nacos/|/eureka/|/consul/|/_all_dbs|/owa/|/autodiscover|/ews/|/remote/fgt_lang|/remote/login|/dana-na/|/global-protect|/vpn/|/citrix|/vaadin|/wls-wsat|/_async/asyncresponseservice|/console/css|/adminer|/pma/|/phpmyadmin|/dbadmin|/typo3|/joomla|/jsonws|/cfide|/geoserver|/zabbix|/grafana/|/kibana|/_cat/|/telescope/requests|/debug/default/view|/frontend/web|/graphql|/v2/api-docs|/swagger|/api-docs|/wsdl|/soap|/\.vscode/|/actuator/heapdump|/wp-content/uploads/.*\.php|/mifs/|/cgi-bin/luci|/ecp/|/rpc/|/portal/|/\+cscoe\+|/api/v1/totp)
+dangerous_method,aura,signature,,,Source dangerous HTTP method,true,true,method,PUT;DELETE;TRACE;CONNECT;PROPFIND;MKCOL;MOVE;COPY;LOCK;UNLOCK;SEARCH;DEBUG;TRACK;PATCH
+deserialization,aura,signature,deserialization,high,Insecure deserialization / object injection,true,true,target,"(java\.lang\.runtime|java\.lang\.processbuilder|rO0AB|aced0005|__reduce__|__reduce_ex__|pickle\.loads|cpickle|subprocess\.popen|os\.system|child_process|_\$\$nd_func|phar://|O:[0-9]+:%22|O:[0-9]+:\""|a:[0-9]+:\{|commons-collections|ysoserial|readobject|marshal\.loads|yaml\.load|__proto__|constructor\[)"
+iis_aspnet,aura,signature,iis_aspnet,medium,IIS / ASP.NET specific probe or misconfiguration access,true,true,target,(/trace\.axd|/elmah\.axd|/\.axd|__viewstate=|/app_data/|/global\.asax|/aspnet_client|/iisstart|/certsrv|/owa/auth|/scripts/.*\.asp|/fckeditor|/ckeditor|web\.config|/bin/.*\.dll|%u002e%u002e)
+ldap_injection,aura,signature,ldap_injection,high,LDAP injection,true,true,target,(\)\(uid=|\)\(cn=|\)\(userpassword=|\*\)\(|admin\*\)|\)\(objectclass=\*|%29%28uid=|%2a%29%28|\)%00|\*\)%00)
+lfi_traversal,aura,signature,lfi_traversal,high,Path traversal / local file inclusion,true,true,target,(\.\./|\.\.\\|\.\.%2f|\.\.%5c|%2e%2e%2f|%2e%2e/|%2e%2e%5c|\.\.%252f|%252e%252e%252f|etc/passwd|etc%2fpasswd|/etc/shadow|/etc/hosts|/etc/group|boot\.ini|win\.ini|windows/system32|/proc/self/|/proc/version|/proc/cmdline|php://filter|php://input|php://fd|expect://|file:///|data://text|zip://|phar://|/var/log/|/usr/local/|c:\\windows|\.\.%c0%af|\.\.%c1%9c)
+log4shell,aura,signature,log4shell,critical,Log4Shell JNDI injection,true,true,target,(\$\{jndi:|%24%7bjndi|\$\{jndi:(ldap|ldaps|rmi|dns|iiop|corba|nis|nds)|\$\{\$\{|\$\{lower:|\$\{upper:|\$\{env:|\$\{sys:|\$\{::-j|\$\{base64:|%24%7b%6a%6e%64%69|\$\{main:|\$\{date:)
+nosqli,aura,signature,nosqli,high,NoSQL / MongoDB operator injection,true,true,target,(\[\$ne\]|\[\$gt\]|\[\$lt\]|\[\$gte\]|\[\$lte\]|\[\$regex\]|\[\$where\]|\[\$exists\]|\[\$in\]|\[\$nin\]|\[\$or\]|\$where[ ]?[=:]|%5b%24ne%5d|%24where|\{\$gt|\{\$ne|\{\$where|mapreduce\{)
+null_byte,aura,signature,null_byte,medium,Null-byte injection or double-encoding evasion,true,true,target,(%00|%2500|%c0%80|\.php%00|%00\.jpg|\.jsp%00|%252e%252e)
+open_redirect,aura,signature,open_redirect,medium,Open redirect via user-controlled destination parameter,true,true,target,((redirect|redir|url|next|return|returnurl|return_url|goto|dest|destination|continue|redirect_uri|redirect_url|callback|forward|image_url|go|out|link|target|checkout_url)=[ ]?(https?:|//|/\\|%2f%2f|%5c%5c|%68%74%74%70|/%2f))
+recon_probe,aura,signature,recon_probe,low,Reconnaissance / fuzzing artefacts,true,true,target,(/robots\.txt.*\.\.|/\.env.*/|/\?rest_route=|/\?p=[0-9]+' |wp-json/oembed|/sitemap\.xml.*\<|/\.aws/credentials|/api/\.\./|/v1/\.\./|/static/\.\./)
+rfi,aura,signature,rfi,high,Remote file inclusion — URL passed as a parameter value,true,true,target,(=[ ]?(https?|ftp|ftps|php|data|expect|dict|gopher)(://|%3a%2f%2f)|=[ ]?%68%74%74%70|include=[ ]?https?|require=[ ]?https?)
+scanner_ua,aura,signature,,,Source scanner User-Agent match,true,true,user_agent,sqlmap;nikto;nuclei;gobuster;dirbuster;dirb;dirsearch;wpscan;joomscan;droopescan;cmsmap;wfuzz;ffuf;feroxbuster;arachni;acunetix;netsparker;burpsuite;burp;owasp zap;zaproxy;vega;skipfish;w3af;whatweb;wappalyzer;httprint;commix;xsstrike;nosqlmap;sqlninja;jsql;havij;pangolin;nmap;masscan;zgrab;zmap;shodan;censys;netcraft;fscan;goby;xray;rustscan;naabu;metasploit;hydra;medusa;patator;crackmapexec;impacket;python-requests;python-urllib;go-http-client;curl/;wget/;libwww-perl;winhttp;okhttp;httpclient;java/;aiohttp;node-fetch;axios/;guzzle;mechanize;scrapy;phantomjs;headlesschrome;selenium;zgrab;l9explore;l9tcpid;internetmeasurement;custom-asynchttp;hello world;mozila;morfeus;zmeu;muieblackcat;jaws
+sensitive_file,aura,signature,sensitive_file,high,"Access to sensitive files, backups, secrets or config",true,true,target,(/\.env|\.env\.bak|/\.git/|/\.git/config|/\.gitignore|/\.svn/|/\.hg/|/\.bzr/|/\.ds_store|/web\.config|/\.htaccess|/\.htpasswd|/wp-config\.php|/config\.php|/configuration\.php|/settings\.py|/database\.yml|/credentials|/id_rsa|/\.aws/|/\.ssh/|/\.bash_history|/backup\.|/dump\.sql|/database\.sql|/\.npmrc|/\.dockercfg|/docker-compose\.yml|/composer\.lock|/phpinfo\.php|/info\.php|/server-status|/server-info|/\.well-known/security|/\.travis\.yml|/config\.json\.bak|/\.env\.local|/\.env\.production|/secrets\.|/\.kube/config)
+shellshock,aura,signature,shellshock,critical,Shellshock / Bash function-definition injection,true,true,target,(\(\)[ +]*\{|%28%29[ +]*%7b|\(\)[ +]*\{[ +:;]|%28%29%20%7b)
+spring4shell,aura,signature,spring4shell,critical,Spring4Shell class-loader manipulation,true,true,target,(class\.module\.classloader|class\.classloader|springframework.*classloader|%63%6c%61%73%73%2e%6d%6f%64%75%6c%65|class%2emodule%2eclassloader|getruntime\(\)\.exec)
+sqli,aura,signature,sqli,high,SQL injection payloads or probes,true,true,target,"(union[ +/*]*select|union[ +](all|distinct)[ +]select|information_schema|table_schema|column_name|group_concat|load_file[ (]|into[ +]outfile|into[ +]dumpfile|sleep[ (][ 0-9]|benchmark[ (]|pg_sleep[ (]|waitfor[ +]delay|extractvalue[ (]|updatexml[ (]|' or '|\"" or \""|%27[ +]?or|%22[ +]?or|or[ +]1[ ]?=[ ]?1|and[ +]1[ ]?=[ ]?1|' and '|'--|'\#|;--|/\*!|xp_cmdshell|sp_executesql|utl_http|dbms_lock|convert[ (]int|cast[ (]|concat[ (]0x|char[ (][0-9]|0x[0-9a-f][0-9a-f][0-9a-f]|having[ +]1[ ]?=|%27%20or|%20or%201=1)"
+ssrf,aura,signature,ssrf,high,Server-side request forgery / cloud-metadata access,true,true,target,(169\.254\.169\.254|metadata\.google|metadata\.azure\.com|100\.100\.100\.200|/latest/meta-data|/computemetadata|/metadata/instance|=[ ]?(file|dict|gopher|ldap|tftp|sftp|netdoc)://|=[ ]?https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]|169\.254|192\.168\.|10\.[0-9]|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[01]\.)|%6c%6f%63%61%6c%68%6f%73%74|burpcollaborator|oastify|interact\.sh|\.oast\.|requestbin|\.canarytokens)
+ssti,aura,signature,ssti,high,Server-side template injection,true,true,target,"(\{\{[ ]?[0-9*]|\{\{[ ]?(config|self|request|session|settings|g\.)|\$\{[ ]?[0-9*]|\$\{[ ]?(t|java|runtime|class)|\#\{[ ]?[0-9]|\<%[ ]?=[ ]?[0-9]|%7b%7b[0-9]|freemarker|velocity\.|\{\{7[ ]?\*[ ]?7|\$\{7[ ]?\*[ ]?7|\{%[ ]?(if|for|import)|\{\{[ ]?['\""].*['\""]\.)"
+struts_ognl,aura,signature,struts_ognl,critical,Apache Struts2 OGNL injection,true,true,target,(%\{[ ]?\(|\$\{[ ]?\(|_memberaccess|ognl\.|\.getruntime|multipart/form-data.*%\{|redirect:\$\{|\.action\?.*%\{|\#context\[|\#_memberaccess|\@java\.lang)
+webshell,aura,signature,webshell,critical,Known webshell filenames or command-execution parameters,true,true,target,(c99\.php|c100\.php|r57\.php|wso\.php|wso[0-9]|alfa\.php|alfashell|indoxploit|priv8|mini[ ]?shell|shell\.php|shell\.asp|shell\.jsp|shell\.aspx|cmd\.php|cmd\.jsp|cmd\.asp|eval-stdin\.php|b374k|filesman|antsword|weevely|regeorg|regeorge|behinder|godzilla|webadmin\.php|adminer\.php|up\.php|upload\.php|gecko\.php|madspot|backdoor|/1\.php|/2\.php|/x\.php|/a\.php|xx\.php|404\.php|radio\.php|wp-conf\.php|wp-cd\.php|cmd=(whoami|id|dir|type|cat|net[ +]user)|(func|action|act)=(cmd|shell|command|exec))
+xpath_injection,aura,signature,xpath_injection,medium,XPath / XQuery injection,true,true,target,(' or '1'='1|' or count\(|/child::|::text\(\)|string-length\(|' or name\(|\]\[position\(\)|substring\([ ]?/)
+xss,aura,signature,xss,medium,Cross-site scripting payloads,true,true,target,(\<script|%3cscript|\<img[ +/]|%3cimg|\<svg[ +/]|\<iframe|\<body[ +/]|\<object[ +/]|\<embed[ +/]|\<details[ +/]|javascript:|vbscript:|data:text/html|onerror[ ]?=|onload[ ]?=|onmouseover[ ]?=|onclick[ ]?=|onfocus[ ]?=|onanimationstart|onerror%3d|onload%3d|alert[ (]|prompt[ (]|confirm[ (]|document\.cookie|document\.domain|document\.location|window\.location|eval[ (]|string\.fromcharcode|expression[ (]|%3cscript%3e|\<svg/onload)
+xxe,aura,signature,xxe,high,XML external entity injection,true,true,target,(\<!entity|\<!doctype[ +]|%3c%21entity|%3c%21doctype|system[ +]%22file|system[ +]%22http|\<\?xml[ +].*entity|/etc/passwd%22[ ]?%3e|\<!\[cdata\[|expect://.*%3c)
+brute_force,aura-analysis,aggregate,,,brute_force,true,true,ip;time;status,at least 20 HTTP 401/403 requests in one fixed five-minute interval; case-wide auth count
+enumeration_404,aura-analysis,aggregate,,,enumeration_404,true,true,ip;time;status,"at least 50 HTTP 404 observations per peer, case-wide"
+exfil_bytes,aura-analysis,aggregate,,,exfil_bytes,true,true,ip;time;bytes,at least 5 peers; bytes above mean+3SD and above 10MiB; not proof of exfiltration
+rare_user_agent,aura-analysis,aggregate,,,rare_user_agent,true,true,time;user_agent,case-wide UA count at most 5; bottom 25 UAs; excludes empty and '-'
+traffic_spike,aura-analysis,aggregate,,,traffic_spike,true,true,time,at least 6-hour observed span; hourly z-score greater than 3; includes bounded zero-hour baseline
+geoip-similarity,geoip,context,,,Multi-IP similarity within one ASN,true,true,ip;time;target,known shared ASN + path + host when known + category + fixed five-minute UTC interval; contextual hint only
+LePresidente/http-generic-401-bf,hub,leaky,,,Detect generic 401 Authorization error brute force,true,true,ip;recorded_time;status;target,"""evt.Meta.log_type == 'http_access-log' && evt.Parsed.verb == 'POST' && evt.Meta.http_status == '401'""
+# group by path too: a credential brute force repeats the same endpoint, while
+# 401s spread over different paths (client probing an endpoint being configured,
+# path enumeration) are not a credential attack; capacity=5; cache_size=0; leakspeed=10s; blackhole=1m; groupby=evt.Meta.source_ip + ' ' + evt.Meta.http_path; distinct="
+LePresidente/http-generic-403-bf,hub,leaky,,,Detect generic 403 Forbidden (Authorization) error brute force,true,true,ip;recorded_time;status,"""evt.Meta.log_type == 'http_access-log' && evt.Parsed.verb == 'POST' && evt.Meta.http_status == '403'""; capacity=5; cache_size=0; leakspeed=10s; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2017-9841,hub,trigger,,,Detect CVE-2017-9841 exploits,true,true,ip;recorded_time;target,"|
+    evt.Meta.log_type == 'http_access-log' &&
+    Lower(evt.Meta.http_path) endsWith 'util/php/eval-stdin.php'; capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2019-18935,hub,trigger,,,Detect Telerik CVE-2019-18935 exploitation attempts,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] && Upper(QueryUnescape(evt.Meta.http_path)) startsWith Upper('/Telerik.Web.UI.WebResource.axd?type=rau'); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2022-26134,hub,trigger,,,Confluence - RCE (CVE-2022-26134),true,true,ip;recorded_time;target,"""Upper(PathUnescape(evt.Meta.http_path)) contains Upper('@java.lang.Runtime@getRuntime().exec(')""; capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2022-35914,hub,trigger,,,Detect CVE-2022-35914 exploits,true,true,ip;recorded_time;target,"""Upper(evt.Meta.http_path) contains Upper('/vendor/htmlawed/htmlawed/htmLawedTest.php')""; capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2022-37042,hub,trigger,,,Detect CVE-2022-37042 exploits,true,true,ip;method;recorded_time;status;target,"|
+  (
+  Upper(evt.Meta.http_path) contains Upper('/service/extension/backup/mboximport?account-name=admin&ow=2&no-switch=1&append=1') ||
+  Upper(evt.Meta.http_path) contains Upper('/service/extension/backup/mboximport?account-name=admin&account-status=1&ow=cmd') 
+  )
+  and evt.Meta.http_status startsWith ('40') and
+  Upper(evt.Meta.http_verb) == 'POST'; capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2022-41082,hub,trigger,,,Detect CVE-2022-41082 exploits,true,true,ip;recorded_time;target,"|
+  Upper(evt.Meta.http_path) contains Upper('/autodiscover/autodiscover.json') &&
+  Upper(evt.Parsed.http_args) contains Upper('powershell'); capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2022-41697,hub,leaky,,,Detect CVE-2022-41697 enumeration,true,true,ip;recorded_time;status;target,"|
+  Upper(evt.Meta.http_path) contains Upper('/ghost/api/admin/session') &&
+  Upper(evt.Parsed.verb) == 'POST' &&
+  evt.Meta.http_status == '404'; capacity=5; cache_size=0; leakspeed=10s; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2022-42889,hub,trigger,,,Detect CVE-2022-42889 exploits (Text4Shell),true,true,ip;recorded_time;target,"|
+  Upper(PathUnescape(evt.Meta.http_path)) contains Upper('${script:javascript:java.lang.Runtime.getRuntime().exec(')
+  or
+  Upper(PathUnescape(evt.Meta.http_path)) contains Upper('${script:js:java.lang.Runtime.getRuntime().exec(')
+  or
+  Upper(PathUnescape(evt.Meta.http_path)) contains Upper('${url:UTF-8:') 
+  or
+  Upper(PathUnescape(evt.Meta.http_path)) contains Upper('${dns:address|'); capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2022-44877,hub,trigger,,,Detect CVE-2022-44877 exploits,true,true,ip;recorded_time;status;target,"|
+  Lower(evt.Meta.http_path) contains '/index.php' &&
+  Upper(evt.Parsed.verb) == 'POST' &&
+  evt.Meta.http_status == '302' &&
+  Lower(evt.Parsed.http_args) matches 'login=.*(\\$|%24)(\\(|%28).*(\\)|%29)'; capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2022-46169-bf,hub,leaky,,,Detect CVE-2022-46169 brute forcing,true,true,ip;recorded_time;target,"|
+  Upper(evt.Meta.http_path) contains Upper('/remote_agent.php') &&
+  Upper(evt.Parsed.verb) == 'GET' &&
+  Lower(evt.Parsed.http_args) contains 'host_id' &&
+  Lower(evt.Parsed.http_args) contains 'local_data_ids'; capacity=5; cache_size=0; leakspeed=10s; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2022-46169-cmd,hub,trigger,,,Detect CVE-2022-46169 cmd injection,true,true,ip;recorded_time;target,"|
+  Upper(evt.Meta.http_path) contains Upper('/remote_agent.php') &&
+  Upper(evt.Parsed.verb) == 'GET' &&
+  Lower(evt.Parsed.http_args) contains 'action=polldata' &&
+  Lower(evt.Parsed.http_args) matches 'poller_id=.*(;|%3b)'; capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2023-22515,hub,trigger,,,Detect CVE-2023-22515 exploitation,true,true,ip;recorded_time,"|
+  Lower(evt.Parsed.file_ext) == '.action' &&
+  (Lower(evt.Parsed.file_dir) contains '/setup' || Lower(evt.Parsed.file_frag) == 'server-info') &&
+  evt.Parsed.file_frag != nil; capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2023-22518,hub,trigger,,,Detect CVE-2023-22518 exploits,true,true,ip;recorded_time;target,"|
+  Upper(evt.Meta.http_path) contains Upper('/json/setup-restore.action') &&
+  Upper(evt.Parsed.verb) == 'POST'; capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2023-49103,hub,trigger,,,Detect owncloud CVE-2023-49103 exploitation attempts,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] && Lower(evt.Meta.http_path) contains '/owncloud/apps/graphapi/vendor/microsoft/microsoft-graph/tests/getphpinfo.php'; capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2024-0012,hub,trigger,,,Detect CVE-2024-0012 exploitation attempts,true,true,ip;recorded_time;status;target,"|
+  let request = Lower(evt.Parsed.request);
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] && 
+  evt.Meta.http_status in ['404', '403'] &&
+  (request matches '/php/.*/\\.js\\.map' || request matches '/index.php/.*\\.js\\.map'); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/CVE-2024-38475,hub,leaky,,,Detect CVE-2024-38475 exploitation attempts,true,true,ip;recorded_time;status;target,"|
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] && 
+  evt.Meta.http_status in ['404', '403'] &&
+  Lower(evt.Parsed.request) endsWith '%3f'; capacity=3; cache_size=0; leakspeed=10s; blackhole=2m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.request"
+crowdsecurity/CVE-2024-9474,hub,trigger,,,Detect CVE-2024-9474 exploitation attempts,true,true,ip;method;recorded_time;status;target,"|
+  let request = Lower(evt.Parsed.request);
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] && 
+  evt.Meta.http_status in ['404', '403'] &&
+  evt.Meta.http_verb == 'POST' &&
+  request contains '/php/utils/createremoteappwebsession.php/watchtowr.js.map'; capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/apache_log4j2_cve-2021-44228,hub,trigger,,,Detect cve-2021-44228 exploitation attempts,true,true,ip;recorded_time;referer;target;user_agent,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and 
+  (
+    any(File(""log4j2_cve_2021_44228.txt""), { Upper(evt.Meta.http_path) contains Upper(#)})
+  or
+    any(File(""log4j2_cve_2021_44228.txt""), { Upper(evt.Parsed.http_user_agent) contains Upper(#)})
+  or
+    any(File(""log4j2_cve_2021_44228.txt""), { Upper(evt.Parsed.http_referer) contains Upper(#)})  
+  ); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/f5-big-ip-cve-2020-5902,hub,trigger,,,F5 BIG-IP TMUI - RCE (CVE-2020-5902),true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and 
+    (
+    Upper(evt.Meta.http_path) matches '/TMUI/LOGIN.JSP/..;/TMUI/[^.]+.JSP\\?(FILENAME|COMMAND|DIRECTORYPATH|TABID)='
+    or
+    Upper(evt.Meta.http_path) matches '/TMUI/LOGIN.JSP/%2E%2E;/TMUI/[^.]+.JSP\\?(FILENAME|COMMAND|DIRECTORYPATH|TABID)='
+    ); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/fortinet-cve-2018-13379,hub,trigger,,,Detect cve-2018-13379 exploitation attempts,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and 
+    Upper(evt.Meta.http_path) contains Upper('/remote/fgt_lang?lang=/../../../..//////////dev/cmdb/sslvpn_websession'); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/fortinet-cve-2022-40684,hub,trigger,,,Detect cve-2022-40684 exploitation attempts,true,true,ip;recorded_time;target;user_agent,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and 
+  Upper(evt.Meta.http_path) startsWith Upper('/api/v2/cmdb/system/admin/') and Lower(evt.Parsed.http_user_agent) == 'report runner'; capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/grafana-cve-2021-43798,hub,trigger,,,Grafana - Arbitrary File Read (CVE-2021-43798),true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and 
+    (Upper(evt.Meta.http_path) matches '/PUBLIC/PLUGINS/[^/]+/../[./]+/'
+    or
+    Upper(evt.Meta.http_path) matches '/PUBLIC/PLUGINS/[^/]+/%2E%2E/[%2E/]+/'); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-admin-interface-probing,hub,leaky,,,Detect generic HTTP admin interface probing,true,true,ip;recorded_time;status;target,"|
+  evt.Meta.service == 'http' and 
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] and 
+  evt.Meta.http_status in ['404', '403'] and
+  any(File(""admin_interfaces.txt""), { Lower(evt.Meta.http_path) contains #}); capacity=2; cache_size=0; leakspeed=10s; blackhole=1m; groupby=evt.Meta.source_ip; distinct=evt.Meta.http_path"
+crowdsecurity/http-apiscp-bf,hub,leaky,,,detect apisCP dashboard bruteforce,true,true,ip;recorded_time;status;target,"""evt.Meta.log_type == 'http_access-log' && evt.Meta.http_path startsWith '/apps/login' && evt.Parsed.verb == 'POST' && evt.Meta.http_status == '200'""; capacity=5; cache_size=0; leakspeed=10s; blackhole=5m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-backdoors-attempts,hub,leaky,,,Detect attempt to common backdoors,true,true,ip;recorded_time;target,"'evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and any(File(""backdoors.txt""), { evt.Parsed.file_name == #})'; capacity=1; cache_size=0; leakspeed=5s; blackhole=5m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.file_name"
+crowdsecurity/http-bad-user-agent,hub,leaky,,,Detect usage of bad User Agent,true,true,ip;recorded_time;user_agent,"'evt.Meta.log_type in [""http_access-log"", ""http_error-log""] && RegexpInFile(evt.Parsed.http_user_agent, ""bad_user_agents.regex.txt"")'; capacity=1; cache_size=0; leakspeed=1m; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-bf-wordpress_bf,hub,leaky,,,Detect WordPress bruteforce on admin interface,true,true,ip;recorded_time;status;target,"""evt.Meta.log_type == 'http_access-log' && evt.Parsed.file_name == 'wp-login.php' && evt.Parsed.verb == 'POST' && evt.Meta.http_status == '200'""; capacity=5; cache_size=0; leakspeed=10s; blackhole=5m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-bf-wordpress_bf_xmlrpc,hub,leaky,,,Detect WordPress bruteforce on XML-RPC endpoint,true,true,ip;recorded_time;target,"""evt.Meta.log_type == 'http_access-log' && evt.Parsed.file_name == 'xmlrpc.php' && evt.Parsed.verb == 'POST'""; capacity=5; cache_size=0; leakspeed=2m; blackhole=5m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-crawl-non_statics,hub,leaky,,,Detect aggressive crawl on non static resources,true,true,host;ip;recorded_time;target,"""evt.Meta.log_type in ['http_access-log', 'http_error-log'] && evt.Parsed.static_ressource == 'false' && evt.Parsed.verb in ['GET', 'HEAD']""; capacity=40; cache_size=5; leakspeed=0.5s; blackhole=1m; groupby=evt.Meta.source_ip + '/' + evt.Meta.target_fqdn; distinct=evt.Parsed.file_name"
+crowdsecurity/http-cve-2021-41773,hub,trigger,,,Apache - Path Traversal (CVE-2021-41773),true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and 
+    (Upper(evt.Meta.http_path) contains ""/.%2E/.%2E/""
+      or
+     Upper(evt.Meta.http_path) contains ""/%2E%2E/%2E%2E""); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-cve-2021-42013,hub,trigger,,,Apache - Path Traversal (CVE-2021-42013),true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and 
+    Upper(evt.Meta.http_path) contains ""/%%32%65%%32%65/""; capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-cve-probing,hub,trigger,,,Detect generic HTTP cve probing,true,true,ip;recorded_time;status;target,"|
+  evt.Meta.service == 'http' and 
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] and 
+  evt.Meta.http_status in ['404', '403'] and
+  any(File(""trendy_cves_uris.json""), { 
+    evt.Meta.http_path contains JsonExtract(#, ""uri"") ? evt.SetMeta(""cve"", JsonExtract(#, ""cve"")) : false 
+  }); capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct=evt.Meta.http_path"
+crowdsecurity/http-dos-bypass-cache,hub,leaky,,,Detect DoS tools bypassing cache every request,true,true,ip;recorded_time;target,"""evt.Meta.log_type == 'http_access-log' && evt.Meta.http_args_len != '' && int(evt.Meta.http_args_len) >= 7 && int(evt.Meta.http_args_len) <= 12 && evt.Parsed.http_args matches '^[0-9]+$' && evt.Parsed.static_ressource == 'false'""; capacity=30; cache_size=10; leakspeed=1s; blackhole=1m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.http_args"
+crowdsecurity/http-dos-invalid-http-versions,hub,trigger,,,Detect DoS tools using invalid HTTP versions,true,true,ip;protocol;recorded_time,"'evt.Meta.log_type in [""http_access-log"", ""http_error-log""] && evt.Parsed.http_version != """" && evt.Parsed.http_version not in [""0.9"", ""1.0"", ""1.1"", ""2.0"", ""3.0""]'; capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-dos-random-uri,hub,leaky,,,Detect DoS tools using random uri,true,true,ip;method;recorded_time;target,"|
+  evt.Meta.log_type == ""http_access-log"" &&
+  evt.Meta.http_verb == 'GET' &&
+  evt.Parsed.static_ressource == 'false' &&
+  Upper(evt.Parsed.file_frag) == evt.Parsed.file_frag &&
+  len(evt.Parsed.file_frag) == 6 &&
+  int(evt.Meta.http_args_len) == 0; capacity=30; cache_size=0; leakspeed=1s; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-dos-swithcing-ua,hub,leaky,,,Detect DoS tools switching user-agent too fast,true,true,ip;recorded_time;user_agent,"'evt.Meta.log_type in [""http_access-log"", ""http_error-log""]'; capacity=10; cache_size=0; leakspeed=8s; blackhole=2m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.http_user_agent"
+crowdsecurity/http-generic-bf,hub,leaky,,,Detect generic http brute force,true,true,ip;recorded_time,"""evt.Meta.service == 'http' && evt.Meta.sub_type == 'auth_fail'""; capacity=5; cache_size=0; leakspeed=10s; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-generic-test,hub,trigger,,,Crowdsec Generic Test Scenario: basic [REDACTED] trigger,true,true,ip;recorded_time;target,"evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and
+  evt.Meta.http_path == ""/crowdsec-test-NtktlJHV4TfBSK3wvlhiOBnl""; capacity=0; cache_size=0; leakspeed=; blackhole=5m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-magento-bf,hub,leaky,,,Detect bruteforce on Magento admin interface,false,false,ip;recorded_time,"""evt.Meta.log_type == 'ADMIN_LOGIN_FAILED'""; capacity=5; cache_size=0; leakspeed=10s; blackhole=5m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-magento-ccs,hub,leaky,,,Detect credit card stuffing from a single IP,false,false,ip;recorded_time,"""evt.Meta.log_type == 'PAYMENT_FAILED'""; capacity=3; cache_size=0; leakspeed=30s; blackhole=5m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-magento-ccs-by-as,hub,leaky,,,Detect distributed credit card stuffing from same AS,false,false,ip;recorded_time,"""evt.Meta.log_type == 'PAYMENT_FAILED' and evt.Meta.ASNNumber != '' ""; capacity=10; cache_size=0; leakspeed=30s; blackhole=5m; groupby=evt.Meta.ASNNumber; distinct=evt.Meta.source_ip"
+crowdsecurity/http-magento-ccs-by-country,hub,leaky,,,Detect distributed credit card stuffing from same country,false,false,ip;recorded_time,"""evt.Meta.log_type == 'PAYMENT_FAILED' and evt.Meta.IsoCode != '' ""; capacity=10; cache_size=0; leakspeed=30s; blackhole=5m; groupby=evt.Meta.IsoCode; distinct=evt.Meta.source_ip"
+crowdsecurity/http-open-proxy,hub,trigger,,,Detect scan for open proxy,true,true,ip;recorded_time;status;target,"""evt.Meta.log_type == 'http_access-log' && evt.Meta.http_status in ['400','405'] && (evt.Parsed.verb == 'CONNECT' || evt.Parsed.request matches '^http[s]?://')""; capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-path-traversal-probing,hub,leaky,,,Detect path traversal attempt,true,true,ip;recorded_time;target,"""evt.Meta.log_type in ['http_access-log', 'http_error-log'] && any(File('http_path_traversal.txt'),{evt.Meta.http_path contains #})""; capacity=3; cache_size=0; leakspeed=10s; blackhole=2m; groupby=evt.Meta.source_ip; distinct=evt.Meta.http_path"
+crowdsecurity/http-probing,hub,leaky,,,Detect site scanning/probing from a single ip,true,true,host;ip;recorded_time;status;target,"""evt.Meta.service == 'http' && evt.Meta.http_status in ['404', '403', '400'] && evt.Parsed.static_ressource == 'false'""; capacity=10; cache_size=0; leakspeed=10s; blackhole=5m; groupby=evt.Meta.source_ip + '/' + evt.Meta.target_fqdn; distinct=evt.Meta.http_path"
+crowdsecurity/http-sap-interface-probing,hub,leaky,,,Detect generic HTTP SAP interface probing,true,true,ip;recorded_time;status;target,"|
+  evt.Meta.service == 'http' and 
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] and 
+  evt.Meta.http_status in ['404', '403'] and (
+    let uri = Lower(evt.Meta.http_path);
+    uri contains ""/sap/bc/gui/sap/its/webgui""
+    or uri contains ""/irj/portal""
+    or uri contains ""/sap/bc/""
+    or uri contains ""/sap/bc/ui2/flp""
+    or uri contains ""/sap/bc/ui5_ui5/""
+    or uri contains ""/sap/opu/odata/""
+    or uri contains ""/sap/bc/webdynpro/""
+    or uri contains ""/sap/public/bc/""
+    or uri contains ""/sap/public/info""
+    or uri contains ""/sap/public/icf_info""
+    or uri contains ""/sap/admin/publicicp/""
+    or uri contains ""/sap/admin/public/""
+    or uri == ""/nwa""
+    or uri contains ""/webdynpro/dispatcher/sap.com/tc~sec~ume~wd~umeadmin/umeadminapp""
+    or uri contains ""/sap/hana/xs/admin""
+    or uri contains ""/sap/hana/xs/formlogin""
+    or uri contains ""/irj/go/km/navigation""
+  ); capacity=1; cache_size=0; leakspeed=10s; blackhole=1m; groupby=evt.Meta.source_ip; distinct=evt.Meta.http_path"
+crowdsecurity/http-sensitive-files,hub,leaky,,,"Detect attempt to access to sensitive files (.log, .db ..) or folders (.git)",true,true,ip;recorded_time;target,"'evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and any(File(""sensitive_data.txt""), { evt.Parsed.request endsWith #})'; capacity=4; cache_size=0; leakspeed=5s; blackhole=5m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.request"
+crowdsecurity/http-sqli-probbing-detection,hub,leaky,,,A scenario that detects SQL injection probing with minimal false positives,true,true,ip;recorded_time;target,"""evt.Meta.log_type in ['http_access-log', 'http_error-log'] && any(File('sqli_probe_patterns.txt'), {Upper(evt.Parsed.http_args) contains Upper(#)})""; capacity=10; cache_size=0; leakspeed=1s; blackhole=5m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.http_args"
+crowdsecurity/http-technology-probing,hub,trigger,,,Detect HTTP technology/vendor probing,true,true,ip;recorded_time;status;target,"|
+  if (evt.Meta.service == 'http' and
+      evt.Meta.log_type in ['http_access-log', 'http_error-log'] and
+      evt.Meta.http_status in ['404', '403'])
+    {
+      let target_technology = LookupFile(evt.Meta.http_path, ""technology_probing.json"");
+      target_technology != """" ? evt.SetMeta(""target_technology"", target_technology)  : false
+    } else { false }; capacity=0; cache_size=0; leakspeed=; blackhole=1m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/http-wordpress-scan,hub,leaky,,,Detect exploitation attempts against common WordPress endpoints,true,true,ip;recorded_time;status;target,"|
+  evt.Meta.service == 'http' and
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] and
+  evt.Meta.http_status in ['404', '403'] and
+  Lower(evt.Parsed.request) matches ""(?i)(/wp-.*\\.php|/wp-content/plugins/.*\\.(txt|md))$""; capacity=3; cache_size=0; leakspeed=10s; blackhole=5m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.request"
+crowdsecurity/http-wordpress_user-enum,hub,leaky,,,Detect WordPress probing: authors enumeration,true,true,ip;recorded_time;target,"""evt.Meta.log_type == 'http_access-log' && Upper(evt.Parsed.http_args) contains 'AUTHOR='""; capacity=5; cache_size=0; leakspeed=10s; blackhole=5m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.http_args"
+crowdsecurity/http-wordpress_wpconfig,hub,leaky,,,Detect WordPress probing: variations around wp-config.php by wpscan,true,true,ip;recorded_time;target,"""evt.Meta.log_type == 'http_access-log' && evt.Parsed.file_name contains 'wp-config.php'""; capacity=5; cache_size=0; leakspeed=10s; blackhole=5m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.file_name"
+crowdsecurity/http-xss-probbing,hub,leaky,,,A scenario that detects XSS probing with minimal false positives,true,true,ip;recorded_time;target,"""evt.Meta.log_type in ['http_access-log', 'http_error-log'] && any(File('xss_probe_patterns.txt'), {Upper(evt.Parsed.http_args) contains Upper(#)})""; capacity=5; cache_size=0; leakspeed=1s; blackhole=5m; groupby=evt.Meta.source_ip; distinct=evt.Parsed.http_args"
+crowdsecurity/jira_cve-2021-26086,hub,trigger,,,Detect Atlassian Jira CVE-2021-26086 exploitation attempts,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and any(File(""jira_cve_2021-26086.txt""), {Upper(evt.Meta.http_path) contains Upper(#)}); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/netgear_rce,hub,trigger,,,Detect Netgear RCE DGN1000/DGN220 exploitation attempts,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] && Lower(QueryUnescape(evt.Meta.http_path)) startsWith Lower('/setup.cgi?next_file=netgear.cfg&todo=syscmd&cmd='); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/pulse-secure-sslvpn-cve-2019-11510,hub,trigger,,,Detect cve-2019-11510 exploitation attempts,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and 
+    (Upper(evt.Meta.http_path) matches '/DANA-NA/../DANA/HTML5ACC/GUACAMOLE/../../../../../../../[^?]+\\?/DANA/HTML5ACC/GUACAMOLE/'
+    or
+    Upper(evt.Meta.http_path) matches '/DANA-NA/%2E%2E/DANA/HTML5ACC/GUACAMOLE/%2E%2E/%2E%2E/%2E%2E/%2E%2E/%2E%2E/%2E%2E/%2E%2E/[^?]+\\?/DANA/HTML5ACC/GUACAMOLE/'); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/spring4shell_cve-2022-22965,hub,trigger,,,Detect cve-2022-22965 probing,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and
+    (Upper(evt.Meta.http_path) contains 'CLASS.MODULE.CLASSLOADER.'); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/thinkphp-cve-2018-20062,hub,trigger,,,Detect ThinkPHP CVE-2018-20062 exploitation attempts,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in [""http_access-log"", ""http_error-log""] and RegexpInFile(Lower(evt.Meta.http_path), ""thinkphp_cve_2018-20062.txt""); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/vmware-cve-2022-22954,hub,trigger,,,Detect Vmware CVE-2022-22954 exploitation attempts,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] && Upper(QueryUnescape(evt.Meta.http_path)) startsWith Upper('/catalog-portal/ui/oauth/verify?error=&deviceUdid=${""freemarker.template.utility.Execute""?new()('); capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+crowdsecurity/vmware-vcenter-vmsa-2021-0027,hub,trigger,,,Detect VMSA-2021-0027 exploitation attempts,true,true,ip;recorded_time;target,"|
+  evt.Meta.log_type in ['http_access-log', 'http_error-log'] && evt.Meta.http_path matches '/ui/vcav-bootstrap/rest/vcav-providers/provider-logo\\?url=(file|http)'; capacity=0; cache_size=0; leakspeed=; blackhole=2m; groupby=evt.Meta.source_ip; distinct="
+ltsich/http-w00tw00t,hub,trigger,,,detect w00tw00t,true,true,ip;recorded_time;target,"""evt.Meta.log_type == 'http_access-log' and (
+  evt.Parsed.file_name contains 'w00tw00t.at.ISC.SANS.DFind' or
+  Lower(evt.Meta.http_path) == '/core/skin/login.aspx'
+  )""; capacity=0; cache_size=0; leakspeed=; blackhole=5m; groupby=evt.Meta.source_ip; distinct="
+WA-access_bypass,webaudit,signature,access_bypass,high,Access-control bypass path attempt,true,true,target,url: /\.\.;/|/;/|/;jsessionid
+WA-command_injection,webaudit,signature,command_injection,critical,Command injection attempt,true,true,target,url: (?:;|\||\$\(|`|\n)\s*(?:whoami|id|uname|cat|curl|wget|bash|sh|powershell)(?:\b)|/bin/(?:ba)?sh|/dev/tcp/|\$\{ifs\}
+WA-crlf_injection,webaudit,signature,crlf_injection,medium,CRLF injection attempt,true,true,target,url: %0d%0a|%0a%0d|\r\n
+WA-cve_probe,webaudit,signature,cve_probe,medium,Selected vulnerable component probe,true,true,target,url: /vendor/phpunit/|/phpunit/src/util/php/eval-stdin|/actuator/(?:env|heapdump|gateway)|/wls-wsat/|/remote/fgt_lang\?
+WA-deserialization,webaudit,signature,deserialization,high,Deserialization/RCE payload attempt,true,true,target,"url: java\.lang\.(?:runtime|processbuilder)|__reduce__|pickle\.loads|ysoserial|_\$\$nd_func|o:[0-9]+:"""
+WA-iis_aspnet,webaudit,signature,iis_aspnet,medium,IIS sensitive endpoint probe,true,true,target,url: /(?:trace|elmah)\.axd|/app_data/|/global\.asax
+WA-ldap_injection,webaudit,signature,ldap_injection,high,LDAP injection attempt,true,true,target,url: \)\((?:uid|cn|userpassword|objectclass)=
+WA-lfi_traversal,webaudit,signature,lfi_traversal,high,Traversal or local inclusion attempt,true,true,target,url: \.\./|/etc/(?:passwd|shadow)|/proc/self/|php://(?:filter|input)|(?:file|phar|zip):///|windows/system32|boot\.ini
+WA-log4shell,webaudit,signature,log4shell,critical,Log4Shell-style lookup attempt,true,true,target,url_headers: \$\{(?:jndi:|\$\{|lower:|upper:|::-j)
+WA-method,webaudit,signature,method,low,Unusual HTTP method,true,true,method,method: ^(?:TRACE|TRACK|DEBUG|CONNECT)$
+WA-nosqli,webaudit,signature,nosqli,high,NoSQL operator injection attempt,true,true,target,url: \[\$(?:ne|gt|lt|gte|lte|regex|where|exists|in|nin|or)\]|\$where\s*[=:]
+WA-null_byte,webaudit,signature,null_byte,medium,Null-byte encoding attempt,true,true,target,url: %00|\x00|%c0%80
+WA-open_redirect,webaudit,signature,open_redirect,low,Protocol-relative redirect candidate,true,true,target,url: [?&](?:redirect|next|return_url)=(?://|/\\)
+WA-protocol,webaudit,signature,unusual_protocol,low,Unusual HTTP protocol version; inspect malformed/probing traffic,true,true,protocol,protocol: ^HTTP/
+WA-recon_probe,webaudit,signature,recon_probe,low,API/static path fuzzing,true,true,target,url: /(?:api|static|v1)/\.\./
+WA-rfi,webaudit,signature,rfi,high,Remote inclusion candidate,true,true,target,url: (?:[?&])(?:include|require|page|template|file)=\s*(?:https?|ftp)://
+WA-scanner,webaudit,signature,scanner,medium,Identified scanner User-Agent,true,true,user_agent,ua: \b(?:sqlmap|nikto|nuclei|gobuster|dirbuster|dirsearch|wpscan|wfuzz|ffuf|feroxbuster|masscan|zgrab|acunetix|nmap)\b
+WA-sensitive_file,webaudit,signature,sensitive_file,high,Sensitive resource probe,true,true,target,url: /(?:\.env(?:\.[a-z0-9_-]+)?|\.git/(?:config|head)|\.svn/entries|\.htpasswd|id_rsa|\.aws/credentials|dump\.sql|database\.sql|wp-config\.php(?:\.bak)?|web\.config)(?:[?;/]|$)
+WA-shellshock,webaudit,signature,shellshock,critical,Shellshock function payload,true,true,target,url_headers: \(\)\s*\{
+WA-spring4shell,webaudit,signature,spring4shell,critical,Spring classloader manipulation attempt,true,true,target,url: class\.(?:module\.)?classloader|springframework[^&]*classloader
+WA-sqli,webaudit,signature,sqli,high,SQL injection attempt,true,true,target,"url: union(?:\s|/\*.*?\*/|\+)+(?:all\s+)?select|(?:'|\"")\s*(?:or|and)\s+|\b(?:or|and)\s+1\s*=\s*1|\b(?:sleep|pg_sleep|benchmark|load_file)\s*\(|information_schema|into\s+(?:out|dump)file"
+WA-ssrf,webaudit,signature,ssrf,high,SSRF or metadata target attempt,true,true,target,url: (?:169\.254\.169\.254|metadata\.google|100\.100\.100\.200)|=(?:https?://(?:localhost\b|127\.|\[::1\]|192\.168\.|10\.[0-9])|(?:gopher|dict)://)
+WA-ssti,webaudit,signature,ssti,high,Template injection attempt,true,true,target,url: \{\{\s*(?:[0-9]+\s*\*|config\b|self\b|request\b)|\$\{\s*[0-9]+\s*\*|\{%\s*(?:import|include)
+WA-struts_ognl,webaudit,signature,struts_ognl,critical,Struts/OGNL payload attempt,true,true,target,url: _memberaccess|ognl\.|@java\.lang|#context\[
+WA-webshell,webaudit,signature,webshell,critical,Webshell probe (not proof of presence),true,true,target,url: /(?:c99|r57|wso|shell|cmd|b374k)\.(?:php|jsp|asp|aspx)(?:[?;/]|$)|[?&]cmd=(?:whoami|id|cat|dir)\b
+WA-xpath_injection,webaudit,signature,xpath_injection,medium,XPath injection attempt,true,true,target,url: /child::|\]\[position\(|\bor\s+count\(
+WA-xss,webaudit,signature,xss,medium,XSS payload attempt,true,true,target,url: <(?:script|svg|img|iframe)\b|javascript\s*:|\bon(?:error|load|mouseover)\s*=
+WA-xxe,webaudit,signature,xxe,high,URL-visible XML external entity attempt,true,true,target,url: <!entity\b|<!doctype\s+[^>]+\bsystem\b
+WB-404,webaudit,aggregate,WB-404,medium,Concentrated HTTP 404 responses,true,true,ip;time;status,at least 20 HTTP 404 observations; two overlapping five-minute partitions offset by 150s; diversity capped at 64
+WB-auth,webaudit,aggregate,WB-auth,medium,Concentrated HTTP 401/403 responses,true,true,ip;time;status,at least 20 HTTP 401/403 observations; two overlapping five-minute partitions offset by 150s; diversity capped at 64
+WB-burst,webaudit,aggregate,WB-burst,medium,Leaky bucket burst,true,true,ip;time,capacity 300; leak 1 request/second; ordered input required; two overlapping five-minute partitions offset by 150s; diversity capped at 64
+WB-login,webaudit,aggregate,WB-login,medium,Repeated login endpoint requests,true,true,ip;time;target;method,at least 20 POST requests to known login endpoints; two overlapping five-minute partitions offset by 150s; diversity capped at 64
+WB-multi,webaudit,aggregate,WB-multi,medium,Multiple techniques in one window,true,true,ip;time;target,at least 2 signature categories and 8 observations; no verified attack progression; two overlapping five-minute partitions offset by 150s; diversity capped at 64
+WB-paths,webaudit,aggregate,WB-paths,medium,Diverse URL probing with errors,true,true,ip;time;target;status,at least 40 paths and 10 HTTP 401/403/404 observations; two overlapping five-minute partitions offset by 150s; diversity capped at 64
+WB-rate,webaudit,aggregate,WB-rate,medium,High request rate,true,true,ip;time,at least 600 requests; two overlapping five-minute partitions offset by 150s; diversity capped at 64
+WB-sensitive,webaudit,aggregate,WB-sensitive,medium,Distinct sensitive resource probes,true,true,ip;time;target,at least 5 distinct sensitive paths; two overlapping five-minute partitions offset by 150s; diversity capped at 64
+WB-ua,webaudit,aggregate,WB-ua,medium,User-Agent rotation during probing,true,true,ip;time;target;status;user_agent,"at least 5 UAs, 10 paths and 10 HTTP 401/403/404 observations; two overlapping five-minute partitions offset by 150s; diversity capped at 64"
+WS-errors,webaudit,aggregate,WS-errors,medium,IP HTTP-error-rate outlier,true,true,ip;time;status,at least 20 peers with 20 known-status requests each; +0.5 rate and 3x effect floors
+WS-hour,webaudit,aggregate,WS-hour,medium,Hourly traffic outlier,true,true,ip;time,at least 20 hourly bins including observed-span zeros; +100 requests and 5x median; bounded span
+WS-ip,webaudit,aggregate,WS-ip,medium,IP request/byte volume outlier,true,true,ip;time,"at least 20 peers; median/MAD with effect floors +100 and 5x requests, or +1MiB and 10x bytes"
+WS-size,webaudit,aggregate,WS-size,medium,Response-size outlier,true,true,ip;time;status;bytes,at least 20 prior samples; +1MiB and 10x median; robust MAD; ring of 128
+WS-url-size,webaudit,aggregate,WS-url-size,medium,Same URL/status response-size outlier,true,true,ip;time;target;status;bytes,at least 20 prior samples; +4096 bytes and 5x median; robust MAD; ring of 128

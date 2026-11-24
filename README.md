@@ -111,7 +111,7 @@ Windows はファイルロックを残さないメモリ読み込み方式で、
 本体は MIT ライセンスです。ルール、ライブラリ、テストデータの個別条件は第三者ライセンスを参照してください。
 
 
-## 調査報告書一式（移植中）
+## 調査報告書一式
 
 ```sh
 java -jar target/webauditJ.jar access.log --report-dir report --lang ja --system-name "対象システム" --investigator "担当者"
@@ -142,3 +142,5 @@ spool上限に達しても既存解析を継続し、全件証跡と該当集計
 観測事実・ruleによる推定・未確認事項・正常アクセスの可能性・脆弱性が存在する場合の影響を分けます。severityは既存rule優先度を保持し、検出確度が別に評価されていない場合はunknownです。既存のscore/outcome/confidenceを校正確率へ変換しません。追加調査と条件付き予防策を区別し、既存の攻撃別確認案内を再利用します。
 
 既定では一般的なquery秘密キー、Authorization、Cookie等を解析後の公開モデルとCSVでマスクします。元のfile IDとlineから先に参照を作るため、マスク後にファイル名が同じ表示になっても原本を区別できます。`--include-sensitive-evidence`で明示解除できますが、control/Bidi制御文字の可視化は解除しません。全秘密・個人情報の完全匿名化は保証せず、IPや調査担当者も匿名化しません。共有前に内容を確認し、原本と同等のアクセス制御で保管してください。元ログは変更しません。
+
+出力一覧・数え方・制限は[利用方法と出力契約](docs/reporting/output.md)、実測結果は[性能と資源使用量](docs/reporting/performance.md)を参照してください。[日本語サンプル](examples/investigation-ja/report.html)と[English sample](examples/investigation-en/report.html)には同じ入力から生成したJSON/CSV/manifestも付属します。

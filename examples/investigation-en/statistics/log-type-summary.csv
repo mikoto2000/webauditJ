@@ -1,0 +1,2 @@
+key,value,name,organization,missing,other,requests,suspicious_requests,suspicious_count_quality,request_percent,suspicious_within_group_percent,unique_ips,unique_ip_quality,label_truncated,count_quality
+VALUE-aaa81fa3b38de972e9c3f0493615d8a4,http_access-log,,,false,false,9,8,exact,100.0,88.88888888888889,,unavailable,false,exact
