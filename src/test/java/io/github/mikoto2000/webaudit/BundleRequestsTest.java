@@ -12,6 +12,69 @@ import org.junit.jupiter.api.io.TempDir;
 class BundleRequestsTest {
   @TempDir Path dir;
 
+  @Test void preservesNativeHourMembershipBeforeUnixEpoch() {
+    Event e=LogParser.parse(BundleTest.LINE.replace("01/Nov/2026:00:00:00","31/Dec/1969:23:59:59"),"access.log",1,"");
+    var row=BundleRequests.baseDetection("DET-hour","webaudit","WS-hour","related","WS-hour","medium","hour",Times.text(e.time),Times.text(e.time),e.ip,e.host,Json.map("count_quality","exact"));
+    var group=new BundleRequests.Group(row,new Signal(Map.of("id","WS-hour"),e,1,"hour",e.time,e.time),null,"");
+    var snapshot=Json.map("event",e.toMap(),"_time",Times.text(e.time),"hits",List.of(),"source_detections",List.of());
+    assertEquals(1,BundleRequests.match(snapshot,e,new BundleRequests.Index(List.of(group))).related().size());
+  }
+
+  @Test
+  void associatesEndOfAnalysisStatisticalSignals() throws Exception {
+    Path input = dir.resolve("late.log");
+    var text = new StringBuilder();
+    for (int ip = 1; ip <= 21; ip++)
+      for (int i = 0; i < (ip == 21 ? 200 : 1); i++)
+        text.append(
+                BundleTest.LINE
+                    .replace("192.0.2.1", "192.0.2." + ip)
+                    .replace("/.env", "/healthy")
+                    .replace("404 0", "200 0"))
+            .append('\n');
+    Files.writeString(input, text);
+    Path target = dir.resolve("late-report");
+    var report = Bundle.generate(List.of(input), target, new Options(), new BundleOptions());
+    assertTrue(Json.bool(report.get("evidence_complete")));
+    assertTrue(
+        csv(target.resolve("related-requests.csv")).stream()
+            .anyMatch(row ->
+                row.get("source_ip").equals("192.0.2.21")
+                    && row.get("rule_ids").contains("WS-ip")));
+  }
+
+  @Test
+  void excludesDistinctDuplicatesAndSuppressedHubCandidates() throws Exception {
+    var rule =
+        SourceMatcher.RULES.stream()
+            .filter(r -> r.get("name").equals("crowdsecurity/http-probing"))
+            .findFirst()
+            .orElseThrow();
+    var original = new LinkedHashMap<>(rule);
+    try {
+      rule.put("capacity", 2L);
+      rule.put("leakspeed", "1m");
+      rule.put("blackhole", "1m");
+      rule.put("distinct", "evt.Meta.http_path");
+      Path input = dir.resolve("hub.log");
+      var text = new StringBuilder();
+      for (String uri : List.of("/a", "/a", "/b", "/c", "/d", "/e", "/f"))
+        text.append(BundleTest.LINE.replace("/.env", uri)).append('\n');
+      Files.writeString(input, text);
+      Path target = dir.resolve("hub-report");
+      Bundle.generate(List.of(input), target, new Options(), new BundleOptions());
+      var lines =
+          csv(target.resolve("suspicious-requests.csv")).stream()
+              .filter(row -> row.get("rule_ids").contains("crowdsecurity/http-probing"))
+              .map(row -> row.get("source_line"))
+              .toList();
+      assertEquals(List.of("1", "3", "4"), lines);
+    } finally {
+      rule.clear();
+      rule.putAll(original);
+    }
+  }
+
   static List<Map<String, String>> csv(Path path) throws IOException {
     try (var reader = Files.newBufferedReader(path);
         var parser =
