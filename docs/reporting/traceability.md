@@ -36,3 +36,14 @@
 BundleTestはgzip原本と3種類の行、全成果物hash、既存出力拒否、原本変更、出力容量上限/失敗marker、CLI metadata/排他、dedup/空/不読、秘密regex、Long.MAX_VALUE上限、hash上限を超える原本増大を検証する。REDでは未実装classによるコンパイル失敗を確認。追加の巨大上限テストは修正前の算術overflowで停止しなくなり、該当テストJVMだけを特定して終了した。修正後は5テスト成功。今後の再発時に停止し続けないよう2秒のpreemptive timeoutも設ける。
 
 Phase1のHTMLは既存templateを使う暫定表示であり、提出用11章と全件CSV/coverage/統計は後続phase対象。新しい検出器・watch変更・依存追加なし。機密値マスクはPhase5で移植する。
+
+
+## Phase 2 実装・検証
+
+`BundleCoverage`にGo版と同じ41観点、全既存のnative/行動/統計/Hub/Aura署名/Aura集計/Geoのmetadata・条件・必要項目・IDを移植した。`report-aspects.json`と`report-aggregate-rules.json`は移植元の報告書契約の静的説明であり、検出器ではない。native/Hub/Auraの実際の検出結果をoptional observerで受け、Behavior内部の実際のbaseline/peer数から評価可能性を取得する。AuraAnalysisは実装と同じaccess-log範囲だけを適用母数とする。
+
+カバレッジのevaluation/status/complete/has_detectionsを独立保持し、母数不足・field不足・入力部分解析・部分支援・未対応・Geo未実施を区別する。観点内の署名一致requestはunion、rule一致数は別。Hub等のmatched_candidatesはフィルタ候補であり成立検出と別にし、全件関連付け前に不確かな一意request数を補完しない。旧解析モデル・旧HTML/CSVを変更しない。
+
+BundleCoverageTestのREDでcoverage未出力を確認し、GREENで9件のbundle契約テストが成功。全rule列挙、部分hit、未対応、UA不足、Geo未実施、正常no-hit、統計母数不足、一意request対複数ruleを検証する。原本来歴と全artifact hashも再検証する。
+
+Phase2セルフレビューで、国DBのみ利用時にASN類似性を評価済みno-hitと扱わない回帰テストを追加した。対応するGo版にも同じ前提確認の補正を別PRで反映する。

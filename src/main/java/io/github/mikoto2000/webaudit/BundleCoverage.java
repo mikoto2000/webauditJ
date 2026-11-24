@@ -377,7 +377,7 @@ final class BundleCoverage {
         strings(row, "limitations")
             .add("ASN database is unavailable; ASN similarity was not evaluated");
       }
-      if (!isReady)
+      if (!isReady && !engine.equals("geoip"))
         strings(row, "limitations")
             .add("Insufficient baseline observations or peers for statistical evaluation");
       if (engine.equals("geoip") && analysis.get("geoip") == null) {
