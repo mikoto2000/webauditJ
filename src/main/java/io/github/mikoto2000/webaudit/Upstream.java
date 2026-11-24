@@ -121,6 +121,7 @@ final class Upstream {
     View view = view(e);
     for (var r : RULES) {
       if (!Json.bool(r.get("supported")) || !matches(r, e, view)) continue;
+      if (options.bundle != null) options.bundle.coverage.hit("hub", Json.string(r.get("name")));
       String id = Json.string(r.get("name")),
           group = group(e, Json.string(r.get("groupby"))),
           key = digest(id + "\0" + group + (e.timezoneUnknown ? "\0" + domain : ""));

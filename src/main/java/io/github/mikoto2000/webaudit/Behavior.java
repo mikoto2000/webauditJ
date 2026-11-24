@@ -280,4 +280,20 @@ final class Behavior {
       unique(warnings, "Too few IP peers for request/error-rate statistical inference");
     return List.copyOf(signals);
   }
+
+  Map<String, Boolean> coverageReadiness() {
+    long lo = hours.isEmpty() ? 0 : Collections.min(hours.keySet()),
+        hi = hours.isEmpty() ? 0 : Collections.max(hours.keySet());
+    return Map.of(
+        "WS-ip",
+        ips.size() >= 20,
+        "WS-errors",
+        ips.values().stream().filter(p -> p.statusN >= 20).count() >= 20,
+        "WS-size",
+        global.values.size() > 20,
+        "WS-url-size",
+        urls.values().stream().anyMatch(b -> b.values.size() > 20),
+        "WS-hour",
+        !hours.isEmpty() && hi - lo >= 19 && hi - lo < options.maxKeys);
+  }
 }

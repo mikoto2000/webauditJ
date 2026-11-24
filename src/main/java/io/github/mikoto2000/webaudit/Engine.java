@@ -47,11 +47,17 @@ public final class Engine {
               upstream.observe(e);
               aura.observe(e);
               var detection = Signatures.detect(e);
+              if (o.bundle != null) o.bundle.coverage.observe(e, detection);
               correlator.add(e, detection);
               if (!e.timezoneUnknown) behavior.observe(e, detection.hits());
             })
         .stream(paths);
-    for (var signal : behavior.finish()) correlator.addSignal(signal);
+    var signals = behavior.finish();
+    if (o.bundle != null) {
+      o.bundle.coverage.signals = signals;
+      o.bundle.coverage.ready = behavior.coverageReadiness();
+    }
+    for (var signal : signals) correlator.addSignal(signal);
     var findings = correlator.finish();
     report.put("findings", findings);
     report.put("upstream_alerts", nullable(upstream.alerts));

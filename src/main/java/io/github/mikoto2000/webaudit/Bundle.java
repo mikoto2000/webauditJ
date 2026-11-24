@@ -202,6 +202,8 @@ public final class Bundle {
             status,
             "count_quality",
             complete ? "exact" : "lower_bound");
+    capture.coverage.build(report);
+    capture.coverage.write(writer, report);
     writer.csv(
         "log-inventory.csv",
         List.of(

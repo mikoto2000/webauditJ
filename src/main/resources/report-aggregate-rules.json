@@ -1,0 +1,306 @@
+[
+  {
+    "severity": "",
+    "id": "brute_force",
+    "engine": "aura-analysis",
+    "kind": "aggregate",
+    "category": "",
+    "description": "brute_force",
+    "required_fields": [
+      "ip",
+      "time",
+      "status"
+    ],
+    "condition": "at least 20 HTTP 401/403 requests in one fixed five-minute interval; case-wide auth count",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "",
+    "id": "enumeration_404",
+    "engine": "aura-analysis",
+    "kind": "aggregate",
+    "category": "",
+    "description": "enumeration_404",
+    "required_fields": [
+      "ip",
+      "time",
+      "status"
+    ],
+    "condition": "at least 50 HTTP 404 observations per peer, case-wide",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "",
+    "id": "exfil_bytes",
+    "engine": "aura-analysis",
+    "kind": "aggregate",
+    "category": "",
+    "description": "exfil_bytes",
+    "required_fields": [
+      "ip",
+      "time",
+      "bytes"
+    ],
+    "condition": "at least 5 peers; bytes above mean+3SD and above 10MiB; not proof of exfiltration",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "",
+    "id": "rare_user_agent",
+    "engine": "aura-analysis",
+    "kind": "aggregate",
+    "category": "",
+    "description": "rare_user_agent",
+    "required_fields": [
+      "time",
+      "user_agent"
+    ],
+    "condition": "case-wide UA count at most 5; bottom 25 UAs; excludes empty and '-'",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "",
+    "id": "traffic_spike",
+    "engine": "aura-analysis",
+    "kind": "aggregate",
+    "category": "",
+    "description": "traffic_spike",
+    "required_fields": [
+      "time"
+    ],
+    "condition": "at least 6-hour observed span; hourly z-score greater than 3; includes bounded zero-hour baseline",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WB-404",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WB-404",
+    "description": "Concentrated HTTP 404 responses",
+    "required_fields": [
+      "ip",
+      "time",
+      "status"
+    ],
+    "condition": "at least 20 HTTP 404 observations; two overlapping five-minute partitions offset by 150s; diversity capped at 64",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WB-auth",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WB-auth",
+    "description": "Concentrated HTTP 401/403 responses",
+    "required_fields": [
+      "ip",
+      "time",
+      "status"
+    ],
+    "condition": "at least 20 HTTP 401/403 observations; two overlapping five-minute partitions offset by 150s; diversity capped at 64",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WB-burst",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WB-burst",
+    "description": "Leaky bucket burst",
+    "required_fields": [
+      "ip",
+      "time"
+    ],
+    "condition": "capacity 300; leak 1 request/second; ordered input required; two overlapping five-minute partitions offset by 150s; diversity capped at 64",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WB-login",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WB-login",
+    "description": "Repeated login endpoint requests",
+    "required_fields": [
+      "ip",
+      "time",
+      "target",
+      "method"
+    ],
+    "condition": "at least 20 POST requests to known login endpoints; two overlapping five-minute partitions offset by 150s; diversity capped at 64",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WB-multi",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WB-multi",
+    "description": "Multiple techniques in one window",
+    "required_fields": [
+      "ip",
+      "time",
+      "target"
+    ],
+    "condition": "at least 2 signature categories and 8 observations; no verified attack progression; two overlapping five-minute partitions offset by 150s; diversity capped at 64",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WB-paths",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WB-paths",
+    "description": "Diverse URL probing with errors",
+    "required_fields": [
+      "ip",
+      "time",
+      "target",
+      "status"
+    ],
+    "condition": "at least 40 paths and 10 HTTP 401/403/404 observations; two overlapping five-minute partitions offset by 150s; diversity capped at 64",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WB-rate",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WB-rate",
+    "description": "High request rate",
+    "required_fields": [
+      "ip",
+      "time"
+    ],
+    "condition": "at least 600 requests; two overlapping five-minute partitions offset by 150s; diversity capped at 64",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WB-sensitive",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WB-sensitive",
+    "description": "Distinct sensitive resource probes",
+    "required_fields": [
+      "ip",
+      "time",
+      "target"
+    ],
+    "condition": "at least 5 distinct sensitive paths; two overlapping five-minute partitions offset by 150s; diversity capped at 64",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WB-ua",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WB-ua",
+    "description": "User-Agent rotation during probing",
+    "required_fields": [
+      "ip",
+      "time",
+      "target",
+      "status",
+      "user_agent"
+    ],
+    "condition": "at least 5 UAs, 10 paths and 10 HTTP 401/403/404 observations; two overlapping five-minute partitions offset by 150s; diversity capped at 64",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WS-errors",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WS-errors",
+    "description": "IP HTTP-error-rate outlier",
+    "required_fields": [
+      "ip",
+      "time",
+      "status"
+    ],
+    "condition": "at least 20 peers with 20 known-status requests each; +0.5 rate and 3x effect floors",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WS-hour",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WS-hour",
+    "description": "Hourly traffic outlier",
+    "required_fields": [
+      "ip",
+      "time"
+    ],
+    "condition": "at least 20 hourly bins including observed-span zeros; +100 requests and 5x median; bounded span",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WS-ip",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WS-ip",
+    "description": "IP request/byte volume outlier",
+    "required_fields": [
+      "ip",
+      "time"
+    ],
+    "condition": "at least 20 peers; median/MAD with effect floors +100 and 5x requests, or +1MiB and 10x bytes",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WS-size",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WS-size",
+    "description": "Response-size outlier",
+    "required_fields": [
+      "ip",
+      "time",
+      "status",
+      "bytes"
+    ],
+    "condition": "at least 20 prior samples; +1MiB and 10x median; robust MAD; ring of 128",
+    "supported": true,
+    "enabled": true
+  },
+  {
+    "severity": "medium",
+    "id": "WS-url-size",
+    "engine": "webaudit",
+    "kind": "aggregate",
+    "category": "WS-url-size",
+    "description": "Same URL/status response-size outlier",
+    "required_fields": [
+      "ip",
+      "time",
+      "target",
+      "status",
+      "bytes"
+    ],
+    "condition": "at least 20 prior samples; +4096 bytes and 5x median; robust MAD; ring of 128",
+    "supported": true,
+    "enabled": true
+  }
+]
