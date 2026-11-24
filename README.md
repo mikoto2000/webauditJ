@@ -117,7 +117,7 @@ Windows はファイルロックを残さないメモリ読み込み方式で、
 java -jar target/webauditJ.jar access.log --report-dir report --lang ja --system-name "対象システム" --investigator "担当者"
 ```
 
-新規ディレクトリを排他的に作成するバッチ専用モードです。現時点はPhase 4までの原本来歴・入力別診断・manifest・全調査観点カバレッジ・全件証跡・全アクセス統計に対応します。11章表示は後続フェーズで移植します。[移植設計](docs/reporting/design.md)と[要求対応表](docs/reporting/traceability.md)を参照してください。
+新規ディレクトリを排他的に作成するバッチ専用モードです。11章構成の日英HTML、原本来歴・入力別診断・manifest・全調査観点カバレッジ・全件証跡・全アクセス統計・事案別調査案内を生成します。[移植設計](docs/reporting/design.md)と[要求対応表](docs/reporting/traceability.md)を参照してください。
 
 任意metadataは`--report-title`、`--system-name`、`--investigation-background`、`--investigation-purpose`、`--investigator`。`--lang ja|en`を選択できます。`-o`/`--format`とは排他です。既存の単一ファイル出力は維持します。`--max-spool-bytes`、`--max-report-bytes`は各既定1 GiBです。原本SHA-256はgzipを含む保存bytesの前後照合で、元ログは変更しません。生成失敗時のINCOMPLETE marker付き出力は完成報告書として扱わないでください。現段階の証跡には元ログと同等の機密性があります。
 
@@ -133,3 +133,12 @@ spool上限に達しても既存解析を継続し、全件証跡と該当集計
 `statistics/`に全観測と不審観測のmethod/status/class/IP/host/URI/UA/protocol/logtype別集計、レスポンスサイズと取得可能な処理時間、adaptive UTC時系列を出力します。GeoDBがある場合は国/ASN・組織名・ユニークIP・lookup状況も含みます。処理時間は単位が明確なnginx JSONのrequest_time（秒）またはcustom regexのduration_secondsだけを採用し、欠損・不正・0を別扱いにします。数値overflowはnull/qualityで開示します。各次元はmaxKeys・ラベル長、時系列はbin上限で制限し、other/切詰め/下限を明示します。
 
 分母はパース済み・非dedupの元file/line観測で、ネットワーク上の一意HTTP取引数とは限りません。観点・rule・engineの件数は重複するので単純加算しません。spool上限後も全アクセス統計は既存streamから継続し、不審件数の品質はsuspicious_count_qualityで独立表示します。ログがない時間帯を欠損や停止と断定しません。
+
+
+### 11章の報告書と機密値
+
+`report.html`は外部通信なしで表示・印刷できます。目次、事案と独立したHub/Auraの一覧、詳細・ルール・coverageへのリンク、一覧へ戻るリンク、生ログ代表例、値付きグラフを備えます。HTMLは事案/独立検出各100件、rule/coverage/入力各1000件、ランキング20–30行、全体timeline120区間に制限し、別紙で全保持データを確認できます。
+
+観測事実・ruleによる推定・未確認事項・正常アクセスの可能性・脆弱性が存在する場合の影響を分けます。severityは既存rule優先度を保持し、検出確度が別に評価されていない場合はunknownです。既存のscore/outcome/confidenceを校正確率へ変換しません。追加調査と条件付き予防策を区別し、既存の攻撃別確認案内を再利用します。
+
+既定では一般的なquery秘密キー、Authorization、Cookie等を解析後の公開モデルとCSVでマスクします。元のfile IDとlineから先に参照を作るため、マスク後にファイル名が同じ表示になっても原本を区別できます。`--include-sensitive-evidence`で明示解除できますが、control/Bidi制御文字の可視化は解除しません。全秘密・個人情報の完全匿名化は保証せず、IPや調査担当者も匿名化しません。共有前に内容を確認し、原本と同等のアクセス制御で保管してください。元ログは変更しません。

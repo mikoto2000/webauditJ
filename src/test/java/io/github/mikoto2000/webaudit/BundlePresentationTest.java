@@ -12,6 +12,31 @@ class BundlePresentationTest {
   @TempDir Path dir;
 
   @Test
+  void retainsPairedOriginalReferencesWhenMaskedFileNamesCollide() throws Exception {
+    Path first = dir.resolve("token=ONE.log"), second = dir.resolve("token=TWO.log");
+    Files.writeString(first, BundleTest.LINE + "\n");
+    Files.writeString(second, BundleTest.LINE + "\n");
+    Path target = dir.resolve("paired");
+    var report =
+        Bundle.generate(List.of(first, second), target, new Options(), new BundleOptions());
+    var inputs = Json.rows(report.get("inventory"));
+    assertEquals(inputs.get(0).get("path"), inputs.get(1).get("path"));
+    var ids = new HashSet<String>();
+    for (var d : Json.rows(report.get("detections")))
+      if (d.get("engine").equals("aura"))
+        for (var ref : Json.rows(d.get("sample_evidence_refs")))
+          ids.add((String) ref.get("source_file_id"));
+    assertEquals(2, ids.size());
+    var findings = new HashMap<String, Map<String, Object>>();
+    for (var f : Json.rows(Json.obj(report.get("analysis")).get("findings")))
+      findings.put((String) f.get("id"), f);
+    for (var row : BundleRequestsTest.csv(target.resolve("findings.csv")))
+      assertEquals(
+          Json.string(findings.get(row.get("finding_id")).get("attack_score")),
+          row.get("attack_score"));
+  }
+
+  @Test
   void translatesEveryStaticTemplateLabel() throws Exception {
     String template =
         new String(

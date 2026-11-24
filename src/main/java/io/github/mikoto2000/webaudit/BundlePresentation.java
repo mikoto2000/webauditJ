@@ -82,13 +82,8 @@ final class BundlePresentation {
     };
   }
 
-  static Map<String, Object> reference(Map<String, Object> report, String file, long line) {
-    String fileID = "";
-    for (var input : rows(report.get("inventory")))
-      if (Objects.equals(input.get("path"), file)) {
-        fileID = (String) input.get("id");
-        break;
-      }
+  static Map<String, Object> reference(Map<String, String> files, String file, long line) {
+    String fileID = files.getOrDefault(file, "");
     return Json.map(
         "request_id",
         Bundle.id("REQ-", fileID + "\0" + line),
@@ -231,6 +226,18 @@ final class BundlePresentation {
     var metrics = new HashMap<String, Map<String, Object>>();
     for (var m : rows(report.get("finding_observations")))
       metrics.put((String) m.get("finding_id"), m);
+    var files = new HashMap<String, String>();
+    for (var input : rows(report.get("inventory")))
+      files.put((String) input.get("path"), (String) input.get("id"));
+    var coverageIndex = new HashMap<String, List<String>>();
+    for (var row : rows(report.get("coverage")))
+      for (String fid : strings(row.get("finding_ids")))
+        coverageIndex.computeIfAbsent(fid, _ -> new ArrayList<>()).add((String) row.get("id"));
+    var hintIndex = new HashMap<String, List<Map<String, Object>>>();
+    if (analysis.get("geoip") != null)
+      for (var hint : rows(Json.obj(analysis.get("geoip")).get("correlations")))
+        for (String fid : strings(hint.get("incident_ids")))
+          hintIndex.computeIfAbsent(fid, _ -> new ArrayList<>()).add(hint);
     for (var f : rows(analysis.get("findings"))) {
       String fid = (String) f.get("id"), priority = priority(f);
       if (priority.equals("high"))
@@ -240,23 +247,19 @@ final class BundlePresentation {
       for (var rule : rows(f.get("rules"))) inferences.add(Json.string(rule.get("description")));
       var impacts = new LinkedHashSet<String>();
       for (String category : strings(f.get("categories"))) impacts.add(impact(category));
-      var coverage = new ArrayList<String>();
-      for (var row : rows(report.get("coverage")))
-        if (strings(row.get("finding_ids")).contains(fid)) coverage.add((String) row.get("id"));
+      var coverage = coverageIndex.getOrDefault(fid, List.of());
       var related = new LinkedHashSet<String>();
       var ips = new LinkedHashSet<String>();
-      if (analysis.get("geoip") != null)
-        for (var hint : rows(Json.obj(analysis.get("geoip")).get("correlations")))
-          if (strings(hint.get("incident_ids")).contains(fid)) {
-            related.addAll(strings(hint.get("incident_ids")));
-            ips.addAll(strings(hint.get("ips")));
-          }
+      for (var hint : hintIndex.getOrDefault(fid, List.of())) {
+        related.addAll(strings(hint.get("incident_ids")));
+        ips.addAll(strings(hint.get("ips")));
+      }
       related.remove(fid);
       ips.remove(Json.string(f.get("ip")));
       var refs = new ArrayList<Map<String, Object>>();
       for (var sample : rows(f.get("evidence"))) {
         var event = Json.obj(sample.get("event"));
-        refs.add(reference(report, Json.string(event.get("file")), Json.number(event.get("line"))));
+        refs.add(reference(files, Json.string(event.get("file")), Json.number(event.get("line"))));
       }
       assessments.add(
           Json.map(
@@ -342,13 +345,13 @@ final class BundlePresentation {
       var refs = new ArrayList<Map<String, Object>>();
       for (var sample : rows(source.get("evidence")))
         refs.add(
-            reference(report, Json.string(sample.get("file")), Json.number(sample.get("line"))));
+            reference(files, Json.string(sample.get("file")), Json.number(sample.get("line"))));
       d.put("sample_evidence_refs", refs);
       var events = new ArrayList<Map<String, Object>>();
       for (var event : rows(source.get("events"))) {
         if (events.size() >= 8) break;
         events.add(
-            reference(report, Json.string(event.get("file")), Json.number(event.get("line"))));
+            reference(files, Json.string(event.get("file")), Json.number(event.get("line"))));
       }
       d.put("evidence_refs", events);
       if (d.get("engine").equals("webaudit")) continue;

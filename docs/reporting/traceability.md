@@ -69,3 +69,16 @@ Phase3追加レビューでは1970年以前のnative時区分とAura UTC時区�
 `BundleNumeric`は有効/欠損/不正を排他的に数え、既知0を保持し、NaN/Inf/負値を採用しない。合計overflowはnull+quality。数式やraw値の検出処理は変更しない。全件母数と、不完全な不審件数の品質はstatistics row/CSVでも別の列にし、spool打切りを単体別紙でも開示する。移植元Go版にもこの数値分類・品質表示の補正を別PRで反映する。
 
 BundleStatisticsTestは正常+不審の全母数/次元合計、size0/mean、duration欠損/0/不正/overflow、spool1byte後の全件母数、cardinality2と広い期間のtimeline、Geoと国別一意IP/不審件数を検証する。REDでstatistics未出力とCSV品質列不足を確認し、GREENで契約テストが成功した。
+
+
+## Phase 5 実装・検証
+
+`BundlePresentation`が共通summary/assessment/recommendationを作る。既存Investigationを再利用し、事実/推定/未知/条件付き影響・正常アクセスの可能性・追加調査/予防策を分離する。metadataは任意、既存severity/outcome/confidenceの意味を変更しない。request/検出/group/事案件数を別単位にし、source検出を安易に統合しない。
+
+`BundleHTML`/`investigation.ftlh`は11章、日英、全体/事案/独立検出の一覧・詳細・戻り・rule/coverage/関連リンク、raw代表ログ、CSVへの参照、offline meter、print CSSを提供する。共通値のread-only viewで新しい検出を行わない。HTML量を固定上限で制限し、完全保持分はCSV/JSONで提供する。source_indexはマスク後のsourceモデル参照にも使用する。
+
+`BundleMask`はRE2/Jの線形パターンとvisible controlsで共通モデルとCSVを一貫して変換し、FreeMarker autoescape/既存formula guard/Jacksonを再利用する。元FILE-ID/line参照はマスク前に作り、raw値は解析前に変えない。信頼されたbuiltin condition/filter/patternは再現性のため元の値を保持する。完全な匿名化は保証しない。明示sensitive opt-outと常時control/Bidi可視化を分離する。
+
+BundlePresentationTestのREDで11章/マスク/制御文字と未翻訳ラベルを確認し、GREENでja/en、全fragment先の存在/重複禁止、共通summary・推奨CSV、全artifactの秘密値、元ログ不変、opt-out、制御文字、日本語固定ラベル全件、マスク後のファイル名衝突でもsource refsが区別可能なことを確認。事案CSVのattack_scoreを実際の旧モデルキーと一致させた。原本/coverage/Geo関連参照は索引化し、各caseで全対象を走査しない。
+
+画面の目視確認はGo版と同じローカルfile URL制限により未実施。静的テンプレート・全anchor・escape・offlineリソースと契約の自動検証で確認し、最終サンプルと性能測定はPhase6へ続ける。
