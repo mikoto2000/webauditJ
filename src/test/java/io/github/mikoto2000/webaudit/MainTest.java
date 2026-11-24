@@ -12,6 +12,25 @@ class MainTest {
   @TempDir Path dir;
 
   @Test
+  void createsMissingOutputParentsWithAndWithoutVerbose() throws Exception {
+    Path input = dir.resolve("a.log");
+    String original = CorrelatorTest.event(0, 404).raw;
+    Files.writeString(input, original);
+    for (boolean verbose : List.of(false, true)) {
+      Path output = dir.resolve("output-" + verbose).resolve("nested/index.html");
+      var args = new ArrayList<>(List.of("-o", output.toString(), input.toString()));
+      if (verbose) args.add("--verbose");
+      assertEquals(0, run(args.toArray(String[]::new)));
+      String report = Files.readString(output);
+      assertTrue(report.contains("</html>"));
+      assertEquals(2, run(args.toArray(String[]::new)));
+      assertEquals(report, Files.readString(output));
+    }
+    assertEquals(2, run(input.toString(), "-o", input.resolve("nested/report.html").toString()));
+    assertEquals(original, Files.readString(input));
+  }
+
+  @Test
   void removesIncompleteReportsAndRetainsBothWriteAndCloseFailures() throws Exception {
     Path path = dir.resolve("incomplete.html");
     Files.writeString(path, "partial");
