@@ -1,6 +1,6 @@
 # WebAuditJ
 
-最新リリース: [v2.0.1](https://github.com/mikoto2000/webauditJ/releases/tag/v2.0.1)。変更点は [リリースノート](docs/releases/v2.0.1.md)を参照してください。
+最新リリース: [v2.0.2](https://github.com/mikoto2000/webauditJ/releases/tag/v2.0.2)。変更点は [リリースノート](docs/releases/v2.0.2.md)を参照してください。
 
 HTTP サーバーのログをオフラインで調査する Java 版 WebAudit。Go 版の `95148ba4e22d9001d34fbb0e4d59f072efd3e95c` を基準に、独自検知、Hub/Aura 互換検知、事案の関連付け、GeoIP/ASN 補足情報と DB 管理を移植しています。
 
