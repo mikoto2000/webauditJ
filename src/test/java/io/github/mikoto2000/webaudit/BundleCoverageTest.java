@@ -10,12 +10,16 @@ import org.junit.jupiter.api.io.TempDir;
 class BundleCoverageTest {
   @TempDir Path dir;
 
-  @Test void doesNotClaimASNSimilarityWasEvaluatedWithOnlyCountryDatabase() throws Exception {
-    Path input=dir.resolve("country-only.log");Files.writeString(input,BundleTest.LINE.replace("192.0.2.1","8.8.8.8")+"\n");
-    try(var geo=GeoIP.open(GeoIPTest.db("country"),"",null,10)){
-      var options=new Options();options.geoIP=geo;
-      var report=Bundle.generate(List.of(input),dir.resolve("report"),options,new BundleOptions());
-      assertEquals("unable",index(report).get("RULE-geoip-geoip-similarity").get("status"));
+  @Test
+  void doesNotClaimASNSimilarityWasEvaluatedWithOnlyCountryDatabase() throws Exception {
+    Path input = dir.resolve("country-only.log");
+    Files.writeString(input, BundleTest.LINE.replace("192.0.2.1", "8.8.8.8") + "\n");
+    try (var geo = GeoIP.open(GeoIPTest.db("country"), "", null, 10)) {
+      var options = new Options();
+      options.geoIP = geo;
+      var report =
+          Bundle.generate(List.of(input), dir.resolve("report"), options, new BundleOptions());
+      assertEquals("unable", index(report).get("RULE-geoip-geoip-similarity").get("status"));
     }
   }
 
@@ -65,7 +69,8 @@ class BundleCoverageTest {
   void keepsAspectRequestUnionSeparateFromRuleHits() throws Exception {
     Path input = dir.resolve("mixed.log");
     Files.writeString(
-        input, BundleTest.LINE.replace("/.env", "/?cmd=;whoami;&serialized=java.lang.Runtime") + "\n");
+        input,
+        BundleTest.LINE.replace("/.env", "/?cmd=;whoami;&serialized=java.lang.Runtime") + "\n");
     var report =
         Bundle.generate(List.of(input), dir.resolve("report"), new Options(), new BundleOptions());
     var row = index(report).get("ASPECT-rce");

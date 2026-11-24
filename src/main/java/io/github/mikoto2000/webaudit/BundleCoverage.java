@@ -369,6 +369,14 @@ final class BundleCoverage {
           strings(row, "finding_ids").add((String) finding.get("id"));
       boolean isReady = ready.getOrDefault(id, true),
           partial = !Json.bool(report.get("complete")) || ob[0] < population;
+      if (engine.equals("geoip")
+          && analysis.get("geoip") != null
+          && rows(Json.obj(analysis.get("geoip")).get("databases")).stream()
+              .noneMatch(db -> "asn".equals(db.get("role")))) {
+        isReady = false;
+        strings(row, "limitations")
+            .add("ASN database is unavailable; ASN similarity was not evaluated");
+      }
       if (!isReady)
         strings(row, "limitations")
             .add("Insufficient baseline observations or peers for statistical evaluation");
