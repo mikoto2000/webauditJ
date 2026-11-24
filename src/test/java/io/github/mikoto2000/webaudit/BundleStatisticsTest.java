@@ -62,6 +62,7 @@ class BundleStatisticsTest {
     var lower = Bundle.generate(List.of(input), dir.resolve("limited"), new Options(), limited);
     assertEquals(3, Json.number(Json.obj(lower.get("statistics")).get("total_requests")));
     assertFalse(Json.bool(lower.get("evidence_complete")));
+    for(var row:BundleRequestsTest.csv(dir.resolve("limited/statistics/method-summary.csv"))) assertEquals("lower_bound",row.get("suspicious_count_quality"));
   }
 
   @Test
