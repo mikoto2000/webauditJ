@@ -1,4 +1,8 @@
 {
+  "These are samples from the aggregation, not individual requests confirmed as attacks.": "この集計の対象となったログの例です。個々の要求が攻撃と確認されたものではありません。",
+  "No retained source-log samples. Check the original input logs.": "保持された生ログの例はありません。元の入力ログを確認してください。",
+  "Back to incident list": "事案の一覧表に戻る",
+  "Back to Hub and Aura detection list": "Hub・Auraの検出一覧表に戻る",
   "WebAudit investigation report": "WebAudit 調査レポート",
   "WebAudit": "WebAudit",
   "Offline access-log investigation ·": "アクセスログのオフライン調査 ·",

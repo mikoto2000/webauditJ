@@ -7,10 +7,12 @@ import java.util.*;
 
 final class AuraSignatures {
   private final Options options;
+  private final UpstreamEvidence evidence;
   private final List<String> warnings;
   private final Map<String, Map<String, Object>> aura = new HashMap<>();
 
-  AuraSignatures(Options options, List<String> warnings) {
+  AuraSignatures(Options options, List<String> warnings, UpstreamEvidence evidence) {
+    this.evidence = evidence;
     this.options = options;
     this.warnings = warnings;
   }
@@ -47,6 +49,7 @@ final class AuraSignatures {
         a.put("wall_last", Times.wall(e.time));
       }
       a.put("source", "AuraDFIR");
+      if (evidence != null) a.put("evidence", new ArrayList<Map<String, Object>>());
       aura.put(key, a);
     }
     a.put("count", Json.number(a.get("count")) + 1);
@@ -60,6 +63,11 @@ final class AuraSignatures {
     }
     if (a.get("events") == null) a.put("events", new ArrayList<Map<String, Object>>());
     var refs = Json.rows(a.get("events"));
+    if (evidence != null) {
+      var samples = Json.rows(a.get("evidence"));
+      evidence.add(samples, e);
+      if (Json.number(a.get("count")) > samples.size()) a.put("evidence_truncated", true);
+    }
     if (refs.size() < 8) refs.add(Json.map("file", e.file, "line", e.line));
     else a.put("evidence_truncated", true);
   }

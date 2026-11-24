@@ -201,6 +201,8 @@ public final class Main {
         o.errorTimezone = a.timezone;
         o.logRegex = a.regex;
         o.geoIP = geo;
+        String mode = !a.format.isEmpty() ? a.format : a.output == null ? "summary" : "html";
+        o.retainUpstreamEvidence = mode.equals("html");
         var report = Engine.analyze(a.inputs, o);
         for (String warning : geoWarnings) {
           Engine.warn(report, warning);
@@ -217,7 +219,6 @@ public final class Main {
                     + file.get("unparsed")
                     + " unparsed "
                     + Reports.terminal(Json.string(file.get("error"))));
-        String mode = !a.format.isEmpty() ? a.format : a.output == null ? "summary" : "html";
         if (a.output != null) {
           Writer file;
           try {

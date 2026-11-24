@@ -10,6 +10,7 @@ final class Upstream {
   final List<String> warnings = new ArrayList<>();
   final List<Map<String, Object>> alerts = new ArrayList<>();
   private final Options options;
+  private final UpstreamEvidence evidence;
   private final Map<String, Bucket> buckets = new HashMap<>();
   private final Map<String, Suppression> blocked = new HashMap<>();
   private final AuraSignatures aura;
@@ -24,13 +25,19 @@ final class Upstream {
     long count;
     final Set<String> seen = new HashSet<>();
     final List<Map<String, Object>> refs = new ArrayList<>();
+    final List<Map<String, Object>> samples = new ArrayList<>();
   }
 
   private record Suppression(OffsetDateTime until, String domain) {}
 
   Upstream(Options options) {
+    this(options, null);
+  }
+
+  Upstream(Options options, UpstreamEvidence evidence) {
     this.options = options;
-    this.aura = new AuraSignatures(options, warnings);
+    this.evidence = evidence;
+    this.aura = new AuraSignatures(options, warnings, evidence);
   }
 
   private static double duration(String s) {
@@ -159,6 +166,7 @@ final class Upstream {
       b.last = e.time;
       b.count++;
       b.refs.add(Json.map("file", e.file, "line", e.line));
+      if (evidence != null) evidence.add(b.samples, e);
       int cache = capacity, cacheSize = (int) Json.number(r.get("cache_size"));
       if (cacheSize > 0 && cacheSize <= cache) cache = cacheSize;
       if (b.refs.size() > cache + 1 && cache > 0) b.refs.removeFirst();
@@ -172,6 +180,7 @@ final class Upstream {
           unique(warnings, "Upstream alert limit reached; source alerts are incomplete");
         else {
           var a = alert(e, id, group, b);
+          if (evidence != null) evidence.attach(a, b.samples);
           if (id.equals("crowdsecurity/http-technology-probing"))
             a.put(
                 "metadata",

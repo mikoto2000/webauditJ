@@ -32,8 +32,9 @@ public final class Engine {
             "partial",
             false);
     var behavior = new Behavior(o);
-    var upstream = new Upstream(o);
-    var aura = new AuraAnalysis(o);
+    var evidence = o.retainUpstreamEvidence ? new UpstreamEvidence(o.maxEvidenceBytes) : null;
+    var upstream = new Upstream(o, evidence);
+    var aura = new AuraAnalysis(o, evidence);
     var correlator = new Correlator(o);
     var geo = o.geoIP == null ? null : new GeoAnalysis(o.geoIP, o.maxKeys);
     var order = new TimeOrder();
