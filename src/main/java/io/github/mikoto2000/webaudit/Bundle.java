@@ -104,6 +104,37 @@ public final class Bundle {
         "forwarded headers are not trusted");
   }
 
+  static Map<String, Object> buildInfo() {
+    var build =
+        Json.map(
+            "java_version",
+            System.getProperty("java.version"),
+            "os",
+            System.getProperty("os.name"),
+            "arch",
+            System.getProperty("os.arch"),
+            "artifact_sha256",
+            null,
+            "artifact_hash_scope",
+            "unavailable");
+    try {
+      var source = Bundle.class.getProtectionDomain().getCodeSource();
+      if (source == null) return build;
+      Path path = Path.of(source.getLocation().toURI());
+      if (Files.isDirectory(path)) {
+        build.put("artifact_hash_scope", "classes_directory_unhashed");
+        return build;
+      }
+      String hash = hash(path, 256L << 20);
+      build.put("artifact_sha256", hash);
+      build.put(
+          "artifact_hash_scope",
+          hash == null ? "artifact_size_limit" : "distribution_jar_bytes_at_manifest_generation");
+    } catch (Exception ignored) {
+    }
+    return build;
+  }
+
   public static Map<String, Object> generate(
       List<Path> paths, Path target, Options o, BundleOptions b) throws IOException {
     Objects.requireNonNull(o);
@@ -322,13 +353,7 @@ public final class Bundle {
               "version",
               Engine.VERSION,
               "build",
-              Json.map(
-                  "java_version",
-                  System.getProperty("java.version"),
-                  "os",
-                  System.getProperty("os.name"),
-                  "arch",
-                  System.getProperty("os.arch")),
+              buildInfo(),
               "started_at",
               started,
               "finished_at",
