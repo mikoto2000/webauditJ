@@ -11,6 +11,12 @@ import org.junit.jupiter.api.io.TempDir;
 class BundlePresentationTest {
   @TempDir Path dir;
 
+  @Test void translatesEveryStaticTemplateLabel() throws Exception {
+    String template=new String(BundlePresentationTest.class.getResourceAsStream("/investigation.ftlh").readAllBytes(),java.nio.charset.StandardCharsets.UTF_8);
+    var catalog=Json.obj(Json.resource("locales/ja.json"));var missing=new TreeSet<String>();var matcher=Pattern.compile("t\\(\"([^\"]+)\"\\)").matcher(template);while(matcher.find())if(!catalog.containsKey(matcher.group(1)))missing.add(matcher.group(1));
+    assertTrue(missing.isEmpty(),missing.toString());
+  }
+
   @Test
   void rendersAllChaptersNavigationAndCommonRecommendationsInBothLanguages() throws Exception {
     Path input = dir.resolve("access.log");
