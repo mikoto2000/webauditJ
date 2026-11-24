@@ -60,3 +60,12 @@ native WB/WSとAura case集計は原則related。WS-size/url-sizeは実際の元
 BundleRequestsTestで代表8件を超える25同文別観測、600通常関連、複数engine/rule、一意ID、成否非転記、spool1byteで解析継続/下限/削除、終了時WS-ip、既存Hub matcherに小さいbucket設定を与えdistinct/blackholeを検証する（設定はfinallyで復元）。REDで未出力CSVを確認し、GREENで全件関連付けが成功した。
 
 Phase3追加レビューでは1970年以前のnative時区分とAura UTC時区分を索引で分離するRED/GREEN回帰を追加した。元のエンジンの時区分を変更せず、関連証跡の取りこぼしを補正する。Go版は既に別scopeの索引を利用しており、同じ問題はない。
+
+
+## Phase 4 実装・検証
+
+`BundleStatistics`はspool書込み前に全観測を計数し、全件照合のdirectフラグを一度だけ不審集計へ反映する。既存Geo lookupを再利用する。次元はmaxKeys/各label長/other、地理のunique IP組は共有maxKeysに制限する。`BundleTimeline`を全体/事案で共有し、UTC分/時/日等へ統合、未知時刻/省略を別扱いにする。durationは既存parserが実際に読んだrequest_time/custom duration_secondsを内部属性に追加し、旧Event JSONへは出さない。
+
+`BundleNumeric`は有効/欠損/不正を排他的に数え、既知0を保持し、NaN/Inf/負値を採用しない。合計overflowはnull+quality。数式やraw値の検出処理は変更しない。全件母数と、不完全な不審件数の品質はstatistics row/CSVでも別の列にし、spool打切りを単体別紙でも開示する。移植元Go版にもこの数値分類・品質表示の補正を別PRで反映する。
+
+BundleStatisticsTestは正常+不審の全母数/次元合計、size0/mean、duration欠損/0/不正/overflow、spool1byte後の全件母数、cardinality2と広い期間のtimeline、Geoと国別一意IP/不審件数を検証する。REDでstatistics未出力とCSV品質列不足を確認し、GREENで契約テストが成功した。
