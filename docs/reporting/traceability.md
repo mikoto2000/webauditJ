@@ -124,7 +124,7 @@ Go版を先に完了した後、Java版を順に実装した。各フェーズ�
 | 3 | [#33](https://github.com/mikoto2000/webaudit/pull/33) マージ・CI成功・削除済 | [#5](https://github.com/mikoto2000/webauditJ/pull/5) マージ・CI成功・削除済 |
 | 4 | [#34](https://github.com/mikoto2000/webaudit/pull/34) マージ・CI成功・削除済 | [#6](https://github.com/mikoto2000/webauditJ/pull/6) マージ・CI成功・削除済 |
 | 5 | [#35](https://github.com/mikoto2000/webaudit/pull/35) マージ・CI成功・削除済 | [#7](https://github.com/mikoto2000/webauditJ/pull/7) マージ・CI成功・削除済 |
-| 6 | [#36](https://github.com/mikoto2000/webaudit/pull/36) マージ・CI成功・削除済 | Phase6検証PR（最終回答にURL） |
+| 6 | [#36](https://github.com/mikoto2000/webaudit/pull/36) マージ・CI成功・削除済 | [#8](https://github.com/mikoto2000/webauditJ/pull/8) 統合検証・測定・サンプル生成済、最終CI/マージはPR参照 |
 | 移植照合補正 | [#37](https://github.com/mikoto2000/webaudit/pull/37)、[#38](https://github.com/mikoto2000/webaudit/pull/38) マージ・PR/main CI成功・削除済 | ASN評価前提・数値の排他的分類と不審件数品質を移植内で共通化 |
 
 Go版Phase5のmain CIは既存PowerShell起動待ち5秒タイムアウト後に該当jobを1回再実行して成功した。Java版はPhase5までPR/main CIの成功を確認済み。作業記録は成果物外の`.workflow/reporting/state.md`に保持する。
