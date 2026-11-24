@@ -1,32 +1,34 @@
 # 要求対応表（Java移植）
 
-原文は[requirements.md](requirements.md)、設計は[design.md](design.md)。Go版Phase0–6完了後に着手する。以下は移植開始時点の差分であり、各phaseで実装・テストを追記する。
+原文は[requirements.md](requirements.md)、設計は[design.md](design.md)。Go版Phase0–6完了後にJava版Phase0–6を移植した。以下に実装結果を示し、検証根拠を各phaseと末尾の統合テスト表に記録した。利用方法・成果物・意味と制限は[output.md](output.md)、実測値は[performance.md](performance.md)を参照。
 
-| 要求 | 開始時点 | 対応phase | 完成時の検証根拠 |
+| 要求 | 実装結果 | 対応phase | 検証根拠 |
 |---|---|---|---|
-| §1–2 offline/batch/既存再利用/互換性 | 既存解析対応、bundle未対応 | 全 | 全既存tests/JAR/offline guard |
-| 第1章 調査概要/metadata/summary | 部分 | 1,3,4,5 | 任意metadataと共通summary、単位/quality |
-| 第2章 対象/原本inventory/hash | 部分 | 1,5 | gzip保存bytes、before/after、field/timezone/diagnostics |
-| 第3章 実装に即した方法/ルール | 部分 | 1,2,5 | 実効settings/条件/limits |
-| 第4章 severity/confidence/outcome | 既存成否対応、新軸説明未対応 | 2,5 | 異なる意味を変換しない、unknown |
-| 第5章 全アクセス/不審統計/graph | 部分 | 4,5 | 共通分母、0/null、Geoなし、timeline |
-| 第6章 全観点coverage | 未対応 | 2,3,5 | 未対応/部分/不能/未実施/no-hitを分離 |
-| 第7章 事案/独立検出一覧 | 旧HTMLに一覧あり | 3,5 | request union、別単位、navigation |
-| 第8章 詳細/全証跡/調査案内 | 代表証跡/旧案内のみ | 3,5 | 元行参照、事実/推定/未知/条件付き影響 |
-| 第9章 総合評価 | 未対応 | 4,5 | 根拠のある共通集計/参照、存在/侵入の非断定 |
-| 第10章 一般制約/発生制約 | 部分 | 1,2,5 | input別状態、冒頭部分解析 |
-| 第11章 事案別推奨 | 旧案内あり | 3,5 | ID/理由/対象/時刻/証拠/優先度、調査と予防 |
-| §4 全件不審/関連/遅延検出 | 未対応 | 3 | exact membership、別観測、重複engine、spool cap |
-| §5 共通model/stable ID | 旧map modelのみ | 1–5 | 共通JSON/HTML/CSV契約 |
-| §6 bundle/manifest/全artifact hash | 未対応 | 1–5 | 排他、新規dir、失敗marker、原本不変 |
-| §7 日英/11章/リンク/印刷/負荷 | 旧HTML日英のみ | 5,6 | 全anchor、静的文言、件数制限、サンプル |
-| §8 出力安全性/マスク/資源 | 既存escape等あり | 1,3,5,6 | hostile evidence、制御文字、数式、秘密、path/temp |
-| §9 正確性/完全性/集計関係 | 部分 | 全 | 一意観測・rule/engine・0/null/lowerbound、共通値 |
-| §10–11 フェーズ/TDD/PR/CI/後片付け | 今回開始 | 全 | PRと作業記録（成果物外） |
-| §12 必須テスト全項目 | 既存解析testsあり | 1–6 | 契約/統合testsと最終test matrix |
-| §13–14 完了/最終報告/測定 | 未完了 | 6 | Java実測/日英sample/README/本表/PR状態 |
+| §1–2 offline/batch/既存再利用/互換性 | 対応済 | 全 | 全既存tests/JAR/offline guard |
+| 第1章 調査概要/metadata/summary | 対応済 | 1,3,4,5 | 任意metadataと共通summary、単位/quality |
+| 第2章 対象/原本inventory/hash | 対応済 | 1,5 | gzip保存bytes、before/after、field/timezone/diagnostics |
+| 第3章 実装に即した方法/ルール | 対応済 | 1,2,5 | 実効settings/条件/limits |
+| 第4章 severity/confidence/outcome | 対応済 | 2,5 | 異なる意味を変換しない、unknown |
+| 第5章 全アクセス/不審統計/graph | 対応済 | 4,5 | 共通分母、0/null、Geoなし、timeline |
+| 第6章 全観点coverage | 対応済 | 2,3,5 | 未対応/部分/不能/未実施/no-hitを分離 |
+| 第7章 事案/独立検出一覧 | 対応済 | 3,5 | request union、別単位、navigation |
+| 第8章 詳細/全証跡/調査案内 | 対応済 | 3,5 | 元行参照、事実/推定/未知/条件付き影響 |
+| 第9章 総合評価 | 対応済 | 4,5 | 根拠のある共通集計/参照、存在/侵入の非断定 |
+| 第10章 一般制約/発生制約 | 対応済 | 1,2,5 | input別状態、冒頭部分解析 |
+| 第11章 事案別推奨 | 対応済 | 3,5 | ID/理由/対象/時刻/証拠/優先度、調査と予防 |
+| §4 全件不審/関連/遅延検出 | 対応済 | 3 | exact membership、別観測、重複engine、spool cap |
+| §5 共通model/stable ID | 対応済 | 1–5 | 共通JSON/HTML/CSV契約 |
+| §6 bundle/manifest/全artifact hash | 対応済 | 1–5 | 排他、新規dir、失敗marker、原本不変 |
+| §7 日英/11章/リンク/印刷/負荷 | 対応済 | 5,6 | 全anchor、静的文言、件数制限、サンプル |
+| §8 出力安全性/マスク/資源 | 対応済 | 1,3,5,6 | hostile evidence、制御文字、数式、秘密、path/temp |
+| §9 正確性/完全性/集計関係 | 対応済 | 全 | 一意観測・rule/engine・0/null/lowerbound、共通値 |
+| §10–11 フェーズ/TDD/PR/CI/後片付け | 実装・検証済、最終CI/マージはPhase6 PR参照 | 全 | PRと作業記録（成果物外） |
+| §12 必須テスト全項目 | 対応済 | 1–6 | 契約/統合testsと最終test matrix |
+| §13–14 完了/最終報告/測定 | 実装・検証済、最終CI/マージはPhase6 PR参照 | 6 | Java実測/日英sample/README/本表/PR状態 |
 
 未対応や評価不能な調査観点を新規検出器で無理に埋めず、実際の支援範囲として開示する。Java固有の実装差・制限・未検証は完成時にも明示する。
+
+「全観点を報告する要求」は実装済みであり、「全観点の検出器を新規に実装した」という意味ではない。本文専用攻撃・IP reputationは未対応、入力項目・母数が足りない観点は評価不能、GeoDBなしは未実施として出力する。検出確度は未校正のためunknown、独立検出の侵入成否も未評価を維持する。これらを無検出や安全と表示しない。
 
 
 ## Phase 1 実装・検証
@@ -82,3 +84,47 @@ BundleStatisticsTestは正常+不審の全母数/次元合計、size0/mean、dur
 BundlePresentationTestのREDで11章/マスク/制御文字と未翻訳ラベルを確認し、GREENでja/en、全fragment先の存在/重複禁止、共通summary・推奨CSV、全artifactの秘密値、元ログ不変、opt-out、制御文字、日本語固定ラベル全件、マスク後のファイル名衝突でもsource refsが区別可能なことを確認。事案CSVのattack_scoreを実際の旧モデルキーと一致させた。原本/coverage/Geo関連参照は索引化し、各caseで全対象を走査しない。
 
 画面の目視確認はGo版と同じローカルfile URL制限により未実施。静的テンプレート・全anchor・escape・offlineリソースと契約の自動検証で確認し、最終サンプルと性能測定はPhase6へ続ける。
+
+## Phase 6 統合検証・完成時の対応
+
+`BundleIntegrationTest`で複数ファイル・ローテーション・gzip・逆順時刻の700観測を照合し、同文の別観測を失わず、共通JSON/summaryの一意件数と一致することを検証する。HTTP200でも侵入成功へ格上げしない。配布JARの自己fingerprintをmanifestに記録し、classes実行では非取得を明示する。既存の検出器・parser・normalization・Correlator・SourceMatcher・Geo lookup・Investigation・escape/serializerを再利用し、新規検出器・依存・watch変更を加えない。
+
+共通モデルは`webaudit/investigation-1`、manifestは`webaudit/manifest-1`。旧`webaudit/2`を`analysis`に保持し、inventory/coverage/rules/evidence/statistics/summary/assessment/recommendationsを追加した。内部Eventのformat/duration/observer/tokenは旧Event JSONに漏らさない。request IDは元file+line観測のIDである。
+
+| §12 必須テスト観点 | 主な実行根拠 |
+|---|---|
+| 正常のみ/不審のみ/混在/空 | BundleCoverageTest.preservesNoHitAndInsufficientBaseline、BundleStatisticsTest.countsAllAccessesAndKeepsKnownZeroSeparateFromMissing、BundleTest.disclosesDedupEmptyUnreadableAndPrivateSettings |
+| 複数rule/engine・同文別観測 | BundleRequestsTest.preservesFullDistinctObservationsAndSeparatesRelated、BundleCoverageTest.keepsAspectRequestUnionSeparateFromRuleHits |
+| 複数file/rotation/gzip/逆順 | BundleIntegrationTest.preservesRotatedGzipOutOfOrderEvidenceAndSharedCounts、BundleTest.inventoriesOriginalGzipAndSealsEveryArtifact |
+| parse不能/必要field不足/不読 | BundleTestのinventory/unreadable tests、BundleCoverageTest.separatesPartialHitUnsupportedUnableAndEveryRule |
+| GeoDB有/無/国DBだけ | BundleStatisticsTest.recordsGeoAndInvalidDurationWithoutInventingValues、BundleCoverageTest.doesNotClaimASNSimilarityWasEvaluatedWithOnlyCountryDatabase、既存GeoIP tests |
+| 上限/原本変更/遅延統計 | BundleTest.marksChangedInputsAndFailedOutputWithoutChangingOriginal、BundleRequestsTest.disclosesSpoolTruncationAndKeepsFullAnalysisCounts/associatesEndOfAnalysisStatisticalSignals |
+| 成否不明/200/403/404 | 既存CorrelatorTest/InvestigationTest、700観測統合のconfirmed_success禁止、requestへの成否非転記 |
+| HTML/CSV/JSON injection/秘密/controls | BundleIntegrationTest.escapesHostileEvidenceInHTMLCSVAndStructuredJSON、BundlePresentationTestのmask/opt-out/controls/filename collision |
+| HTML/JSON/CSV集計・日英・リンク | BundlePresentationTest.rendersAllChaptersNavigationAndCommonRecommendationsInBothLanguages/translatesEveryStaticTemplateLabel、全fragment存在と重複禁止 |
+| 公開サンプル・全hash | BundleIntegrationTest.publishedSamplesKeepArtifactHashesAndSharedSummary、tools/verify_jar.pyのJAR SHAと成果物全hash |
+| 大規模ログ・メモリ・一時領域 | tools/ReportBenchmark.java、performance.md、生値JSON。既定上限での部分解析も記録 |
+| offline・CLI/output/watch互換 | 全既存テスト、配布JAR単独実行、Linux全thread seccomp guard下のja/en bundle/全hash/従来出力/watch |
+
+ローカルWindowsで全Maven verify（2,908 tests、failure/error/skip各0）、JAR単独実行と自己/成果物hash検査、静的差分確認が成功し、Linux/macOS/Windowsの全テストとLinuxのネットワーク禁止検証をPR CIで実行する。画面の目視確認は環境のローカルHTML制限で未実施。自動検証を目視確認の代わりに実施したという限界を残す。
+
+同じ実ファイルパスの`examples/sample.log`をGo最新版とJava配布JARで解析し、summary全項目・native事案のIP/rule/count/severity/score/outcome・不審/関連CSVの全request ID集合・9次元の全行を比較して一致した。9観測、直接不審8観測、検出16件（native8、Aura署名3、Aura集計5、Hub0）、native事案4件。日時・buildと独立groupのopaque IDのbyte一致は比較対象ではない。既存EngineTestのGo全報告golden検証も維持する。
+
+秘密マスクは一般的パターンへの対応で、全個人情報の匿名化ではない。HTML本文は事案各100件等の上限付き、別紙は全保持データである。保持設定・spool・出力上限・入力不完全性による部分解析を隠さない。source group IDは既存Java内部digestの表現差があるためGoのopaque IDと同一bytesを保証せず、共通の意味・一意観測と参照関係を検証する。任意のOS/DB監査や本文・実際の損害を捏造しない。
+
+## フェーズPRと作業状態
+
+Go版を先に完了した後、Java版を順に実装した。各フェーズは専用worktreeとRED/GREENコミットを使用し、前フェーズのCI成功・通常マージ・元main更新・worktreeとローカル作業branchの削除後に次へ進んだ。最終フェーズの最新CI/マージ状態はPRの状態を参照する。
+
+| Phase | Go版 | Java版 |
+|---|---|---|
+| 0 | [#30](https://github.com/mikoto2000/webaudit/pull/30) マージ・CI成功・削除済 | [#2](https://github.com/mikoto2000/webauditJ/pull/2) マージ・CI成功・削除済 |
+| 1 | [#31](https://github.com/mikoto2000/webaudit/pull/31) マージ・CI成功・削除済 | [#3](https://github.com/mikoto2000/webauditJ/pull/3) マージ・CI成功・削除済 |
+| 2 | [#32](https://github.com/mikoto2000/webaudit/pull/32) マージ・CI成功・削除済 | [#4](https://github.com/mikoto2000/webauditJ/pull/4) マージ・CI成功・削除済 |
+| 3 | [#33](https://github.com/mikoto2000/webaudit/pull/33) マージ・CI成功・削除済 | [#5](https://github.com/mikoto2000/webauditJ/pull/5) マージ・CI成功・削除済 |
+| 4 | [#34](https://github.com/mikoto2000/webaudit/pull/34) マージ・CI成功・削除済 | [#6](https://github.com/mikoto2000/webauditJ/pull/6) マージ・CI成功・削除済 |
+| 5 | [#35](https://github.com/mikoto2000/webaudit/pull/35) マージ・CI成功・削除済 | [#7](https://github.com/mikoto2000/webauditJ/pull/7) マージ・CI成功・削除済 |
+| 6 | [#36](https://github.com/mikoto2000/webaudit/pull/36) マージ・CI成功・削除済 | Phase6検証PR（最終回答にURL） |
+| 移植照合補正 | [#37](https://github.com/mikoto2000/webaudit/pull/37)、[#38](https://github.com/mikoto2000/webaudit/pull/38) マージ・PR/main CI成功・削除済 | ASN評価前提・数値の排他的分類と不審件数品質を移植内で共通化 |
+
+Go版Phase5のmain CIは既存PowerShell起動待ち5秒タイムアウト後に該当jobを1回再実行して成功した。Java版はPhase5までPR/main CIの成功を確認済み。作業記録は成果物外の`.workflow/reporting/state.md`に保持する。
