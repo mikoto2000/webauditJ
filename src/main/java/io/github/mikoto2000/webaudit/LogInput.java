@@ -95,6 +95,7 @@ final class LogInput {
     var seen = new HashMap<String, Map<String, Object>>();
     for (Path p : files) {
       var in = Json.map("path", p.toString(), "parsed", 0L, "unparsed", 0L);
+      if (o.bundle != null) o.bundle.begin(p);
       String signature = null;
       if (o.deduplicateFiles) {
         try {
@@ -108,6 +109,7 @@ final class LogInput {
             unparsed += Json.number(old.get("unparsed"));
             duplicates += Json.number(old.get("parsed"));
             inputs.add(in);
+            if (o.bundle != null) o.bundle.duplicate(p, Json.string(old.get("path")));
             continue;
           }
         } catch (IOException ignored) {
@@ -118,9 +120,11 @@ final class LogInput {
         read(
             p,
             (bytes, line, tooLong) -> {
+              if (o.bundle != null) o.bundle.line(p);
               if (tooLong) {
                 in.put("unparsed", Json.number(in.get("unparsed")) + 1);
                 warn("Oversized line skipped (max-line-bytes)");
+                if (o.bundle != null) o.bundle.bad(p, line, "oversized line (max-line-bytes)");
                 return;
               }
               String text;
@@ -135,7 +139,10 @@ final class LogInput {
                 bad(in, p, line, "invalid UTF-8 or control line");
                 return;
               }
-              if (text.codePoints().allMatch(Core::space)) return;
+              if (text.codePoints().allMatch(Core::space)) {
+                if (o.bundle != null) o.bundle.blank(p, line);
+                return;
+              }
               Event e;
               try {
                 e = LogParser.parse(text, p.toString(), line, o.logRegex);
@@ -171,6 +178,7 @@ final class LogInput {
               absent.forEach((key, value) -> {
                 if (value) missing.merge(key, 1L, Long::sum);
               });
+              if (o.bundle != null) o.bundle.event(e);
               consumer.accept(e);
             });
       } catch (IOException ex) {
@@ -178,6 +186,7 @@ final class LogInput {
         warn(p + ": " + ex.getMessage());
         partial();
       }
+      if (o.bundle != null) o.bundle.finish(p, Json.string(in.get("error")));
       parsed += Json.number(in.get("parsed"));
       unparsed += Json.number(in.get("unparsed"));
       inputs.add(in);
@@ -212,6 +221,7 @@ final class LogInput {
   }
 
   private void bad(Map<String, Object> in, Path path, long line, String reason) {
+    if (o.bundle != null) o.bundle.bad(path, line, reason);
     long n = Json.number(in.get("unparsed")) + 1;
     in.put("unparsed", n);
     if (n <= 3) warn(path + ":" + line + ": " + reason);

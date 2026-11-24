@@ -31,16 +31,20 @@ public final class LogParser {
       Event error = parseError(text, original, file, line);
       if (error != null) {
         error.envelope = envelope;
+        error.format = (envelope == null ? "" : "syslog/") + "http-error";
         return error;
       }
     }
+    String format = "unknown";
     Map<String, String> f = null;
     if (!custom.isEmpty()) {
       var p = Pattern.compile(custom);
       if (!p.matcher(text).matches())
         throw new IllegalArgumentException("custom regex does not match whole line");
       f = fields(p, text);
+      format = "custom-regex";
     } else if (text.stripLeading().startsWith("{")) {
+      format = "nginx-json";
       var object = Json.object(text);
       f = new HashMap<>();
       var keys =
@@ -73,7 +77,17 @@ public final class LogParser {
     } else {
       for (String name : List.of("standard", "extendedStandard", "npmPlus", "npmLegacy")) {
         f = fields(pattern(name), text);
-        if (f != null) break;
+        if (f != null) {
+          format =
+              switch (name) {
+                case "standard" ->
+                    f.get("ua") == null ? "apache-nginx-common" : "apache-nginx-combined";
+                case "extendedStandard" -> "extended-combined";
+                case "npmPlus" -> "npm-plus";
+                default -> "npm-legacy";
+              };
+          break;
+        }
       }
     }
     if (f == null)
@@ -82,6 +96,7 @@ public final class LogParser {
               + " groups for custom fields");
     Event e = fromFields(f, original, file, line);
     e.envelope = envelope;
+    e.format = (envelope == null ? "" : "syslog/") + format;
     return e;
   }
 

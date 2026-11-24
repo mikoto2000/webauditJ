@@ -1,0 +1,23 @@
+[
+  "rules.json",
+  "upstream/AURADFIR-LICENSE",
+  "upstream/HUB-LICENSE",
+  "upstream/SEC-LISTS-LICENSE",
+  "upstream/aura.json",
+  "upstream/data/admin_interfaces.txt",
+  "upstream/data/backdoors.txt",
+  "upstream/data/bad_user_agents.regex.txt",
+  "upstream/data/bad_user_agents.txt",
+  "upstream/data/jira_cve_2021-26086.txt",
+  "upstream/data/log4j2_cve_2021_44228.txt",
+  "upstream/data/path_traversal.txt",
+  "upstream/data/sensitive_data.txt",
+  "upstream/data/sqli_probe_patterns.txt",
+  "upstream/data/technology_probing.json",
+  "upstream/data/thinkphp_cve_2018-20062.txt",
+  "upstream/data/trendy_cves.txt",
+  "upstream/data/trendy_cves_uris.json",
+  "upstream/data/xss_probe_patterns.txt",
+  "upstream/hub.json",
+  "upstream/manifest.json"
+]

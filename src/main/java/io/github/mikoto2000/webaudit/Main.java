@@ -38,6 +38,32 @@ public final class Main {
     @CommandLine.Parameters(arity = "0..*", paramLabel = "INPUT")
     List<Path> inputs = new ArrayList<>();
 
+    @CommandLine.Option(
+        names = "--report-dir",
+        description = "Create a new investigation bundle directory")
+    Path reportDir;
+
+    @CommandLine.Option(names = "--report-title")
+    String reportTitle = "";
+
+    @CommandLine.Option(names = "--system-name")
+    String system = "";
+
+    @CommandLine.Option(names = "--investigation-background")
+    String background = "";
+
+    @CommandLine.Option(names = "--investigation-purpose")
+    String purpose = "";
+
+    @CommandLine.Option(names = "--investigator")
+    String investigator = "";
+
+    @CommandLine.Option(names = "--max-spool-bytes")
+    long maxSpool = 1L << 30;
+
+    @CommandLine.Option(names = "--max-report-bytes")
+    long maxReport = 1L << 30;
+
     @CommandLine.Option(names = "-o", paramLabel = "PATH")
     Path output;
 
@@ -159,7 +185,11 @@ public final class Main {
               return 2;
             }
         } catch (IllegalArgumentException ex) {
-          line(err, "Invalid --log-regex: " + ex.getMessage());
+          line(
+              err,
+              a.reportDir != null
+                  ? "Invalid --log-regex; pattern not recorded"
+                  : "Invalid --log-regex: " + ex.getMessage());
           return 2;
         }
       }
@@ -170,6 +200,24 @@ public final class Main {
           line(err, "Invalid --error-timezone: " + ex.getMessage());
           return 2;
         }
+      if (a.reportDir != null
+          && (a.output != null || command.getParseResult().hasMatchedOption("--format"))) {
+        line(err, "--report-dir cannot be combined with -o or --format");
+        return 2;
+      }
+      if (a.reportDir != null
+          && (a.maxSpool < 1
+              || a.maxSpool > (1L << 50)
+              || a.maxReport < 1
+              || a.maxReport > (1L << 50)
+              || a.inputs.size() > a.maxKeys)) {
+        line(err, "Invalid investigation resource limits");
+        return 2;
+      }
+      if (a.reportDir != null && Files.exists(a.reportDir, LinkOption.NOFOLLOW_LINKS)) {
+        line(err, "Report directory must be new");
+        return 2;
+      }
       if (a.output != null && Files.exists(a.output, LinkOption.NOFOLLOW_LINKS)) {
         line(
             err, "Output must be a new file; existing paths and input files are never overwritten");
@@ -201,6 +249,22 @@ public final class Main {
         o.errorTimezone = a.timezone;
         o.logRegex = a.regex;
         o.geoIP = geo;
+        if (a.reportDir != null) {
+          var bundle = new BundleOptions();
+          bundle.title = a.reportTitle;
+          bundle.system = a.system;
+          bundle.background = a.background;
+          bundle.purpose = a.purpose;
+          bundle.investigator = a.investigator;
+          bundle.language = a.language;
+          bundle.maxSpoolBytes = a.maxSpool;
+          bundle.maxOutputBytes = a.maxReport;
+          bundle.warnings.addAll(geoWarnings);
+          var common = Bundle.generate(a.inputs, a.reportDir, o, bundle);
+          Reports.write(out, Json.obj(common.get("analysis")), "summary");
+          line(out, "\nReport directory: " + Reports.terminal(a.reportDir.toString()));
+          return Json.bool(common.get("complete")) ? 0 : 1;
+        }
         String mode = !a.format.isEmpty() ? a.format : a.output == null ? "summary" : "html";
         o.retainUpstreamEvidence = mode.equals("html");
         var report = Engine.analyze(a.inputs, o);
