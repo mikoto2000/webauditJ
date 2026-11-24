@@ -58,6 +58,9 @@ public final class Main {
     @CommandLine.Option(names = "--investigator")
     String investigator = "";
 
+    @CommandLine.Option(names = "--include-sensitive-evidence")
+    boolean includeSensitive;
+
     @CommandLine.Option(names = "--max-spool-bytes")
     long maxSpool = 1L << 30;
 
@@ -257,6 +260,7 @@ public final class Main {
           bundle.purpose = a.purpose;
           bundle.investigator = a.investigator;
           bundle.language = a.language;
+          bundle.includeSensitiveEvidence = a.includeSensitive;
           bundle.maxSpoolBytes = a.maxSpool;
           bundle.maxOutputBytes = a.maxReport;
           bundle.warnings.addAll(geoWarnings);
