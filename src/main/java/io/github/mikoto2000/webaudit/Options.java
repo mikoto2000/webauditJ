@@ -10,4 +10,5 @@ public final class Options {
   public String logRegex = "", errorTimezone = "";
   public Clock clock = Clock.systemUTC();
   public GeoIP geoIP;
+  BundleCapture bundle;
 }

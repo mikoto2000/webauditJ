@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.Map;
 
 public final class Event implements Cloneable {
+  String format = "unknown";
   public String ip = "", target = "", path = "", file = "", logType = "http_access-log";
   public String recordedUA,
       recordedReferer,
