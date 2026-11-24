@@ -1,0 +1,229 @@
+{
+  "synthetic": true,
+  "fresh_jvm": true,
+  "geoip": false,
+  "lines": 10000,
+  "long_ua_lines": 1000,
+  "repeats": 3,
+  "jar_sha256": {
+    "baseline": "5f181f8a0b5cea9da6a6601b06ccbfa4c986cbc65321b0383eb70820ff25aecd",
+    "candidate": "00d5836c0323effc23e6d04f87ebac94e1e712ccf0962143e9eda2a70feafcb3"
+  },
+  "scenarios": [
+    {
+      "name": "normal",
+      "lines": 10000,
+      "runs": {
+        "baseline": [
+          {
+            "analysis_seconds": 9.4246954,
+            "analysis_thread_allocated_bytes": 2537277472,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "14b6ee63ae8d37dcef0c498ddcd012d94ec0e601a0b7c4d02d6e726074b45241",
+            "partial": false,
+            "requests": 10000
+          },
+          {
+            "analysis_seconds": 10.4196161,
+            "analysis_thread_allocated_bytes": 2983910032,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "14b6ee63ae8d37dcef0c498ddcd012d94ec0e601a0b7c4d02d6e726074b45241",
+            "partial": false,
+            "requests": 10000
+          },
+          {
+            "analysis_seconds": 9.9284267,
+            "analysis_thread_allocated_bytes": 2537328680,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "14b6ee63ae8d37dcef0c498ddcd012d94ec0e601a0b7c4d02d6e726074b45241",
+            "partial": false,
+            "requests": 10000
+          }
+        ],
+        "candidate": [
+          {
+            "analysis_seconds": 2.8874089,
+            "analysis_thread_allocated_bytes": 905953000,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "14b6ee63ae8d37dcef0c498ddcd012d94ec0e601a0b7c4d02d6e726074b45241",
+            "partial": false,
+            "requests": 10000
+          },
+          {
+            "analysis_seconds": 2.907917,
+            "analysis_thread_allocated_bytes": 908367392,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "14b6ee63ae8d37dcef0c498ddcd012d94ec0e601a0b7c4d02d6e726074b45241",
+            "partial": false,
+            "requests": 10000
+          },
+          {
+            "analysis_seconds": 3.293438,
+            "analysis_thread_allocated_bytes": 906708024,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "14b6ee63ae8d37dcef0c498ddcd012d94ec0e601a0b7c4d02d6e726074b45241",
+            "partial": false,
+            "requests": 10000
+          }
+        ]
+      },
+      "median_seconds": {
+        "baseline": 9.9284267,
+        "candidate": 2.907917
+      },
+      "speedup": 3.414274444559456
+    },
+    {
+      "name": "long_ua",
+      "lines": 1000,
+      "runs": {
+        "baseline": [
+          {
+            "analysis_seconds": 54.4543281,
+            "analysis_thread_allocated_bytes": 817583608,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "cecf57cc8ce7826c67ef8d4f8d9fe264467027f97ff578d0d5a636d3c0446109",
+            "partial": true,
+            "requests": 1000
+          },
+          {
+            "analysis_seconds": 54.3509481,
+            "analysis_thread_allocated_bytes": 850931320,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "cecf57cc8ce7826c67ef8d4f8d9fe264467027f97ff578d0d5a636d3c0446109",
+            "partial": true,
+            "requests": 1000
+          },
+          {
+            "analysis_seconds": 52.8022444,
+            "analysis_thread_allocated_bytes": 850942112,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "cecf57cc8ce7826c67ef8d4f8d9fe264467027f97ff578d0d5a636d3c0446109",
+            "partial": true,
+            "requests": 1000
+          }
+        ],
+        "candidate": [
+          {
+            "analysis_seconds": 2.05397,
+            "analysis_thread_allocated_bytes": 219649256,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "cecf57cc8ce7826c67ef8d4f8d9fe264467027f97ff578d0d5a636d3c0446109",
+            "partial": true,
+            "requests": 1000
+          },
+          {
+            "analysis_seconds": 2.3000684,
+            "analysis_thread_allocated_bytes": 219676392,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "cecf57cc8ce7826c67ef8d4f8d9fe264467027f97ff578d0d5a636d3c0446109",
+            "partial": true,
+            "requests": 1000
+          },
+          {
+            "analysis_seconds": 2.3544937,
+            "analysis_thread_allocated_bytes": 219320832,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "cecf57cc8ce7826c67ef8d4f8d9fe264467027f97ff578d0d5a636d3c0446109",
+            "partial": true,
+            "requests": 1000
+          }
+        ]
+      },
+      "median_seconds": {
+        "baseline": 54.3509481,
+        "candidate": 2.3000684
+      },
+      "speedup": 23.63014426005766
+    },
+    {
+      "name": "mixed_attacks",
+      "lines": 10000,
+      "runs": {
+        "baseline": [
+          {
+            "analysis_seconds": 12.3297995,
+            "analysis_thread_allocated_bytes": 2581608144,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "e18bfc6257c309f23d602d35a25857473f948849f30c0819e8fbf798d14b9cbe",
+            "partial": false,
+            "requests": 10000
+          },
+          {
+            "analysis_seconds": 8.7126346,
+            "analysis_thread_allocated_bytes": 2579336152,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "e18bfc6257c309f23d602d35a25857473f948849f30c0819e8fbf798d14b9cbe",
+            "partial": false,
+            "requests": 10000
+          },
+          {
+            "analysis_seconds": 11.4583147,
+            "analysis_thread_allocated_bytes": 2579548912,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "e18bfc6257c309f23d602d35a25857473f948849f30c0819e8fbf798d14b9cbe",
+            "partial": false,
+            "requests": 10000
+          }
+        ],
+        "candidate": [
+          {
+            "analysis_seconds": 3.1707609,
+            "analysis_thread_allocated_bytes": 987382392,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "e18bfc6257c309f23d602d35a25857473f948849f30c0819e8fbf798d14b9cbe",
+            "partial": false,
+            "requests": 10000
+          },
+          {
+            "analysis_seconds": 2.8088312,
+            "analysis_thread_allocated_bytes": 984842088,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "e18bfc6257c309f23d602d35a25857473f948849f30c0819e8fbf798d14b9cbe",
+            "partial": false,
+            "requests": 10000
+          },
+          {
+            "analysis_seconds": 3.3647891,
+            "analysis_thread_allocated_bytes": 985768544,
+            "java": "25+36-3489",
+            "os": "Windows 11",
+            "report_sha256": "e18bfc6257c309f23d602d35a25857473f948849f30c0819e8fbf798d14b9cbe",
+            "partial": false,
+            "requests": 10000
+          }
+        ]
+      },
+      "median_seconds": {
+        "baseline": 11.4583147,
+        "candidate": 3.1707609
+      },
+      "speedup": 3.6137429031624557
+    }
+  ],
+  "baseline_commit": "9caf566b3d540b3903cb19ae10d5e50cb19c5d15",
+  "candidate_commit": "8a7b34b",
+  "upstream_merge": "e9c6cfe73c238375904e550a115ed57d1364fcef",
+  "measured_date": "2026-11-25 Asia/Tokyo",
+  "notes": [
+    "Normal and long-UA measurements completed before runner UTF-8 stdout fix; their reports contained ASCII output. Mixed attacks measured with UTF-8 stdout fixed. Runner timing and report content unchanged.",
+    "Long-UA 10000-line exploratory baseline was interrupted and is excluded; recorded long-UA runs use 1000 lines."
+  ]
+}
