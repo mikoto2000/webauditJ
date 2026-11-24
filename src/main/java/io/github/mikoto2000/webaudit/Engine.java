@@ -44,11 +44,14 @@ public final class Engine {
             e -> {
               if (geo != null) geo.observe(e.ip);
               order.observe(e);
+              if (o.bundle != null && o.bundle.requests != null) o.bundle.requests.pending.clear();
               upstream.observe(e);
               aura.observe(e);
               var detection = Signatures.detect(e);
               if (o.bundle != null) o.bundle.coverage.observe(e, detection);
               correlator.add(e, detection);
+              if (o.bundle != null && o.bundle.requests != null)
+                o.bundle.requests.observe(e, detection, correlator);
               if (!e.timezoneUnknown) behavior.observe(e, detection.hits());
             })
         .stream(paths);
@@ -59,6 +62,7 @@ public final class Engine {
     }
     for (var signal : signals) correlator.addSignal(signal);
     var findings = correlator.finish();
+    if (o.bundle != null && o.bundle.requests != null) o.bundle.requests.correlator = correlator;
     report.put("findings", findings);
     report.put("upstream_alerts", nullable(upstream.alerts));
     report.put("aura_matches", nullable(upstream.auraMatches()));
