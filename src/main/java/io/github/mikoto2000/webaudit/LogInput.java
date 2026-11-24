@@ -16,6 +16,8 @@ final class LogInput {
   private final Map<String, Object> report;
   private final List<Map<String, Object>> inputs;
   private long parsed, unparsed, duplicates;
+  private long progressLines;
+  private int completedFiles;
   private final Map<String, Long> missing = new TreeMap<>();
   private OffsetDateTime first, last;
   private final Consumer<Event> consumer;
@@ -92,6 +94,7 @@ final class LogInput {
       warn("No regular log files found");
       partial();
     }
+    notifyProgress();
     var seen = new HashMap<String, Map<String, Object>>();
     for (Path p : files) {
       var in = Json.map("path", p.toString(), "parsed", 0L, "unparsed", 0L);
@@ -110,6 +113,8 @@ final class LogInput {
             duplicates += Json.number(old.get("parsed"));
             inputs.add(in);
             if (o.bundle != null) o.bundle.duplicate(p, Json.string(old.get("path")));
+            completedFiles++;
+            notifyProgress();
             continue;
           }
         } catch (IOException ignored) {
@@ -120,6 +125,8 @@ final class LogInput {
         read(
             p,
             (bytes, line, tooLong) -> {
+              progressLines++;
+              notifyProgress();
               if (o.bundle != null) o.bundle.line(p);
               if (tooLong) {
                 in.put("unparsed", Json.number(in.get("unparsed")) + 1);
@@ -191,6 +198,8 @@ final class LogInput {
       unparsed += Json.number(in.get("unparsed"));
       inputs.add(in);
       if (signature != null && !in.containsKey("error")) seen.put(signature, in);
+      completedFiles++;
+      notifyProgress();
     }
     if (duplicates > 0)
       warn(
@@ -209,6 +218,11 @@ final class LogInput {
         "Client address is the recorded peer; forwarded headers are untrusted and proxy topology is"
             + " unknown");
     finish();
+  }
+
+  private void notifyProgress() {
+    if (o.progress != null)
+      o.progress.accept(new InputProgress(completedFiles, files.size(), progressLines));
   }
 
   private void finish() {

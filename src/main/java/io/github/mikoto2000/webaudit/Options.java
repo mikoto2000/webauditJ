@@ -10,5 +10,9 @@ public final class Options {
   public String logRegex = "", errorTimezone = "";
   public Clock clock = Clock.systemUTC();
   public GeoIP geoIP;
+
+  /** Called synchronously while streaming input. */
+  public java.util.function.Consumer<InputProgress> progress;
+
   BundleCapture bundle;
 }

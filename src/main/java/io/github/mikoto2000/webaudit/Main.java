@@ -78,7 +78,9 @@ public final class Main {
         description = "HTML report language: ja or en (default: ja)")
     String language = "ja";
 
-    @CommandLine.Option(names = {"--verbose", "-verbose"})
+    @CommandLine.Option(
+        names = {"--verbose", "-verbose"},
+        description = "Show input progress and file-level diagnostics on stderr")
     boolean verbose;
 
     @CommandLine.Option(names = {"--version", "-version"})
@@ -252,6 +254,7 @@ public final class Main {
         o.errorTimezone = a.timezone;
         o.logRegex = a.regex;
         o.geoIP = geo;
+        if (a.verbose) o.progress = new InputProgressDisplay(err);
         if (a.reportDir != null) {
           var bundle = new BundleOptions();
           bundle.title = a.reportTitle;
