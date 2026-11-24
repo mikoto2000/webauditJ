@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 public final class Engine {
-  public static final String VERSION = "2.0.0", RULES_VERSION = "2026.11.20.2";
+  public static final String VERSION = "2.0.1", RULES_VERSION = "2026.11.20.2";
 
   private Engine() {}
 
