@@ -139,12 +139,13 @@ final class BundleCapture {
     ((Set<String>) row.get("formats")).add(e.format);
     ((Set<String>) row.get("log_types")).add(e.logType);
     var fields = (Set<String>) row.get("available_fields");
-    fields.add("ip");
+    fields.add("source_ip");
+    fields.add("raw");
     fields.add("recorded_time");
-    if (!e.timezoneUnknown) fields.add("time");
+    if (!e.timezoneUnknown) fields.add("timestamp");
     for (var entry :
         Json.map(
-                "target",
+                "request_uri",
                 e.target,
                 "method",
                 e.method,
@@ -156,7 +157,7 @@ final class BundleCapture {
                 e.referer,
                 "status",
                 e.status,
-                "bytes",
+                "response_bytes",
                 e.bytes,
                 "host",
                 e.host,
@@ -183,7 +184,7 @@ final class BundleCapture {
     var row = begin(p);
     if (error != null && !error.isEmpty()) {
       row.put("error", error);
-      row.put("status", "partial");
+      row.put("status", Json.number(row.get("parsed")) == 0 ? "failed" : "partial");
       row.put("truncated", error.toLowerCase(Locale.ROOT).contains("limit"));
     }
     try {
