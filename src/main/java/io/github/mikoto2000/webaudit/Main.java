@@ -293,6 +293,8 @@ public final class Main {
         if (a.output != null) {
           Writer file;
           try {
+            Path parent = a.output.getParent();
+            if (parent != null) ManagedFiles.directories(parent);
             file = ManagedFiles.newReportWriter(a.output);
           } catch (IOException ex) {
             line(err, Reports.terminal(ex.getMessage()));

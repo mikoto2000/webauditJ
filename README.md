@@ -33,7 +33,7 @@ Linux/macOS:
 java -jar target/webauditJ.jar examples/sample.log -o report.html
 ```
 
-初回ビルドは Maven と依存のダウンロードに通信します。キャッシュは `.build/` に置きます。生成した JAR の通常解析は通信しません。レポートの出力先には新しいファイルを指定してください。既存ファイルは上書きしません。
+初回ビルドは Maven と依存のダウンロードに通信します。キャッシュは `.build/` に置きます。生成した JAR の通常解析は通信しません。レポートの出力先には新しいファイルを指定してください。既存ファイルは上書きしません。`-o ./output/nested/index.html` のように指定すると、保存時に不足する親フォルダーを再帰的に作成します。Unix の新規フォルダーは所有者のみアクセス可能です。親パスがファイルの場合や作成権限がない場合は終了コード 2 になります。保存に失敗しても作成した親フォルダーは残ります。
 
 ```sh
 java -jar target/webauditJ.jar access.log rotated.log.gz logs/ --format json -o report.json
