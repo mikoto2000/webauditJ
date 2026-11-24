@@ -35,7 +35,10 @@ public final class Bundle {
       byte[] data = new byte[65536];
       long total = 0;
       int n;
-      while ((n = in.read(data, 0, (int) Math.min(data.length, limit - total + 1))) != -1) {
+      while ((n =
+              in.read(
+                  data, 0, (int) (limit - total >= data.length ? data.length : limit - total + 1)))
+          != -1) {
         total += n;
         if (total > limit) return null;
         hash.update(data, 0, n);

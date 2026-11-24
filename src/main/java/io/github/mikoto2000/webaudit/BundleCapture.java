@@ -187,11 +187,18 @@ final class BundleCapture {
       row.put("truncated", error.toLowerCase(Locale.ROOT).contains("limit"));
     }
     try {
+      boolean sizeChanged =
+          row.get("size_bytes") != null && Files.size(p) != Json.number(row.get("size_bytes"));
       String after = Bundle.hash(p, options.maxFileBytes);
       if (after == null || !Objects.equals(row.get("sha256"), after)) {
-        row.put("changed_during_analysis", after != null && row.get("sha256") != null);
+        row.put(
+            "changed_during_analysis", sizeChanged || after != null && row.get("sha256") != null);
         row.put("status", "partial");
-        row.put("hash_status", after == null ? "unavailable" : "changed");
+        row.put(
+            "hash_status",
+            after == null
+                ? ("size_limit".equals(row.get("hash_status")) ? "size_limit" : "unavailable")
+                : "changed");
       }
     } catch (IOException ex) {
       row.put("status", "partial");

@@ -20,6 +20,56 @@ class BundleTest {
   }
 
   @Test
+  void hashesLargeLimitsAndDisclosesGrowthBeyondHashCap() throws Exception {
+    Path input = dir.resolve("growing.log");
+    Files.writeString(input, "a\n");
+    assertEquals(hash(Files.readAllBytes(input)), Bundle.hash(input, Long.MAX_VALUE));
+    var o = new Options();
+    o.maxFileBytes = 5;
+    var capture = new BundleCapture(o);
+    capture.begin(input);
+    Files.writeString(input, "abcdefghi\n");
+    capture.finish(input, "decompressed file limit reached");
+    assertEquals(
+        true,
+        capture
+            .inputs
+            .get(input.toAbsolutePath().normalize().toString())
+            .get("changed_during_analysis"));
+  }
+
+  @Test
+  void disclosesDedupEmptyUnreadableAndPrivateSettings() throws Exception {
+    Path a = dir.resolve("a.log"), b = dir.resolve("b.log"), empty = dir.resolve("empty.log");
+    Files.writeString(a, LINE + "\n");
+    Files.copy(a, b);
+    Files.writeString(empty, "");
+    var options = new Options();
+    options.deduplicateFiles = true;
+    var report =
+        Bundle.generate(
+            List.of(a, b, empty, dir.resolve("missing.log")),
+            dir.resolve("report"),
+            options,
+            new BundleOptions());
+    assertFalse(Json.bool(report.get("complete")));
+    assertEquals(4, Json.rows(report.get("inventory")).size());
+    assertTrue(
+        Json.rows(report.get("inventory")).stream()
+            .anyMatch(row ->
+                "excluded_duplicate".equals(row.get("status"))
+                    && Json.number(row.get("excluded")) == 1));
+    assertTrue(
+        Json.rows(report.get("inventory")).stream()
+            .anyMatch(row -> "failed".equals(row.get("status"))));
+    var privateOptions = new Options();
+    privateOptions.logRegex = "(?P<ip>\\S+) (?P<time>SECRET) (?P<target>\\S+)";
+    var settings = Bundle.settings(privateOptions, new BundleOptions());
+    assertFalse(Json.MAPPER.writeValueAsString(settings).contains("SECRET"));
+    assertNotNull(settings.get("custom_regex_sha256"));
+  }
+
+  @Test
   void inventoriesOriginalGzipAndSealsEveryArtifact() throws Exception {
     Path input = dir.resolve("input.log.gz");
     try (var z = new GZIPOutputStream(Files.newOutputStream(input))) {
