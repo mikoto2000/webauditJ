@@ -14,6 +14,7 @@ final class Behavior {
   private final Map<Long, Peer> hours = new TreeMap<>();
   private final Map<String, Baseline> urls = new HashMap<>();
   private final Baseline global = new Baseline();
+  private final double[] sizeScratch = new double[128];
   private final List<Signal> signals = new ArrayList<>();
   private OffsetDateTime last;
 
@@ -168,7 +169,7 @@ final class Behavior {
         urls.put(uk, b);
       }
       if (b != null) {
-        if (outlier(value, b.values, 4096, 5))
+        if (outlier(value, b.values, 4096, 5, sizeScratch))
           emit(
               "WS-url-size",
               "Response differs from same URL/status baseline",
@@ -180,7 +181,7 @@ final class Behavior {
               e.time);
         b.add(value);
       }
-      if (outlier(value, global.values, 1 << 20, 10))
+      if (outlier(value, global.values, 1 << 20, 10, sizeScratch))
         emit(
             "WS-size",
             "Unusually large response",
