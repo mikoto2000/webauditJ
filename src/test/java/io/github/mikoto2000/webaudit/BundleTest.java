@@ -23,7 +23,9 @@ class BundleTest {
   void hashesLargeLimitsAndDisclosesGrowthBeyondHashCap() throws Exception {
     Path input = dir.resolve("growing.log");
     Files.writeString(input, "a\n");
-    assertEquals(hash(Files.readAllBytes(input)), Bundle.hash(input, Long.MAX_VALUE));
+    assertTimeoutPreemptively(
+        java.time.Duration.ofSeconds(2),
+        () -> assertEquals(hash(Files.readAllBytes(input)), Bundle.hash(input, Long.MAX_VALUE)));
     var o = new Options();
     o.maxFileBytes = 5;
     var capture = new BundleCapture(o);

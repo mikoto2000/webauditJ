@@ -109,3 +109,14 @@ Windows はファイルロックを残さないメモリ読み込み方式で、
 - [第三者ライセンスと出典](THIRD_PARTY_NOTICES.md)
 
 本体は MIT ライセンスです。ルール、ライブラリ、テストデータの個別条件は第三者ライセンスを参照してください。
+
+
+## 調査報告書一式（移植中）
+
+```sh
+java -jar target/webauditJ.jar access.log --report-dir report --lang ja --system-name "対象システム" --investigator "担当者"
+```
+
+新規ディレクトリを排他的に作成するバッチ専用モードです。現時点はPhase 1の原本来歴・入力別診断・実効設定・ルールhash・成果物hash・manifestに対応します。11章表示、coverage、全件証跡、統計は後続フェーズで移植します。[移植設計](docs/reporting/design.md)と[要求対応表](docs/reporting/traceability.md)を参照してください。
+
+任意metadataは`--report-title`、`--system-name`、`--investigation-background`、`--investigation-purpose`、`--investigator`。`--lang ja|en`を選択できます。`-o`/`--format`とは排他です。既存の単一ファイル出力は維持します。`--max-spool-bytes`、`--max-report-bytes`は各既定1 GiBです（spool本体はPhase 3で追加）。原本SHA-256はgzipを含む保存bytesの前後照合で、元ログは変更しません。生成失敗時のINCOMPLETE marker付き出力は完成報告書として扱わないでください。現段階の証跡には元ログと同等の機密性があります。

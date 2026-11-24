@@ -27,3 +27,12 @@
 | §13–14 完了/最終報告/測定 | 未完了 | 6 | Java実測/日英sample/README/本表/PR状態 |
 
 未対応や評価不能な調査観点を新規検出器で無理に埋めず、実際の支援範囲として開示する。Java固有の実装差・制限・未検証は完成時にも明示する。
+
+
+## Phase 1 実装・検証
+
+`Bundle`/`BundleWriter`/`BundleOptions`/`BundleCapture`に原本inventory・前後hash・実効settings・秘密regexのhash・rules fingerprint・build・全artifact hash・診断・排他新規出力・INCOMPLETEを移植。`LogInput`のoptional observerで既存streamを再利用し、`Event.format`は非公開属性としてlegacy JSONへ出さない。実際に通ったparser branchとtimezone offset/fieldsを記録する。
+
+BundleTestはgzip原本と3種類の行、全成果物hash、既存出力拒否、原本変更、出力容量上限/失敗marker、CLI metadata/排他、dedup/空/不読、秘密regex、Long.MAX_VALUE上限、hash上限を超える原本増大を検証する。REDでは未実装classによるコンパイル失敗を確認。追加の巨大上限テストは修正前の算術overflowで停止しなくなり、該当テストJVMだけを特定して終了した。修正後は5テスト成功。今後の再発時に停止し続けないよう2秒のpreemptive timeoutも設ける。
+
+Phase1のHTMLは既存templateを使う暫定表示であり、提出用11章と全件CSV/coverage/統計は後続phase対象。新しい検出器・watch変更・依存追加なし。機密値マスクはPhase5で移植する。
