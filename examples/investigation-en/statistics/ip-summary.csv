@@ -1,0 +1,6 @@
+key,value,name,organization,missing,other,requests,suspicious_requests,suspicious_count_quality,request_percent,suspicious_within_group_percent,unique_ips,unique_ip_quality,label_truncated,count_quality
+VALUE-6d99cbd08fc6c99cdb2d942a4cbb097c,192.0.2.10,,,false,false,3,3,exact,33.333333333333336,100.0,,unavailable,false,exact
+VALUE-a0c2b533f88e9b435c7e5f9ca99ec967,192.0.2.30,,,false,false,3,3,exact,33.333333333333336,100.0,,unavailable,false,exact
+VALUE-2d459f9e8eb3f880e28a2b04c5749f48,192.0.2.20,,,false,false,1,1,exact,11.11111111111111,100.0,,unavailable,false,exact
+VALUE-37fcff24bf62035b2b08020afc08b4fe,192.0.2.1,,,false,false,1,0,exact,11.11111111111111,0.0,,unavailable,false,exact
+VALUE-54b9789ef2e3d61ee43bd2f32942ff3e,192.0.2.40,,,false,false,1,1,exact,11.11111111111111,100.0,,unavailable,false,exact
