@@ -167,6 +167,9 @@ final class BundleStatistics {
       var values = new ArrayList<Map<String, Object>>();
       for (var original : table.getValue().values()) {
         var row = new LinkedHashMap<>(original);
+        row.put(
+            "suspicious_count_quality",
+            Json.bool(report.get("evidence_complete")) ? "exact" : "lower_bound");
         long requests = Json.number(row.get("requests")),
             suspicious = Json.number(row.get("suspicious_requests"));
         row.put("request_percent", total == 0 ? 0.0 : requests * 100.0 / total);
@@ -264,6 +267,7 @@ final class BundleStatistics {
             "other",
             "requests",
             "suspicious_requests",
+            "suspicious_count_quality",
             "request_percent",
             "suspicious_within_group_percent",
             "unique_ips",
