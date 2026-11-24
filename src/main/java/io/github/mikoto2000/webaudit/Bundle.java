@@ -141,194 +141,201 @@ public final class Bundle {
     }
     var writer = new BundleWriter(target, b.maxOutputBytes);
     var capture = new BundleCapture(o);
-    var previous = o.bundle;
-    boolean retained = o.retainUpstreamEvidence;
-    String started = Times.instant(o.clock.instant());
-    Map<String, Object> analysis;
-    try {
-      o.bundle = capture;
-      o.retainUpstreamEvidence = true;
-      analysis = Engine.analyze(paths, o);
-    } finally {
-      o.bundle = previous;
-      o.retainUpstreamEvidence = retained;
-    }
-    for (String warning : b.warnings) Engine.warn(analysis, warning);
-    boolean complete = !Json.bool(analysis.get("partial"));
-    var inventory = new ArrayList<Map<String, Object>>();
-    for (var in : Json.rows(analysis.get("files"))) {
-      String path = Json.string(in.get("path"));
-      var row = capture.inputs.get(path);
-      if (row == null) {
-        row = capture.begin(Path.of(path));
-        row.put("status", "failed");
-        row.put("count_quality", "unavailable");
-        row.put("error", in.get("error"));
+    try (var spool = new RequestSpool(target, b.maxSpoolBytes)) {
+      capture.requests = new BundleRequests(capture, spool);
+      var previous = o.bundle;
+      boolean retained = o.retainUpstreamEvidence;
+      String started = Times.instant(o.clock.instant());
+      Map<String, Object> analysis;
+      try {
+        o.bundle = capture;
+        o.retainUpstreamEvidence = true;
+        analysis = Engine.analyze(paths, o);
+      } finally {
+        o.bundle = previous;
+        o.retainUpstreamEvidence = retained;
       }
-      if (Set.of("partial", "failed").contains(row.get("status"))) complete = false;
-      inventory.add(row);
-    }
-    if (capture.diagnosticsTruncated) {
-      complete = false;
-      Engine.warn(analysis, "Report diagnostic limit reached; diagnostic samples are incomplete");
-    }
-    if (!complete) {
-      analysis.put("partial", true);
-      Engine.warn(
-          analysis,
-          "Investigation report is incomplete; inspect inventory and diagnostic completeness");
-    }
-    String status =
-        complete ? "completed" : Json.number(analysis.get("requests")) == 0 ? "failed" : "partial";
-    var report =
-        Json.map(
-            "schema",
-            "webaudit/investigation-1",
-            "metadata",
-            b.map(),
-            "started_at",
-            started,
-            "finished_at",
-            Times.instant(o.clock.instant()),
-            "settings",
-            settings(o, b),
-            "inventory",
-            inventory,
-            "analysis",
+      for (String warning : b.warnings) Engine.warn(analysis, warning);
+      boolean complete = !Json.bool(analysis.get("partial"));
+      var inventory = new ArrayList<Map<String, Object>>();
+      for (var in : Json.rows(analysis.get("files"))) {
+        String path = Json.string(in.get("path"));
+        var row = capture.inputs.get(path);
+        if (row == null) {
+          row = capture.begin(Path.of(path));
+          row.put("status", "failed");
+          row.put("count_quality", "unavailable");
+          row.put("error", in.get("error"));
+        }
+        if (Set.of("partial", "failed").contains(row.get("status"))) complete = false;
+        inventory.add(row);
+      }
+      if (capture.diagnosticsTruncated) {
+        complete = false;
+        Engine.warn(analysis, "Report diagnostic limit reached; diagnostic samples are incomplete");
+      }
+      if (!complete) {
+        analysis.put("partial", true);
+        Engine.warn(
             analysis,
-            "complete",
-            complete,
-            "status",
-            status,
-            "count_quality",
-            complete ? "exact" : "lower_bound");
-    capture.coverage.build(report);
-    capture.coverage.write(writer, report);
-    writer.csv(
-        "log-inventory.csv",
-        List.of(
-            "file_id",
-            "path",
-            "size_bytes",
-            "sha256",
-            "hash_scope",
-            "compression",
-            "first",
-            "last",
-            "total_lines",
-            "parsed",
-            "unparsed",
-            "excluded",
-            "status",
-            "truncated",
-            "changed",
-            "error",
-            "formats",
-            "log_types",
-            "timezones",
-            "timezones_truncated",
-            "available_fields"),
-        write -> {
-          for (var row : inventory)
-            write.accept(
-                cell(row, "id"),
-                cell(row, "path"),
-                cell(row, "size_bytes"),
-                cell(row, "sha256"),
-                cell(row, "hash_scope"),
-                cell(row, "compression"),
-                cell(row, "first"),
-                cell(row, "last"),
-                cell(row, "total_lines"),
-                cell(row, "parsed"),
-                cell(row, "unparsed"),
-                cell(row, "excluded"),
-                cell(row, "status"),
-                cell(row, "truncated"),
-                cell(row, "changed_during_analysis"),
-                cell(row, "error"),
-                join(row.get("formats")),
-                join(row.get("log_types")),
-                join(row.get("timezones")),
-                cell(row, "timezones_truncated"),
-                join(row.get("available_fields")));
-        });
-    for (String name : List.of("parse-errors", "excluded-requests")) {
-      var rows = name.equals("parse-errors") ? capture.diagnostics : capture.excluded;
+            "Investigation report is incomplete; inspect inventory and diagnostic completeness");
+      }
+      String status =
+          complete
+              ? "completed"
+              : Json.number(analysis.get("requests")) == 0 ? "failed" : "partial";
+      var report =
+          Json.map(
+              "schema",
+              "webaudit/investigation-1",
+              "metadata",
+              b.map(),
+              "started_at",
+              started,
+              "finished_at",
+              Times.instant(o.clock.instant()),
+              "settings",
+              settings(o, b),
+              "inventory",
+              inventory,
+              "analysis",
+              analysis,
+              "complete",
+              complete,
+              "status",
+              status,
+              "count_quality",
+              complete ? "exact" : "lower_bound");
+      capture.coverage.build(report);
+      capture.requests.export(writer, report);
+      spool.close();
+      capture.coverage.write(writer, report);
       writer.csv(
-          "diagnostics/" + name + ".csv",
-          List.of("file_id", "source_file", "source_line", "reason", "sample_complete"),
+          "log-inventory.csv",
+          List.of(
+              "file_id",
+              "path",
+              "size_bytes",
+              "sha256",
+              "hash_scope",
+              "compression",
+              "first",
+              "last",
+              "total_lines",
+              "parsed",
+              "unparsed",
+              "excluded",
+              "status",
+              "truncated",
+              "changed",
+              "error",
+              "formats",
+              "log_types",
+              "timezones",
+              "timezones_truncated",
+              "available_fields"),
           write -> {
-            for (var row : rows)
+            for (var row : inventory)
               write.accept(
-                  cell(row, "file_id"),
-                  cell(row, "source_file"),
-                  cell(row, "source_line"),
-                  cell(row, "reason"),
-                  Boolean.toString(!capture.diagnosticsTruncated));
+                  cell(row, "id"),
+                  cell(row, "path"),
+                  cell(row, "size_bytes"),
+                  cell(row, "sha256"),
+                  cell(row, "hash_scope"),
+                  cell(row, "compression"),
+                  cell(row, "first"),
+                  cell(row, "last"),
+                  cell(row, "total_lines"),
+                  cell(row, "parsed"),
+                  cell(row, "unparsed"),
+                  cell(row, "excluded"),
+                  cell(row, "status"),
+                  cell(row, "truncated"),
+                  cell(row, "changed_during_analysis"),
+                  cell(row, "error"),
+                  join(row.get("formats")),
+                  join(row.get("log_types")),
+                  join(row.get("timezones")),
+                  cell(row, "timezones_truncated"),
+                  join(row.get("available_fields")));
           });
+      for (String name : List.of("parse-errors", "excluded-requests")) {
+        var rows = name.equals("parse-errors") ? capture.diagnostics : capture.excluded;
+        writer.csv(
+            "diagnostics/" + name + ".csv",
+            List.of("file_id", "source_file", "source_line", "reason", "sample_complete"),
+            write -> {
+              for (var row : rows)
+                write.accept(
+                    cell(row, "file_id"),
+                    cell(row, "source_file"),
+                    cell(row, "source_line"),
+                    cell(row, "reason"),
+                    Boolean.toString(!capture.diagnosticsTruncated));
+            });
+      }
+      var log =
+          new StringBuilder(
+              "WebAuditJ "
+                  + Engine.VERSION
+                  + "\nStarted: "
+                  + started
+                  + "\nFinished: "
+                  + report.get("finished_at")
+                  + "\nStatus: "
+                  + report.get("status")
+                  + "\n");
+      for (Object warning : (List<?>) analysis.get("warnings"))
+        log.append(Reports.terminal(warning.toString())).append('\n');
+      writer.text("diagnostics/execution-log.txt", log.toString());
+      writer.json("report.json", report);
+      writer.write(
+          "report.html",
+          out -> {
+            var html = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+            Reports.write(html, analysis, "html", b.language);
+            html.flush();
+          });
+      var manifest =
+          Json.map(
+              "schema",
+              "webaudit/manifest-1",
+              "version",
+              Engine.VERSION,
+              "build",
+              Json.map(
+                  "java_version",
+                  System.getProperty("java.version"),
+                  "os",
+                  System.getProperty("os.name"),
+                  "arch",
+                  System.getProperty("os.arch")),
+              "started_at",
+              started,
+              "finished_at",
+              report.get("finished_at"),
+              "settings",
+              report.get("settings"),
+              "rules_version",
+              Engine.RULES_VERSION,
+              "rules_sha256",
+              rulesHash(),
+              "geoip",
+              analysis.get("geoip"),
+              "inputs",
+              inventory,
+              "complete",
+              report.get("complete"),
+              "warnings",
+              analysis.get("warnings"),
+              "artifacts",
+              writer.artifacts(),
+              "artifact_hash_scope",
+              "all listed artifacts; manifest excludes its own hash");
+      writer.json("manifest.json", manifest);
+      Files.delete(marker);
+      return report;
     }
-    var log =
-        new StringBuilder(
-            "WebAuditJ "
-                + Engine.VERSION
-                + "\nStarted: "
-                + started
-                + "\nFinished: "
-                + report.get("finished_at")
-                + "\nStatus: "
-                + status
-                + "\n");
-    for (Object warning : (List<?>) analysis.get("warnings"))
-      log.append(Reports.terminal(warning.toString())).append('\n');
-    writer.text("diagnostics/execution-log.txt", log.toString());
-    writer.json("report.json", report);
-    writer.write(
-        "report.html",
-        out -> {
-          var html = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-          Reports.write(html, analysis, "html", b.language);
-          html.flush();
-        });
-    var manifest =
-        Json.map(
-            "schema",
-            "webaudit/manifest-1",
-            "version",
-            Engine.VERSION,
-            "build",
-            Json.map(
-                "java_version",
-                System.getProperty("java.version"),
-                "os",
-                System.getProperty("os.name"),
-                "arch",
-                System.getProperty("os.arch")),
-            "started_at",
-            started,
-            "finished_at",
-            report.get("finished_at"),
-            "settings",
-            report.get("settings"),
-            "rules_version",
-            Engine.RULES_VERSION,
-            "rules_sha256",
-            rulesHash(),
-            "geoip",
-            analysis.get("geoip"),
-            "inputs",
-            inventory,
-            "complete",
-            report.get("complete"),
-            "warnings",
-            analysis.get("warnings"),
-            "artifacts",
-            writer.artifacts(),
-            "artifact_hash_scope",
-            "all listed artifacts; manifest excludes its own hash");
-    writer.json("manifest.json", manifest);
-    Files.delete(marker);
-    return report;
   }
 
   static String cell(Map<String, Object> row, String key) {

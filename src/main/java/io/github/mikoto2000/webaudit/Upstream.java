@@ -21,6 +21,7 @@ final class Upstream {
     int capacity;
     double leak, tokens;
     String domain;
+    String bundleID;
     OffsetDateTime first, last;
     long count;
     final Set<String> seen = new HashSet<>();
@@ -144,6 +145,8 @@ final class Upstream {
         b.domain = domain;
         b.tokens = capacity;
         b.first = e.time;
+        if (options.bundle != null && options.bundle.requests != null)
+          b.bundleID = options.bundle.requests.bucketID(key, e);
         b.last = e.time;
         buckets.put(key, b);
       }
@@ -158,6 +161,8 @@ final class Upstream {
         b.seen.add(value);
         distinctCount++;
       }
+      if (options.bundle != null && options.bundle.requests != null)
+        options.bundle.requests.candidate(b.bundleID);
       if (e.time.isBefore(b.last))
         unique(
             warnings,
@@ -181,6 +186,7 @@ final class Upstream {
           unique(warnings, "Upstream alert limit reached; source alerts are incomplete");
         else {
           var a = alert(e, id, group, b);
+          if (options.bundle != null && options.bundle.requests != null) a.put("id", b.bundleID);
           if (evidence != null) evidence.attach(a, b.samples);
           if (id.equals("crowdsecurity/http-technology-probing"))
             a.put(

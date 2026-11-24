@@ -56,19 +56,27 @@ public final class Correlator {
     };
   }
 
+  static String incidentKey(Event e, String group) {
+    return digest(
+        e.ip
+            + "\0"
+            + s(e.host)
+            + "\0"
+            + s(e.ua)
+            + "\0"
+            + group
+            + "\0"
+            + (e.time.toEpochSecond() / 300)
+            + (e.timezoneUnknown ? "\0wall:" + e.file : ""));
+  }
+
+  String findingID(Event e, Map<String, Object> rule) {
+    var finding = items.get(incidentKey(e, family(rule)));
+    return finding == null ? "" : finding.id;
+  }
+
   private Incident get(Event e, String group) {
-    String key =
-        digest(
-            e.ip
-                + "\0"
-                + s(e.host)
-                + "\0"
-                + s(e.ua)
-                + "\0"
-                + group
-                + "\0"
-                + (e.time.toEpochSecond() / 300)
-                + (e.timezoneUnknown ? "\0wall:" + e.file : ""));
+    String key = incidentKey(e, group);
     if (items.containsKey(key)) return items.get(key);
     if (items.size() >= options.maxFindings) {
       unique(warnings, "Incident limit reached; incident counts and evidence are incomplete");

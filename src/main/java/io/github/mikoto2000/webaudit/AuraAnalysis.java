@@ -21,6 +21,7 @@ final class AuraAnalysis {
 
   private static class UA {
     String value;
+    String key;
     long count;
     final List<Map<String, Object>> samples = new ArrayList<>();
 
@@ -89,6 +90,7 @@ final class AuraAnalysis {
         unique(
             warnings, "Aura User-Agent samples truncated; source references remain authoritative");
       u = new UA(value);
+      u.key = key;
       uas.put(key, u);
     }
     if (u != null) {
@@ -212,11 +214,18 @@ final class AuraAnalysis {
   private void appendRareUserAgents(List<Map<String, Object>> out) {
     var sorted =
         uas.values().stream()
-            .sorted(Comparator.comparingLong((UA u) -> u.count).thenComparing(u -> u.value))
+            .sorted(
+                Comparator.comparingLong((UA u) -> u.count)
+                    .thenComparing(u -> u.value)
+                    .thenComparing(u -> u.key))
             .limit(25)
             .toList();
     for (UA u : sorted)
-      if (u.count <= 5 && !u.value.isEmpty() && !u.value.equals("-"))
-        out.add(alert("rare_user_agent", "", u.value, u.count, null, null, u.samples));
+      if (u.count <= 5 && !u.value.isEmpty() && !u.value.equals("-")) {
+        var result = alert("rare_user_agent", "", u.value, u.count, null, null, u.samples);
+        if (o.bundle != null && o.bundle.requests != null)
+          o.bundle.requests.sourceKeys.put(result, u.key);
+        out.add(result);
+      }
   }
 }

@@ -51,8 +51,12 @@ final class AuraSignatures {
       }
       a.put("source", "AuraDFIR");
       if (evidence != null) a.put("evidence", new ArrayList<Map<String, Object>>());
+      if (options.bundle != null && options.bundle.requests != null)
+        a.put("id", Bundle.id("DET-", "aura\0" + key));
       aura.put(key, a);
     }
+    if (options.bundle != null && options.bundle.requests != null)
+      options.bundle.requests.candidate((String) a.get("id"));
     a.put("count", Json.number(a.get("count")) + 1);
     if (a.get("last") != null) {
       if (e.time.isBefore(Times.parse((String) a.get("first")))) a.put("first", Times.text(e.time));

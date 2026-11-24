@@ -8,6 +8,7 @@ import java.util.*;
 /** Optional observations from the original parser stream; no duplicate analysis. */
 final class BundleCapture {
   final Options options;
+  BundleRequests requests;
   final BundleCoverage coverage = new BundleCoverage();
   final Map<String, Map<String, Object>> inputs = new LinkedHashMap<>();
   final List<Map<String, Object>> diagnostics = new ArrayList<>(), excluded = new ArrayList<>();

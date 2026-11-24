@@ -47,3 +47,16 @@ Phase1のHTMLは既存templateを使う暫定表示であり、提出用11章と
 BundleCoverageTestのREDでcoverage未出力を確認し、GREENで9件のbundle契約テストが成功。全rule列挙、部分hit、未対応、UA不足、Geo未実施、正常no-hit、統計母数不足、一意request対複数ruleを検証する。原本来歴と全artifact hashも再検証する。
 
 Phase2セルフレビューで、国DBのみ利用時にASN類似性を評価済みno-hitと扱わない回帰テストを追加した。対応するGo版にも同じ前提確認の補正を別PRで反映する。
+
+
+## Phase 3 実装・検証
+
+`RequestSpool`で解析時のEvent/正規化/native hit/source token/元ID/Geoを上限付きprivate JSONLへ固定し、`BundleRequests`から全不審・関連・検出・保持事案CSVを逐次生成する。Correlatorの既存keyを共通化して実際に保持されたfindingへ照合する。Hubはdistinct適用後のbucket tokenを記録し、実際のemitだけを解決する。抑制されたbucket候補は検出にしない。Aura署名のaccepted groupも同じ方式。AuraAnalysisは元UA digestを非公開キーとして保持し、clipped表示値で誤関連させない。
+
+native WB/WSとAura case集計は原則related。WS-size/url-sizeは実際の元行へのdirect。requestを複数engine/ruleで重複計上しない。source token・file/line point・IP/host/短いwindow bucket・UA/hourのindexで、全requestに全caseを総当たりしない。未知timezoneはpublic時刻nullを維持し、spool内の実装用時刻を外部のUTC事実へ転用しない。
+
+`ObservationMetrics`は事案内request union、direct/related、検出、status、method64、URI8x1024、bytesを保持し、case timelineは後続の統計モデルで追加する。未保持case/compacted遅延field/spool上限/入力不完全性は全件性に反映する。原本は再走査・変更しない。完成失敗時markerを残す。
+
+BundleRequestsTestで代表8件を超える25同文別観測、600通常関連、複数engine/rule、一意ID、成否非転記、spool1byteで解析継続/下限/削除、終了時WS-ip、既存Hub matcherに小さいbucket設定を与えdistinct/blackholeを検証する（設定はfinallyで復元）。REDで未出力CSVを確認し、GREENで全件関連付けが成功した。
+
+Phase3追加レビューでは1970年以前のnative時区分とAura UTC時区分を索引で分離するRED/GREEN回帰を追加した。元のエンジンの時区分を変更せず、関連証跡の取りこぼしを補正する。Go版は既に別scopeの索引を利用しており、同じ問題はない。

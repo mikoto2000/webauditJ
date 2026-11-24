@@ -117,9 +117,14 @@ Windows はファイルロックを残さないメモリ読み込み方式で、
 java -jar target/webauditJ.jar access.log --report-dir report --lang ja --system-name "対象システム" --investigator "担当者"
 ```
 
-新規ディレクトリを排他的に作成するバッチ専用モードです。現時点はPhase 2までの原本来歴・入力別診断・実効設定・ルールhash・成果物hash・manifest・全調査観点カバレッジに対応します。11章表示、全件証跡、統計は後続フェーズで移植します。[移植設計](docs/reporting/design.md)と[要求対応表](docs/reporting/traceability.md)を参照してください。
+新規ディレクトリを排他的に作成するバッチ専用モードです。現時点はPhase 3までの原本来歴・入力別診断・manifest・全調査観点カバレッジ・不審/関連リクエスト全件別紙に対応します。11章表示と全アクセス統計は後続フェーズで移植します。[移植設計](docs/reporting/design.md)と[要求対応表](docs/reporting/traceability.md)を参照してください。
 
-任意metadataは`--report-title`、`--system-name`、`--investigation-background`、`--investigation-purpose`、`--investigator`。`--lang ja|en`を選択できます。`-o`/`--format`とは排他です。既存の単一ファイル出力は維持します。`--max-spool-bytes`、`--max-report-bytes`は各既定1 GiBです（spool本体はPhase 3で追加）。原本SHA-256はgzipを含む保存bytesの前後照合で、元ログは変更しません。生成失敗時のINCOMPLETE marker付き出力は完成報告書として扱わないでください。現段階の証跡には元ログと同等の機密性があります。
+任意metadataは`--report-title`、`--system-name`、`--investigation-background`、`--investigation-purpose`、`--investigator`。`--lang ja|en`を選択できます。`-o`/`--format`とは排他です。既存の単一ファイル出力は維持します。`--max-spool-bytes`、`--max-report-bytes`は各既定1 GiBです。原本SHA-256はgzipを含む保存bytesの前後照合で、元ログは変更しません。生成失敗時のINCOMPLETE marker付き出力は完成報告書として扱わないでください。現段階の証跡には元ログと同等の機密性があります。
 
 
-`analysis-rules.csv`は全既存の独自署名・行動/統計・Hub・Aura・地理相関の条件と必要項目を出力します。`analysis-coverage.csv`と共通JSONは、検出有無と評価の完全性を別に保持し、未対応/未実施/評価不能/部分評価/検出あり/検出なしを区別します。本文専用攻撃とIP reputationは未対応として残します。統計母数不足やログ項目欠損を無検出と混同しません。保持groupと一意requestの完全な関連付けはPhase 3で追加するため、それ以前の未確定件数は空欄/nullです。
+`analysis-rules.csv`は全既存の独自署名・行動/統計・Hub・Aura・地理相関の条件と必要項目を出力します。`analysis-coverage.csv`と共通JSONは、検出有無と評価の完全性を別に保持し、未対応/未実施/評価不能/部分評価/検出あり/検出なしを区別します。本文専用攻撃とIP reputationは未対応として残します。統計母数不足やログ項目欠損を無検出と混同しません。保持された検出への直接/関連requestを一意に関連付けます。Geo context等、確定できない件数は空欄/nullです。
+
+
+`suspicious-requests.csv`は直接検出された元file/line観測を一度ずつ出力します。`related-requests.csv`は集計条件に関連する正常アクセスも含み、不審の断定ではありません。両者の重なりはdirect/related ID列で開示します。`detections.csv`は各WA署名一致と各保持group、`findings.csv`は保持事案全件と上限付き観測統計です。事案の成否を個々のrequestへ自動転記しません。Request IDはfile ID+lineからの生成IDで、アプリのnative IDと区別します。
+
+spool上限に達しても既存解析を継続し、全件証跡と該当集計を下限扱いにします。終了時に成立する統計的検出も、元ログの再走査をせずsnapshotに関連付けます。正常終了時・出力エラー時にはprivate spoolを削除します。強制終了時はINCOMPLETE付き出力を機密資料として扱ってください。異なる元file/lineに同じ内容があれば別観測です。
