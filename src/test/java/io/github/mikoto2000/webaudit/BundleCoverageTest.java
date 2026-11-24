@@ -10,6 +10,15 @@ import org.junit.jupiter.api.io.TempDir;
 class BundleCoverageTest {
   @TempDir Path dir;
 
+  @Test void doesNotClaimASNSimilarityWasEvaluatedWithOnlyCountryDatabase() throws Exception {
+    Path input=dir.resolve("country-only.log");Files.writeString(input,BundleTest.LINE.replace("192.0.2.1","8.8.8.8")+"\n");
+    try(var geo=GeoIP.open(GeoIPTest.db("country"),"",null,10)){
+      var options=new Options();options.geoIP=geo;
+      var report=Bundle.generate(List.of(input),dir.resolve("report"),options,new BundleOptions());
+      assertEquals("unable",index(report).get("RULE-geoip-geoip-similarity").get("status"));
+    }
+  }
+
   static Map<String, Map<String, Object>> index(Map<String, Object> report) {
     var out = new HashMap<String, Map<String, Object>>();
     for (var row : Json.rows(report.get("coverage"))) out.put((String) row.get("id"), row);
