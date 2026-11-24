@@ -100,6 +100,15 @@ with tempfile.TemporaryDirectory(prefix="webauditJ-offline-") as temporary:
         assert "2026-11" in result.stdout
         if fmt == "json":
             assert json.loads(result.stdout)["geoip"]["databases"][0]["generation"] == "gen-offline"
+    for language in ["ja", "en"]:
+        destination = base / ("investigation-" + language)
+        run([str(log), "--report-dir", str(destination), "--lang", language])
+        common = json.loads((destination / "report.json").read_text(encoding="utf-8"))
+        manifest = json.loads((destination / "manifest.json").read_text(encoding="utf-8"))
+        assert common["schema"] == "webaudit/investigation-1" and common["summary"]["total_requests"] == 5
+        assert not (destination / "INCOMPLETE").exists() and not list(destination.glob(".requests-*"))
+        for artifact in manifest["artifacts"]:
+            assert hashlib.sha256((destination / artifact["path"]).read_bytes()).hexdigest() == artifact["sha256"]
     # Foreground watch, state save/restore and local GeoIP under the same syscall guard.
     for extra in [[], explicit]:
         for attempt in range(2):
