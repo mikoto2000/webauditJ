@@ -6,6 +6,13 @@ import static io.github.mikoto2000.webaudit.SourceMatcher.*;
 import java.util.*;
 
 final class AuraSignatures {
+  private record Signature(String id, SourcePattern pattern) {}
+
+  private static final List<Signature> PATTERNS =
+      Json.rows(AURA.get("signatures")).stream()
+          .map(r ->
+              new Signature(Json.string(r.get("id")), new SourcePattern("(?i)" + r.get("pattern"))))
+          .toList();
   private final Options options;
   private final UpstreamEvidence evidence;
   private final List<String> warnings;
@@ -79,8 +86,9 @@ final class AuraSignatures {
 
   void observe(Event e) {
     String target = e.target.replace('İ', 'i').replace('ı', 'i');
-    for (var r : Json.rows(AURA.get("signatures")))
-      if (re("(?i)" + r.get("pattern"), target)) add(e, Json.string(r.get("id")));
+    String folded = SourcePattern.input(target);
+    for (var signature : PATTERNS)
+      if (signature.pattern.matches(target, folded)) add(e, signature.id);
     String low = lower(s(e.ua).replace("İ", "i\u0307"));
     for (Object ua : (List<?>) AURA.get("scanner_uas"))
       if (low.contains((String) ua)) {

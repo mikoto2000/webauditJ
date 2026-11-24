@@ -13,7 +13,9 @@ final class SourceMatcher {
   static final Map<String, Object> SOURCES = Json.obj(Json.resource("upstream/manifest.json"));
   private static final Map<String, List<String>> LISTS = new HashMap<>();
   private static final Map<String, List<Map<String, Object>>> LOOKUPS = new HashMap<>();
-  private static final Map<String, Pattern> REGEX = new HashMap<>();
+  private static final Map<String, SourcePattern> REGEX =
+      new java.util.concurrent.ConcurrentHashMap<>();
+  private static final Map<String, List<String>> UPPER_LISTS = new HashMap<>();
   private static final List<String> FILES =
       List.of(
           "admin_interfaces.txt",
@@ -46,12 +48,14 @@ final class SourceMatcher {
         throw new IllegalStateException(e);
       }
     }
+    LISTS.forEach((name, values) ->
+        UPPER_LISTS.put(name, values.stream().map(SourceMatcher::upper).toList()));
     for (String name : List.of("technology_probing.json", "trendy_cves_uris.json"))
       LOOKUPS.put(name, LISTS.get(name).stream().map(Json::object).toList());
     for (String name : List.of("bad_user_agents.regex.txt", "thinkphp_cve_2018-20062.txt"))
-      for (String p : LISTS.get(name)) REGEX.put(p, Pattern.compile(p));
+      for (String p : LISTS.get(name)) REGEX.put(p, new SourcePattern(p));
     for (var r : Json.rows(AURA.get("signatures")))
-      REGEX.put("(?i)" + r.get("pattern"), Pattern.compile("(?i)" + r.get("pattern")));
+      REGEX.put("(?i)" + r.get("pattern"), new SourcePattern("(?i)" + r.get("pattern")));
   }
 
   private SourceMatcher() {}
@@ -195,17 +199,18 @@ final class SourceMatcher {
   }
 
   static boolean re(String p, String s) {
-    return REGEX.computeIfAbsent(p, Pattern::compile).matcher(s).find();
+    return REGEX.computeIfAbsent(p, SourcePattern::new).matches(s, SourcePattern.input(s));
   }
 
   static boolean matchPatterns(String name, String s) {
-    for (String p : LISTS.get(name)) if (re(p, s)) return true;
+    String folded = SourcePattern.input(s);
+    for (String p : LISTS.get(name)) if (REGEX.get(p).matches(s, folded)) return true;
     return false;
   }
 
   static boolean listContains(String name, String s, boolean fold) {
-    for (String p : LISTS.get(name))
-      if ((fold ? upper(s) : s).contains(fold ? upper(p) : p)) return true;
+    String value = fold ? upper(s) : s;
+    for (String p : (fold ? UPPER_LISTS : LISTS).get(name)) if (value.contains(p)) return true;
     return false;
   }
 

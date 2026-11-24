@@ -1,6 +1,5 @@
 package io.github.mikoto2000.webaudit;
 
-import com.google.re2j.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,11 +8,11 @@ import java.util.Objects;
 public final class Signatures {
   public record Detection(List<Map<String, Object>> hits, Normalizer.Normalized normalization) {}
 
-  private record Compiled(Map<String, Object> rule, Pattern regex) {}
+  private record Compiled(Map<String, Object> rule, SourcePattern regex) {}
 
   private static final List<Compiled> RULES =
       Json.rows(Json.resource("rules.json")).stream()
-          .map(r -> new Compiled(r, Pattern.compile("(?i)" + r.get("pattern"))))
+          .map(r -> new Compiled(r, new SourcePattern("(?i)" + r.get("pattern"))))
           .toList();
 
   private Signatures() {}
@@ -21,10 +20,17 @@ public final class Signatures {
   public static Detection detect(Event e) {
     var n = Normalizer.normalize(e.target);
     var hits = new ArrayList<Map<String, Object>>();
+    var fields = new java.util.HashMap<String, List<String>>();
+    var foldedFields = new java.util.HashMap<String, List<String>>();
     for (var compiled : RULES) {
       var r = compiled.rule();
-      var values = values(r, e, n);
-      for (String v : values) {
+      String field = Json.string(r.get("field"));
+      var values = fields.computeIfAbsent(field, k -> values(r, e, n));
+      var folded =
+          foldedFields.computeIfAbsent(
+              field, k -> values.stream().map(SourcePattern::input).toList());
+      for (int i = 0; i < values.size(); i++) {
+        String v = values.get(i);
         boolean excluded = false;
         if (r.get("exclude") instanceof List<?> excludes)
           for (Object x : excludes)
@@ -32,7 +38,7 @@ public final class Signatures {
               excluded = true;
               break;
             }
-        if (!excluded && compiled.regex().matcher(v).find()) {
+        if (!excluded && compiled.regex().matches(v, folded.get(i))) {
           hits.add(r);
           break;
         }
