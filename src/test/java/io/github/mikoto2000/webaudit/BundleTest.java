@@ -94,6 +94,7 @@ class BundleTest {
     assertEquals(1, Json.number(file.get("parsed")));
     assertEquals(1, Json.number(file.get("unparsed")));
     assertEquals(1, Json.number(file.get("excluded")));
+    assertTrue(((Collection<?>)file.get("available_fields")).containsAll(List.of("source_ip","timestamp","request_uri","response_bytes","raw")));
     var manifest = Json.object(Files.readString(target.resolve("manifest.json")));
     assertEquals("webaudit/manifest-1", manifest.get("schema"));
     assertFalse(Json.string(manifest.get("rules_sha256")).isEmpty());
@@ -105,6 +106,12 @@ class BundleTest {
     assertFalse(Files.exists(target.resolve("INCOMPLETE")));
     assertThrows(
         IOException.class, () -> Bundle.generate(List.of(input), target, new Options(), options));
+  }
+
+  @Test void marksCompletelyUnreadableGzipAsFailedInInventory() throws Exception {
+    Path input=dir.resolve("broken.log.gz");Files.write(input,new byte[]{0x1f,(byte)0x8b,0});
+    var report=Bundle.generate(List.of(input),dir.resolve("broken-report"),new Options(),new BundleOptions());
+    assertEquals("failed",report.get("status"));assertEquals("failed",Json.rows(report.get("inventory")).getFirst().get("status"));
   }
 
   @Test
