@@ -93,6 +93,41 @@ class ReportLanguageTest {
     assertEquals("", out.toString());
   }
 
+  @Test
+  void overviewAndConfidenceExplainIndependentDetectionsInBothLanguages() throws Exception {
+    Path input = dir.resolve("overview.log");
+    Files.writeString(input, CorrelatorTest.event(0, 404).raw);
+    var report = Engine.analyze(List.of(input), new Options());
+    var finding = Json.rows(report.get("findings")).getFirst();
+    finding.remove("first");
+    finding.remove("last");
+    finding.put("timezone_unknown", true);
+    for (boolean partial : List.of(false, true)) {
+      report.put("partial", partial);
+      for (String lang : List.of("ja", "en")) {
+        var out = new StringWriter();
+        Reports.write(out, report, "html", lang);
+        String html = out.toString();
+        var tr = new ReportLanguage(lang);
+        for (String key :
+            List.of(
+                "Hub alerts:",
+                "Aura signature groups:",
+                "Aura analysis findings:",
+                "How to read the indicators",
+                "Evidence-strength indicator. This is not the probability of success.",
+                "Wall clock; timezone unknown; cannot convert to UTC")) {
+          assertTrue(html.contains(tr.text(key)), key);
+        }
+        assertTrue(html.contains("href=\"#coverage\""));
+        assertTrue(html.contains("id=\"coverage\""));
+        assertTrue(html.contains("href=\"#evidence-" + finding.get("id") + "\""));
+        assertTrue(html.contains("id=\"evidence-" + finding.get("id") + "\""));
+        assertFalse(html.contains("0001-01-01"));
+      }
+    }
+  }
+
   String render(String... options) throws Exception {
     Path input = dir.resolve("access.log");
     Files.writeString(input, CorrelatorTest.event(0, 404).raw.replace("/.env", "/.env?q=<script>"));
