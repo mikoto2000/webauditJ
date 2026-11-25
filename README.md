@@ -1,18 +1,10 @@
 # WebAuditJ
 
-最新リリース: [v2.1.0](https://github.com/mikoto2000/webauditJ/releases/tag/v2.1.0)。変更点は [リリースノート](docs/releases/v2.1.0.md)を参照してください。
+最新リリース: [v2.1.1](https://github.com/mikoto2000/webauditJ/releases/tag/v2.1.1)。変更点は [リリースノート](docs/releases/v2.1.1.md)を参照してください。
 
 HTTP サーバーのログをオフラインで調査する Java 版 WebAudit。Go 版の `95148ba4e22d9001d34fbb0e4d59f072efd3e95c` を基準に、独自検知、Hub/Aura 互換検知、事案の関連付け、GeoIP/ASN 補足情報と DB 管理を移植しています。
 
 Go 版 main `a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459` までの追加機能にも対応しています（参照値は [baseline.json](docs/reference/baseline.json)）。攻撃別の追加調査ガイド、HTML の日本語表示と言語選択、集約上限・GeoIP 警告・端末表示・不完全なレポートの削除に関する修正を含みます。
-
-Go 版 **v2.0.0** のリアルタイム監視・JSONL事案イベント・チェックポイント復元・外部コマンドHook・ローカルGeoIP補足に対応しました。詳細は [監視・Hookガイド](docs/watch.md)、[移植検証記録](docs/watch-validation.md)を参照してください。
-
-```sh
-java -jar target/webauditJ.jar watch access.log
-java -jar target/webauditJ.jar watch access.log --from beginning --format jsonl
-java -jar target/webauditJ.jar watch access.log --on-detect ./examples/notify.sh
-```
 
 Java **25 以上**が必要です。配布形式は依存ライブラリ・ルール・HTML テンプレートを含む実行可能 JAR です。jpackage と GraalVM Native Image は後続工程です。
 
@@ -50,6 +42,8 @@ LB / CDN / リバースプロキシ配下では、Apache / Nginx 側で信頼す
 
 ## HTML の言語と追加調査ガイド
 
+端末の調査案内は日本語です。`--lang en` は HTML の表示だけを切り替え、端末要約には適用されません。
+
 HTML は既定で日本語です。英語で出力する場合は `--lang en` を指定します。
 
 ```sh
@@ -65,6 +59,16 @@ java -jar target/webauditJ.jar access.log --format html --lang ja
 HTML の「独立したHub・Auraの検出」は、一覧表から各詳細へ移動できます。詳細に検出元の生ログを最大8件、1件あたり4096バイトまで表示します。Aura の集計検出は、その集計対象に属するログの例です。生ログは解析中に保持し、合計保持量は独自事案の証拠とは別枠で `--max-evidence-bytes` を上限とします。省略時は警告を表示します。生ログの保持はHTML出力時のみ行います。
 
 案内は証拠を探す目安です。時刻・タイムゾーン・対象ホスト・URL、可能ならリクエスト ID で当時の記録と照合してください。痕跡がないだけでは失敗と判断できず、失敗の証拠は確認した要求の範囲に限られます。現在の環境での再現だけでは当時の成否を確定できません。追加証拠による自動再判定は行いません。
+
+## 継続監視したい場合
+
+Go 版 **v2.0.0** のリアルタイム監視・JSONL事案イベント・チェックポイント復元・外部コマンドHook・ローカルGeoIP補足に対応しました。詳細は [監視・Hookガイド](docs/watch.md)、[移植検証記録](docs/watch-validation.md)を参照してください。
+
+```sh
+java -jar target/webauditJ.jar watch access.log
+java -jar target/webauditJ.jar watch access.log --from beginning --format jsonl
+java -jar target/webauditJ.jar watch access.log --on-detect ./examples/notify.sh
+```
 
 ## GeoIP / ASN
 

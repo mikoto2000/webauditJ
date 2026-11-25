@@ -804,5 +804,20 @@
   "URI": "URI",
   "Unseen attack patterns, obfuscation, false positives, proxy address ambiguity, GeoIP accuracy and the existing time-window/source-compatibility limits constrain interpretation.": "未収録の攻撃パターン、難読化、誤検知、プロキシ経由のアドレスの曖昧さ、GeoIP の精度、既存の時間窓・互換実装の制約により、判断できる範囲は限定されます。",
   "Unverified matters": "判断できない・未確認の事項",
-  "Where and how to check": "確認対象と確認方法"
+  "Where and how to check": "確認対象と確認方法",
+  "Partial": "部分解析",
+  "View warnings and input files": "警告・入力ファイルを見る",
+  "Analysis status:": "解析状態:",
+  "Completed": "完了",
+  "WebAudit incidents:": "WebAuditの事案:",
+  "Hub alerts:": "Hubのアラート:",
+  "Aura signature groups:": "Auraのシグネチャグループ:",
+  "Aura analysis findings:": "Auraの解析検出:",
+  "Zero WebAudit incidents does not mean zero Hub or Aura detections. Counts use different aggregation units and must not be added.": "WebAuditの事案が0件でも、Hub・Auraの検出が0件とは限りません。集計単位が異なるため、各件数は合算できません。",
+  "How to read the indicators": "判定指標の読み方",
+  "Attack score: sum of unique matched-rule weights (critical 40, high 30, medium 15, other 5), capped at 100. It measures suspiciousness, not attack success.": "攻撃スコアは、一意な一致ルールの重み（緊急40、高30、中15、その他5）の合計を100で打ち切った値です。不審さを表し、攻撃の成功を示すものではありません。",
+  "Outcome confidence: a rule-based evidence-strength indicator, not a calibrated probability. The current values are 0.2 for unknown, 0.55 for possible success and 0.5 for likely failure; they are not success rates.": "成否の確信度は、ルールの条件に基づく証拠の強さの指標であり、校正された確率ではありません。現行値は成否不明0.2、成功の疑い0.55、失敗の疑い0.5で、成功率を示しません。",
+  "Wall clock; timezone unknown; cannot convert to UTC": "記録上の時刻・タイムゾーン不明・UTC換算不可",
+  "Time range unavailable; check retained timestamps in evidence samples": "時刻範囲なし。証拠欄で保持された個別時刻を確認",
+  "Evidence-strength indicator. This is not the probability of success.": "証拠の強さを示す指標。成功確率ではありません。"
 }

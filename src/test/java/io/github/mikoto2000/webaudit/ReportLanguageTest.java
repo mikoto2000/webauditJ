@@ -109,9 +109,14 @@ class ReportLanguageTest {
         Reports.write(out, report, "html", lang);
         String html = out.toString();
         var tr = new ReportLanguage(lang);
-        for (String key : List.of("Hub alerts:", "Aura signature groups:", "Aura analysis findings:",
-            "How to read the indicators", "Evidence-strength indicator. This is not the probability of success.",
-            "Wall clock; timezone unknown; cannot convert to UTC")) {
+        for (String key :
+            List.of(
+                "Hub alerts:",
+                "Aura signature groups:",
+                "Aura analysis findings:",
+                "How to read the indicators",
+                "Evidence-strength indicator. This is not the probability of success.",
+                "Wall clock; timezone unknown; cannot convert to UTC")) {
           assertTrue(html.contains(tr.text(key)), key);
         }
         assertTrue(html.contains("href=\"#coverage\""));
