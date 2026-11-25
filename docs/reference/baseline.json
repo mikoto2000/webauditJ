@@ -29,6 +29,16 @@
       "sha256": "d6cc9b886a3a8a26713aaaca14717f7d6b33c0a3e345a5dd8307c48c574665f5",
       "cases": 33,
       "commit": "96e3c8a3148d1684d60abac22d3aa2939354e891"
+    },
+    "audience-ja-golden.json": {
+      "sha256": "6c3198fb51bed23a6814376712ffd06b3dcee9590bb7c62191c1b0a692713495",
+      "commit": "96b3697118495aec9948b98d9c47cab9aad65eb6",
+      "cases": 12
+    },
+    "audience-en-golden.json": {
+      "sha256": "41e20a0872cdb33d3a9d802be880315589d562fe0f7bce03385e382940bdedf1",
+      "commit": "96b3697118495aec9948b98d9c47cab9aad65eb6",
+      "cases": 12
     }
   },
   "main_port_commit": "a26ee0ff1e1bb3d5c88979cf6c0854898f3e5459",

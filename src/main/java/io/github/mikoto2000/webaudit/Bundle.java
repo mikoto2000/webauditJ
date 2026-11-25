@@ -259,6 +259,8 @@ public final class Bundle {
       var transformed = (Map<String, Object>) BundleMask.tree(report, !b.includeSensitiveEvidence);
       report.clear();
       report.putAll(transformed);
+      var audience = new BundleAudience(report);
+      audience.prepare();
       BundlePresentation.recommendations(writer, report);
       writer.csv(
           "log-inventory.csv",
@@ -339,15 +341,15 @@ public final class Bundle {
         log.append(BundleMask.text(warning.toString(), !b.includeSensitiveEvidence)).append('\n');
       writer.text("diagnostics/execution-log.txt", log.toString());
       writer.json("report.json", report);
-      writer.write(
-          "report.html",
-          out -> {
-            var html = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-            BundleHTML.write(html, report);
-            html.flush();
-          });
+      audience.write(writer);
       var manifest =
           Json.map(
+              "decision_rules_version",
+              BundleAudience.RULES,
+              "report_spec_version",
+              BundleAudience.SPEC,
+              "secondary_template_version",
+              BundleAudience.TEMPLATE,
               "schema",
               "webaudit/manifest-1",
               "version",

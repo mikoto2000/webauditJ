@@ -17,6 +17,7 @@ def check_jar(jar):
         assert "Multi-Release: true" in manifest, "Shaded multi-release dependencies must be enabled"
         assert "Enable-Native-Access: ALL-UNNAMED" in manifest, "Watch OS operations require native access"
         required = [
+            "audience-content.json", "audience_executive.ftlh", "audience_technical.ftlh", "audience.css", "secondary-investigation.js", "report-spec.md", "audience-readme.md",
             "rules.json", "parser-patterns.json", "report.ftlh", "investigation.ftlh", "report-resources.json", "report-aspects.json", "report-aggregate-rules.json", "upstream/manifest.json",
             "picocli/CommandLine.class", "com/google/re2j/Pattern.class",
             "com/maxmind/db/Reader.class", "freemarker/template/Configuration.class",

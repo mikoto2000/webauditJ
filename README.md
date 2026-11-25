@@ -146,3 +146,6 @@ spool上限に達しても既存解析を継続し、全件証跡と該当集計
 出力一覧・数え方・制限は[利用方法と出力契約](docs/reporting/output.md)、実測結果は[性能と資源使用量](docs/reporting/performance.md)を参照してください。[日本語サンプル](examples/investigation-ja/report.html)と[English sample](examples/investigation-en/report.html)には同じ入力から生成したJSON/CSV/manifestも付属します。
 
 `--verbose` は stderr に入力ファイルのプログレスバーと読み取り行数を表示します。単一の大きなファイルでも行数は約100ms間隔で更新します。バーは列挙したファイルの処理済み数（重複除外・読み取り失敗を含む）で、解析やレポート生成全体の成功率ではありません。gzip、ディレクトリ、`--report-dir` にも対応します。完了時は改行し、通常レポートのファイル別診断は従来どおり表示します。stdout のレポート形式は変わりません。Go 版 [PR #39](https://github.com/mikoto2000/webaudit/pull/39) の表示仕様を移植しています。
+
+
+`--report-dir` は幹部向け `executive-summary.html`、技術者向け `technical-report.html`、二次調査の依頼Markdown・構造化計画・共通仕様書・HTML/CSSテンプレートも出力します。`index.html` から開いてください。詳細は[幹部・技術者向けレポート](docs/reporting/audience-reports.md)を参照してください。依頼文の生成だけを行い、資料収集・LLM呼出し・調査実行は行いません。

@@ -70,3 +70,6 @@ HTMLは事案/独立検出各100件、coverage/rule各1000件、ランキング2
 統計別紙の`count_quality`は全観測件数、`suspicious_count_quality`は不審件数の品質を表す。spool上限等で後者だけが下限になる場合もCSV単体で開示する。数値統計のcount/missing/invalidは排他的に計数し、不正値を欠損数へ二重計上しない。
 
 Java版のmanifest.buildはJVM/OS/archと配布JAR自身のSHA-256を記録する。IDEやclasses directoryから実行した場合はartifact_hash_scope=classes_directory_unhashed、hash=nullとして非取得を明示する。JARの識別は生成時のbytesであり署名検証ではない。HTMLの入力一覧も1000件まで。
+
+
+`--report-dir` は幹部向け `executive-summary.html`、技術者向け `technical-report.html`、二次調査の依頼Markdown・構造化計画・共通仕様書・HTML/CSSテンプレートも出力します。`index.html` から開いてください。詳細は[幹部・技術者向けレポート](audience-reports.md)を参照してください。依頼文の生成だけを行い、資料収集・LLM呼出し・調査実行は行いません。
