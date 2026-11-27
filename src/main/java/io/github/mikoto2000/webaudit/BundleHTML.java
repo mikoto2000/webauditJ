@@ -88,6 +88,59 @@ final class BundleHTML {
     return chart(title, bars.subList(0, Math.min(30, bars.size())), annex, bars.size());
   }
 
+  static List<Map<String, Object>> riskCoverage(
+      Map<String, Object> report, List<? extends Map<String, Object>> coverage) {
+    var findings = new HashMap<Object, Map<String, Object>>();
+    for (var f : BundleCoverage.rows(Json.obj(report.get("analysis")).get("findings")))
+      findings.put(f.get("id"), f);
+    var detections = new HashMap<Object, Map<String, Object>>();
+    for (var d : BundleCoverage.rows(report.get("detections"))) detections.put(d.get("id"), d);
+    var materials = new HashMap<Object, Object>();
+    for (var a : BundleCoverage.rows(Json.obj(report.get("decision_support")).get("actions")))
+      materials.put(a.get("case_id"), a.get("materials"));
+    var result = new ArrayList<Map<String, Object>>();
+    for (var risk : BundleAudience.executiveRisks(report)) {
+      Object id = risk.get("case_id");
+      var matches = new ArrayList<Map<String, Object>>();
+      String engine = "";
+      Object missing = List.of();
+      if (risk.get("kind").equals("finding")) {
+        engine = "webaudit";
+        var f = findings.get(id);
+        if (f != null) missing = Json.obj(f.get("outcome")).getOrDefault("missing", List.of());
+        for (var row : coverage)
+          if (Json.string(row.get("id")).startsWith("ASPECT-")
+              && Json.bool(row.get("has_detections"))
+              && BundleRequests.strings(row.get("finding_ids")).contains(id)) matches.add(row);
+        if (matches.isEmpty())
+          for (var row : coverage)
+            if (Json.string(row.get("id")).startsWith("RULE-")
+                && BundleRequests.strings(row.get("finding_ids")).contains(id)) matches.add(row);
+      } else if (detections.containsKey(id)) {
+        var d = detections.get(id);
+        engine = Json.string(d.get("engine"));
+        for (var row : coverage)
+          if (Json.string(row.get("id")).startsWith("RULE-")
+              && BundleRequests.strings(row.get("engines")).contains(engine)
+              && BundleRequests.strings(row.get("rule_ids")).contains(d.get("rule_id")))
+            matches.add(row);
+      }
+      result.add(
+          Json.map(
+              "risk",
+              risk,
+              "perspectives",
+              matches,
+              "engine",
+              engine,
+              "missing",
+              missing,
+              "materials",
+              materials.getOrDefault(id, List.of())));
+    }
+    return result;
+  }
+
   static Map<String, Object> view(Map<String, Object> report, ReportLanguage tr) {
     var model = new HashMap<String, Object>();
     var analysis = Json.obj(report.get("analysis"));
@@ -104,6 +157,17 @@ final class BundleHTML {
     var findings = limit(analysis.get("findings"), 100);
     var rules = limit(report.get("analysis_rules"), 1000);
     var coverage = limit(report.get("coverage"), 1000);
+    var risksByCase = new HashMap<Object, Map<String, Object>>();
+    for (var risk : BundleCoverage.rows(Json.obj(report.get("decision_support")).get("risks")))
+      risksByCase.put(risk.get("case_id"), risk);
+    var recommendationsByTarget = new HashMap<Object, List<Map<String, Object>>>();
+    for (var rec : BundleCoverage.rows(report.get("recommendations")))
+      if ("investigation".equals(rec.get("type"))) {
+        var ids = new LinkedHashSet<String>(BundleRequests.strings(rec.get("finding_ids")));
+        ids.addAll(BundleRequests.strings(rec.get("detection_ids")));
+        for (var id : ids)
+          recommendationsByTarget.computeIfAbsent(id, k -> new ArrayList<>()).add(rec);
+      }
     var cases = new ArrayList<Map<String, Object>>();
     var sources = new ArrayList<Map<String, Object>>();
     var metrics = new HashMap<String, Map<String, Object>>();
@@ -140,6 +204,12 @@ final class BundleHTML {
               .toList();
       cases.add(
           Json.map(
+              "risk",
+              risksByCase.getOrDefault(id, Map.of()),
+              "recommendations",
+              recommendationsByTarget.getOrDefault(id, List.of()),
+              "brief_samples",
+              samples.subList(0, Math.min(3, samples.size())),
               "finding",
               f,
               "metrics",
@@ -153,7 +223,7 @@ final class BundleHTML {
     }
     long sourceTotal = 0;
     for (var d : BundleCoverage.rows(report.get("detections"))) {
-      if (d.get("engine").equals("webaudit")) continue;
+      if (Set.of("webaudit", "geoip").contains(d.get("engine"))) continue;
       sourceTotal++;
       if (sources.size() >= 100) continue;
       sourceIDs.add((String) d.get("id"));
@@ -171,7 +241,23 @@ final class BundleHTML {
                   r.get("engine").equals(d.get("engine")) && r.get("id").equals(d.get("rule_id")))
               .findFirst()
               .orElse(Map.of());
-      sources.add(Json.map("detection", d, "source", source, "rule", rule, "samples", samples));
+      var uris = BundleRequests.strings(d.get("uri_examples"));
+      sources.add(
+          Json.map(
+              "detection",
+              d,
+              "source",
+              source,
+              "rule",
+              rule,
+              "samples",
+              samples,
+              "risk",
+              risksByCase.getOrDefault(d.get("id"), Map.of()),
+              "recommendations",
+              recommendationsByTarget.getOrDefault(d.get("id"), List.of()),
+              "brief_uris",
+              uris.subList(0, Math.min(3, uris.size()))));
     }
     var charts = new ArrayList<Map<String, Object>>();
     var dimensions = Json.obj(stats.get("dimensions"));
@@ -228,6 +314,20 @@ final class BundleHTML {
     var timeline = limit(stats.get("timeline"), 120);
     long timelineMax =
         timeline.stream().mapToLong(row -> Json.number(row.get("requests"))).max().orElse(1);
+    model.put("risk_coverage", riskCoverage(report, coverage));
+    model.put(
+        "detected_aspects",
+        coverage.stream()
+            .filter(c ->
+                Json.string(c.get("id")).startsWith("ASPECT-")
+                    && Json.bool(c.get("has_detections")))
+            .toList());
+    model.put(
+        "incomplete_aspects",
+        coverage.stream()
+            .filter(c ->
+                Json.string(c.get("id")).startsWith("ASPECT-") && !Json.bool(c.get("complete")))
+            .toList());
     model.put("cases", cases);
     model.put("sources", sources);
     model.put("coverage", coverage);
@@ -300,6 +400,74 @@ final class BundleHTML {
                 Json.MAPPER
                     .writerWithDefaultPrettyPrinter()
                     .writeValueAsString(DeepUnwrap.unwrap((TemplateModel) args.getFirst())));
+    safe.put("v", new HashMap<>(safe));
+    safe.put(
+        "entries",
+        (TemplateMethodModelEx)
+            a -> {
+              Object value = DeepUnwrap.unwrap((TemplateModel) a.getFirst());
+              return value instanceof Map<?, ?> ? value : Map.of();
+            });
+    safe.put(
+        "items",
+        (TemplateMethodModelEx)
+            a -> BundleAudience.items(DeepUnwrap.unwrap((TemplateModel) a.getFirst())));
+    safe.put("scalar", (TemplateMethodModelEx) a -> string(a.getFirst()));
+    safe.put(
+        "truth",
+        (TemplateMethodModelEx)
+            a -> BundleAudience.truth(DeepUnwrap.unwrap((TemplateModel) a.getFirst())));
+    safe.put("dt", safe.get("n"));
+    safe.put(
+        "brief",
+        (TemplateMethodModelEx)
+            a -> {
+              String value = string(a.getFirst());
+              return value.codePointCount(0, value.length()) > 160
+                  ? value.substring(0, value.offsetByCodePoints(0, 160)) + "…"
+                  : value;
+            });
+    safe.put(
+        "analysisStatus",
+        (TemplateMethodModelEx)
+            a ->
+                tr.text(
+                    switch (string(a.getFirst())) {
+                      case "completed" -> "Completed analysis";
+                      case "failed" -> "Failed analysis";
+                      default -> "Partial analysis";
+                    }));
+    safe.put(
+        "meanBytes",
+        (TemplateMethodModelEx)
+            a -> {
+              var m = Json.obj(DeepUnwrap.unwrap((TemplateModel) a.getFirst()));
+              return Json.number(m.get("bytes_count")) == 0
+                  ? tr.text("unknown")
+                  : ((Number) m.get("bytes_sum")).doubleValue() / Json.number(m.get("bytes_count"));
+            });
+    safe.put(
+        "percent",
+        (TemplateMethodModelEx)
+            a -> {
+              Object value = DeepUnwrap.unwrap((TemplateModel) a.getFirst());
+              return value instanceof Number n
+                  ? String.format(Locale.ROOT, "%.2f%%", n.doubleValue())
+                  : tr.text("unknown");
+            });
+    var requestIDs = new HashSet<String>();
+    for (var c : BundleCoverage.rows(Json.obj(report.get("secondary_investigation")).get("cases")))
+      requestIDs.add(Json.string(c.get("id")));
+    safe.put("requestable", (TemplateMethodModelEx) a -> requestIDs.contains(string(a.getFirst())));
+    safe.put(
+        "requestTargets",
+        (TemplateMethodModelEx)
+            a -> {
+              var rec = Json.obj(DeepUnwrap.unwrap((TemplateModel) a.getFirst()));
+              var ids = new LinkedHashSet<String>(BundleRequests.strings(rec.get("finding_ids")));
+              ids.addAll(BundleRequests.strings(rec.get("detection_ids")));
+              return ids.stream().filter(requestIDs::contains).toList();
+            });
     try {
       HTML.getTemplate("investigation.ftlh").process(safe, out);
     } catch (TemplateException e) {

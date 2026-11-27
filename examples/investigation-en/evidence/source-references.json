@@ -1,0 +1,89 @@
+{
+  "WA-68533c54f477aefb" : [ {
+    "request_id" : "REQ-419dfb2344bd0d6de2dac26f4d1247d0",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 2
+  }, {
+    "request_id" : "REQ-5168561791d6cdbf1a5002e8978cb610",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 3
+  }, {
+    "request_id" : "REQ-461ca24c8de85cb32ba88db998116999",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 4
+  } ],
+  "WA-e209a83ef4765316" : [ {
+    "request_id" : "REQ-5f95cd089487c6efa5892e119b001731",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 5
+  } ],
+  "WA-53546a87d8946592" : [ {
+    "request_id" : "REQ-428881c6d1eeefd7783d3bc3de5eb1c4",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 6
+  }, {
+    "request_id" : "REQ-033bc7627f85da7cd7970ef8c3e3394e",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 7
+  }, {
+    "request_id" : "REQ-e07e1855083799c332b2a3ed546c2642",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 8
+  } ],
+  "WA-e3ae05f55589ce85" : [ {
+    "request_id" : "REQ-9fbb5b476024dfc58e9b1e7a1fd5bc47",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 9
+  } ],
+  "DET-3f3155956d35ab191969098eb3f28b05" : [ {
+    "request_id" : "REQ-428881c6d1eeefd7783d3bc3de5eb1c4",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 6
+  }, {
+    "request_id" : "REQ-033bc7627f85da7cd7970ef8c3e3394e",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 7
+  }, {
+    "request_id" : "REQ-e07e1855083799c332b2a3ed546c2642",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 8
+  } ],
+  "DET-f46f1e0d8936861b6d6ee668e0da5ee5" : [ {
+    "request_id" : "REQ-419dfb2344bd0d6de2dac26f4d1247d0",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 2
+  }, {
+    "request_id" : "REQ-5168561791d6cdbf1a5002e8978cb610",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 3
+  }, {
+    "request_id" : "REQ-461ca24c8de85cb32ba88db998116999",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 4
+  } ],
+  "DET-e04a802150d1b00d86916f0c97ab9cc8" : [ {
+    "request_id" : "REQ-9fbb5b476024dfc58e9b1e7a1fd5bc47",
+    "source_file_id" : "FILE-90df7baaf2104816a41cdbcab5bf8f8a",
+    "source_file" : "F:\\project\\webauditJ\\examples\\sample.log",
+    "source_line" : 9
+  } ],
+  "DET-03ae07b757f50ab890a74fe01a34030a" : [ ],
+  "DET-477f2cd524014e5368cfb1e0bb6dfe4f" : [ ],
+  "DET-734734038fab05d4d89ce4e762bcd588" : [ ],
+  "DET-3a94cf3eddc8266172d0f4e1e29f5593" : [ ],
+  "DET-4c4a76ae2d2b61d4f67160e36b94f12b" : [ ]
+}

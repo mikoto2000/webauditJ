@@ -8,3 +8,5 @@ __pycache__/
 !src/test/resources/**/*.log
 !examples/*.log
 /.worktrees/
+
+/_site/

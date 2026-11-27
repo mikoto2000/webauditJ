@@ -1,5 +1,7 @@
 # WebAuditJ
 
+出力レポート例：[日本語](examples/investigation-ja/index.html) / [English](examples/investigation-en/index.html)
+
 最新リリース: [v2.1.1](https://github.com/mikoto2000/webauditJ/releases/tag/v2.1.1)。変更点は [リリースノート](docs/releases/v2.1.1.md)を参照してください。
 
 HTTP サーバーのログをオフラインで調査する Java 版 WebAudit。Go 版の `95148ba4e22d9001d34fbb0e4d59f072efd3e95c` を基準に、独自検知、Hub/Aura 互換検知、事案の関連付け、GeoIP/ASN 補足情報と DB 管理を移植しています。
@@ -153,3 +155,5 @@ spool上限に達しても既存解析を継続し、全件証跡と該当集計
 
 
 `--report-dir` は幹部向け `executive-summary.html`、技術者向け `technical-report.html`、二次調査の依頼Markdown・構造化計画・共通仕様書・HTML/CSSテンプレートも出力します。`index.html` から開いてください。詳細は[幹部・技術者向けレポート](docs/reporting/audience-reports.md)を参照してください。依頼文の生成だけを行い、資料収集・LLM呼出し・調査実行は行いません。
+
+報告書は、幹部向けの要約から確認事項を選び、技術者向けで観測事実・疑い・未確認事項・次の確認へ進む構成です。第3章では幹部向け上位10対象と調査観点・独立検出を対応付け、第6章で対象別の追加調査依頼と結果報告を扱います。詳細は[読み方と追加調査](docs/reporting/audience-reports.md)を参照してください。

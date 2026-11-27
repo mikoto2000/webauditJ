@@ -8,7 +8,7 @@ import java.util.*;
 
 /** Audience views of the masked common model; never reclassifies detection outcomes. */
 final class BundleAudience {
-  static final String RULES = "webaudit/response-rules-1",
+  static final String RULES = "webaudit/response-rules-2",
       TEMPLATE = "webaudit/secondary-prompt-1",
       SPEC = "webaudit/report-spec-1";
   private final Map<String, Object> report, content, decision, plan;
@@ -31,6 +31,10 @@ final class BundleAudience {
             "monitor",
             "confirmed_impact",
             content.get("confirmed_impact"),
+            "common_escalation_condition",
+            content.get("common_escalation_condition"),
+            "common_if_deferred",
+            content.get("common_if_deferred"),
             "response_rules",
             content.get("response_rules"),
             "risks",
@@ -221,9 +225,11 @@ final class BundleAudience {
             "next_action",
             profile.get("next_action"),
             "escalation_condition",
-            content.get("escalation_condition"),
+            Json.string(profile.get("escalation_condition")).isEmpty()
+                ? content.get("common_escalation_condition")
+                : profile.get("escalation_condition"),
             "if_deferred",
-            content.get("if_deferred")));
+            content.get("common_if_deferred")));
     actions.add(
         Json.map(
             "id",
@@ -357,7 +363,11 @@ final class BundleAudience {
   }
 
   List<Map<String, Object>> executiveRisks() {
-    return risks.stream()
+    return executiveRisks(report);
+  }
+
+  static List<Map<String, Object>> executiveRisks(Map<String, Object> report) {
+    return rows(Json.obj(report.get("decision_support")).get("risks")).stream()
         .sorted(
             Comparator.comparingInt(r ->
                 r.get("outcome").equals("possible_success")
@@ -370,6 +380,65 @@ final class BundleAudience {
                     }))
         .limit(10)
         .toList();
+  }
+
+  static List<Map<String, Object>> riskSummary(List<Map<String, Object>> risks) {
+    var seen = new HashSet<Object>();
+    return risks.stream().filter(r -> seen.add(r.get("title"))).toList();
+  }
+
+  static List<Map<String, Object>> outcomeCounts(Map<String, Object> counts) {
+    var order =
+        new ArrayList<>(
+            List.of(
+                "confirmed_success",
+                "possible_success",
+                "unknown",
+                "likely_failed",
+                "confirmed_failure"));
+    counts.keySet().stream().filter(k -> !order.contains(k)).sorted().forEach(order::add);
+    return order.stream()
+        .filter(counts::containsKey)
+        .map(k -> (Map<String, Object>) Json.map("label", k, "count", counts.get(k)))
+        .toList();
+  }
+
+  static List<Map<String, Object>> escalationGroups(Map<String, Object> decision) {
+    var groups = new LinkedHashMap<String, Map<String, Object>>();
+    for (var risk : rows(decision.get("risks"))) {
+      String condition = Json.string(risk.get("escalation_condition"));
+      if (condition.isEmpty() || condition.equals(decision.get("common_escalation_condition")))
+        continue;
+      var group =
+          groups.computeIfAbsent(
+              condition,
+              k ->
+                  Json.map(
+                      "title",
+                      risk.get("title"),
+                      "condition",
+                      k,
+                      "targets",
+                      new ArrayList<Map<String, Object>>()));
+      rows(group.get("targets")).add(risk);
+    }
+    return List.copyOf(groups.values());
+  }
+
+  static Object items(Object value) {
+    return value instanceof Collection<?> || value instanceof Map<?, ?> ? value : List.of();
+  }
+
+  static boolean truth(Object value) {
+    return value instanceof Boolean b
+        ? b
+        : value instanceof Number n
+            ? n.doubleValue() != 0
+            : value instanceof Collection<?> c
+                ? !c.isEmpty()
+                : value instanceof Map<?, ?> m
+                    ? !m.isEmpty()
+                    : value != null && !value.toString().isEmpty();
   }
 
   static Object unwrap(Object o) throws TemplateModelException {
@@ -396,6 +465,40 @@ final class BundleAudience {
     view.put("decision_support", d);
     var model = new HashMap<String, Object>();
     model.put("r", BundleHTML.safe(view));
+    model.put(
+        "entries",
+        (TemplateMethodModelEx)
+            a -> {
+              Object value = unwrap(a.getFirst());
+              return value instanceof Map<?, ?> ? value : Map.of();
+            });
+    model.put("items", (TemplateMethodModelEx) a -> items(unwrap(a.getFirst())));
+    var detailIDs = new HashSet<String>();
+    rows(Json.obj(report.get("analysis")).get("findings")).stream()
+        .limit(100)
+        .forEach(f -> detailIDs.add(Json.string(f.get("id"))));
+    rows(report.get("detections")).stream()
+        .filter(f -> !Set.of("webaudit", "geoip").contains(f.get("engine")))
+        .limit(100)
+        .forEach(f -> detailIDs.add(Json.string(f.get("id"))));
+    model.put(
+        "caseDetailsAnchor",
+        (TemplateMethodModelEx)
+            a -> {
+              String id = Json.string(unwrap(a.getFirst()));
+              return detailIDs.contains(id) ? id : "";
+            });
+    model.put(
+        "executiveVisible",
+        (TemplateMethodModelEx) a -> ids.contains(Json.string(unwrap(a.getFirst()))));
+    model.put("riskSummary", (TemplateMethodModelEx) a -> riskSummary(rows(unwrap(a.getFirst()))));
+    model.put(
+        "outcomeCounts",
+        (TemplateMethodModelEx) a -> outcomeCounts(Json.obj(unwrap(a.getFirst()))));
+    model.put(
+        "escalationGroups",
+        (TemplateMethodModelEx) a -> escalationGroups(Json.obj(unwrap(a.getFirst()))));
+
     model.put(
         "l", (TemplateMethodModelEx) a -> Json.string(unwrap(a.get(lang.equals("en") ? 1 : 0))));
     model.put(
@@ -523,6 +626,12 @@ final class BundleAudience {
             RULES,
             "response_rules",
             decision.get("response_rules"),
+            "common_escalation_condition",
+            decision.get("common_escalation_condition"),
+            "common_if_deferred",
+            decision.get("common_if_deferred"),
+            "escalation_fallback",
+            "Use common_escalation_condition when a profile has no specific criteria",
             "priority_rule",
             "possible_success or severity high/critical => high; medium => medium; otherwise low;"
                 + " independent detections unassessed",
@@ -630,38 +739,44 @@ final class BundleAudience {
     BundleHTML.write(technical, report);
     String nav =
         "<p><a href=\"executive-summary.html\">"
-            + (lang.equals("en") ? "Executive report" : "幹部向け報告")
+            + (lang.equals("en")
+                ? "Start with results and next steps (plain-language summary)"
+                : "まず結果と次の対応を見る（やさしい要約）")
             + "</a> · <a href=\"technical-report.html#secondary-investigation\">"
             + (lang.equals("en") ? "Secondary prompt generator" : "二次調査プロンプト生成")
             + "</a></p>";
     String legacy =
         technical.toString().replace("<nav id=\"contents\">", nav + "<nav id=\"contents\">");
+    legacy =
+        legacy.replaceFirst(
+            "</ol>",
+            "<li><a href=\"technical-report.html#investigation-workflow\">"
+                + (lang.equals("en")
+                    ? "Investigation requests and result reporting (technical report)"
+                    : "追加調査の依頼と結果報告（技術者向け）")
+                + "</a></li></ol>");
     w.text("report.html", legacy);
     String enhanced =
         legacy
-            .replace("</main>", render("audience_technical.ftlh", false) + "</main>")
+            .replace(
+                "<section id=\"appendix-assessment\">",
+                render("audience_technical.ftlh", false) + "<section id=\"appendix-assessment\">")
             .replace(
                 "default-src 'none'; style-src", "default-src 'none'; script-src 'self'; style-src")
             .replace(
                 "</body>",
                 "<script src=\"secondary-plan.js\"></script><script"
                     + " src=\"secondary-investigation.js\"></script></body>");
+    enhanced =
+        enhanced.replaceFirst(
+            "<li><a href=\"technical-report.html#investigation-workflow\">.*?</a></li>",
+            "<li><a href=\"#investigation-workflow\">"
+                + (lang.equals("en")
+                    ? "6. Investigation requests and result reporting"
+                    : "第6章 追加調査の依頼と結果報告")
+                + "</a></li>");
     w.text("technical-report.html", enhanced);
     w.text("technical.html", enhanced);
-    w.text(
-        "index.html",
-        "<!doctype html><html lang=\""
-            + lang
-            + "\"><meta charset=\"utf-8\"><meta name=\"viewport\""
-            + " content=\"width=device-width\"><title>WebAuditJ</title><h1>WebAuditJ</h1><ul><li><a"
-            + " href=\"executive-summary.html\">"
-            + (lang.equals("en") ? "Executive report" : "幹部向け報告")
-            + "</a></li><li><a href=\"technical-report.html\">"
-            + (lang.equals("en") ? "Technical report" : "技術者向け報告")
-            + "</a></li><li><a href=\"technical-report.html#secondary-investigation\">"
-            + (lang.equals("en") ? "Secondary prompt generator" : "二次調査プロンプト生成")
-            + "</a></li><li><a href=\"report-spec.md\">Report specification</a></li><li><a"
-            + " href=\"report.json\">JSON</a></li><li><a href=\"README.md\">README</a></li><li><a"
-            + " href=\"manifest.json\">Manifest</a></li></ul></html>");
+    w.text("index.html", render("audience_index.ftlh", false));
   }
 }

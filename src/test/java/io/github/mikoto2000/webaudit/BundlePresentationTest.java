@@ -63,9 +63,10 @@ class BundlePresentationTest {
       String html = Files.readString(target.resolve("report.html"));
       for (int i = 1; i <= 11; i++) {
         assertTrue(html.contains("id=\"chapter-" + i + "\""));
-        assertTrue(html.contains("href=\"#chapter-" + i + "\""));
       }
-      assertTrue(html.contains(lang.equals("ja") ? "第11章 推奨対応" : "11. Recommended actions"));
+      for (int i : List.of(1, 2, 6, 8, 11))
+        assertTrue(html.contains("href=\"#chapter-" + i + "\""));
+      assertTrue(html.contains(lang.equals("ja") ? "第5章 推奨対応" : "5. Recommended actions"));
       assertFalse(html.contains("<script>"));
       assertTrue(html.contains("&lt;script&gt;title&lt;/script&gt;"));
       assertTrue(html.contains("<meter"));
