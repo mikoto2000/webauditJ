@@ -1,0 +1,1569 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WebAuditJ 調査レポート</title>
+<style>
+:root{color-scheme:light;--ink:#182630;--muted:#52626c;--line:#dce4e8;--accent:#126579}*{box-sizing:border-box}body{margin:0;background:#f3f6f7;color:var(--ink);font:15px/1.65 system-ui,sans-serif}main{max-width:1200px;margin:0 auto;padding:40px 24px}h1{font-size:34px;margin:0}h2{margin-top:36px;font-size:23px}h3{font-size:18px}p{overflow-wrap:anywhere}.eyebrow{color:var(--accent);font-weight:700}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:24px 0}.metric,article,section.panel{background:white;border:1px solid var(--line);border-radius:10px;padding:20px}.metric strong{display:block;font-size:29px}article{margin:16px 0}pre{background:#eef3f5;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.55 ui-monospace,monospace}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eef3f5}.table{overflow-x:auto}.tag{display:inline-block;border:1px solid var(--line);padding:2px 8px;border-radius:20px;margin:2px}.warning{border-left:4px solid #bb8123;padding-left:14px}details{margin:12px 0}summary{cursor:pointer;color:var(--accent);font-weight:600}a{color:var(--accent)}footer{margin-top:40px;color:var(--muted)}
+</style></head><body><main>
+<div class="eyebrow">HTTPログのオフライン調査</div><h1>WebAuditJ 調査レポート</h1>
+<p class="muted">バージョン 2.1.1 · ルール 2026.11.20.2 · 2026-11-27T12:17:55.8825076Z</p>
+<p><strong>解析状況 完了</strong> · <a href="#coverage">警告・入力ファイルを見る</a>。アクセスログだけでは侵害を確定できません。攻撃スコアと成否の確信度は異なる証拠を表します。</p>
+<p>Hubのアラート: 0 · Auraのシグネチャグループ: 3 · Auraの解析検出: 5</p><p>WebAuditの事案が0件でも、Hub・Auraの検出が0件とは限りません。集計単位が異なるため、各件数は合算できません。</p>
+<section class="panel" aria-labelledby="reading-guide"><h2 id="reading-guide">まず、ここだけ読んでください</h2><ol><li><strong>何が見つかった？</strong> <a href="#incident-list">不審なアクセスの一覧を見る</a> · <a href="#upstream-list">ほかの検出結果を見る</a></li><li><strong>被害は出ている？</strong> 不審なアクセスがあっても、被害が出たとは限りません。「成功の疑い」は追加確認が必要、「成否不明」は判断できる証拠が足りないという意味です。</li><li><strong>次に何をする？</strong> 一覧から事案を開き、「追加調査」で確認する記録を見てください。</li></ol><p><a href="#coverage">解析できなかった範囲・注意点を確認する</a> · 検出がなくても、安全が確認できたという意味ではありません。</p></section>
+<div class="grid"><div class="metric">解析済み要求数<strong>9</strong></div><div class="metric">未解析行数<strong>0</strong></div><div class="metric">WebAuditの事案<strong>4</strong></div><div class="metric">入力ファイル<strong>1</strong></div></div>
+<p>対象期間: 2026-11-01T00:00:00Z 〜 2026-11-01T00:00:20Z。除外した重複観測数: 0.</p>
+<details><summary>判定指標の読み方</summary><p>攻撃スコアは、一意な一致ルールの重み（緊急40、高30、中15、その他5）の合計を100で打ち切った値です。不審さを表し、攻撃の成功を示すものではありません。</p><p>成否の確信度は、ルールの条件に基づく証拠の強さの指標であり、校正された確率ではありません。現行値は成否不明0.2、成功の疑い0.55、失敗の疑い0.5で、成功率を示しません。</p>
+</details><h2 id="coverage">解析範囲と警告</h2><section class="panel"><p class="warning">要求本文と応答内容がないため、認証結果や侵害の成否は確認できません</p><p class="warning">クライアントのアドレスは記録された接続元です。転送ヘッダーは信頼せず、プロキシ構成は不明として扱います</p><p class="warning">接続元IPが少なすぎるため、要求数・エラー率の統計的推定を行えません</p><p class="warning">解析済みの9件の要求で参照元（Referer）が欠落し、関連する検出範囲が狭まっています</p>
+<details><summary>入力ファイルと欠落項目</summary><div class="table"><table><tr><th>ファイル</th><th>解析済み</th><th>未解析</th><th>診断情報</th></tr><tr><td>F:\project\webauditJ\examples\sample.log</td><td>9</td><td>0</td><td></td></tr></table></div><p>参照元（Referer）: 9 が欠落</p></details></section>
+<h2 id="incident-list">WebAuditの事案</h2>
+<div class="table"><table><thead><tr><th scope="col">事案</th><th scope="col">重要度 / スコア</th><th scope="col">成否判定</th><th scope="col">接続元</th><th scope="col">件数</th></tr></thead><tbody>
+<tr><td><a href="#WA-68533c54f477aefb">WA-68533c54f477aefb</a> · 探索</td><td>高 / 30</td><td>成功の疑い</td><td>192.0.2.10</td><td>3</td></tr><tr><td><a href="#WA-e209a83ef4765316">WA-e209a83ef4765316</a> · 脆弱性の悪用試行</td><td>高 / 30</td><td>成否不明</td><td>192.0.2.20</td><td>1</td></tr><tr><td><a href="#WA-53546a87d8946592">WA-53546a87d8946592</a> · 脆弱性の悪用試行</td><td>高 / 30</td><td>失敗の疑い</td><td>192.0.2.30</td><td>3</td></tr><tr><td><a href="#WA-e3ae05f55589ce85">WA-e3ae05f55589ce85</a> · 脆弱性の悪用試行</td><td>中 / 15</td><td>成否不明</td><td>192.0.2.40</td><td>1</td></tr>
+</tbody></table></div>
+<article id="WA-68533c54f477aefb"><span class="tag">高</span><span class="tag">成功の疑い</span><h3>192.0.2.10 · 探索</h3><p>WA-68533c54f477aefb · 3 件の観測 · スコア 30 · 成否の確信度 0.55<br><small>証拠の強さを示す指標。成功確率ではありません。</small></p><p>対象ホスト 不明 · User-Agent BrowserA<br>2026-11-01T00:00:01Z 〜 2026-11-01T00:00:03Z</p>
+<p>GeoIP: 非公開アドレス · 不明  · ASN 不明  · 国 未検索, ASN 未検索</p>
+<h4>検出・成否判定の理由</h4><ul><li>機密リソースの探索</li><li>アクセスログにあるのは要求と応答のメタデータであり、サーバー側の実行結果や返された内容ではありません</li><li>同じ機密リソースで拒否・未検出から本文を伴う2xx応答の反復へ変化しました。ソフト404、リダイレクト、共通ページや正規の変更の可能性が残ります</li></ul><p class="muted">記録された接続元IP、対象ホスト（取得できる場合）、User-Agent、技法の分類、イベント時刻の5分間区分が一致。これは関連付けの仮説であり、同じ主体だと確認したものではありません</p>
+<details open id="evidence-WA-68533c54f477aefb"><summary>証拠と正規化</summary><p><strong>F:\project\webauditJ\examples\sample.log:2</strong></p><pre>192.0.2.10 - - [01/Nov/2026:00:00:01 +0000] &quot;GET /.env HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserA&quot;</pre><p>時刻: 2026-11-01T00:00:01Z · HTTPステータス 404 · 応答バイト数 0</p><pre>/.env</pre><p><strong>F:\project\webauditJ\examples\sample.log:3</strong></p><pre>192.0.2.10 - - [01/Nov/2026:00:00:02 +0000] &quot;GET /.env HTTP/1.1&quot; 200 128 &quot;-&quot; &quot;BrowserA&quot;</pre><p>時刻: 2026-11-01T00:00:02Z · HTTPステータス 200 · 応答バイト数 128</p><pre>/.env</pre><p><strong>F:\project\webauditJ\examples\sample.log:4</strong></p><pre>192.0.2.10 - - [01/Nov/2026:00:00:03 +0000] &quot;GET /.env HTTP/1.1&quot; 200 128 &quot;-&quot; &quot;BrowserA&quot;</pre><p>時刻: 2026-11-01T00:00:03Z · HTTPステータス 200 · 応答バイト数 128</p><pre>/.env</pre></details>
+<details><summary>不足している証拠と追加の調査事項</summary><ul><li>応答本文と対象リソースの本来の動作</li><li>要求本文、アプリケーション・認証の監査記録</li><li>バックエンド・プロキシのステータス変換とファイル・プロセス・通信の証拠</li></ul><ol><li>参照先の元ログを読み、要求の転送先とプロキシ設定を確認してください</li><li>同時刻・同一リソースのアプリケーション・認証・エラーログを照合してください</li><li>ペイロードの探索では、サーバーのファイル・プロセス・外向き通信を確認してください</li><li>返された機密情報の実体を存在しないパスへの応答と比較し、応答・アプリケーションの証拠を保存してください</li></ol></details><section><h4>成否を確認するには</h4><p>この事案の時刻（タイムゾーンを確認）・対象ホスト・URLを基に、可能ならリクエストIDで記録を照合してください。送信元IPだけでは同じ利用者・要求と断定できません。</p>
+<h5>攻撃・検出の種類: 機密ファイル</h5><dl><dt>不明な理由</dt><dd>HTTPステータスや応答サイズだけでは、対象ファイルの内容が返されたか、読み込み・実行されたか判断できません。</dd><dt>確認する場所</dt><dd><ul><li>当時の応答本文、アプリのファイル読み込み記録、ホストのファイルアクセス監査</li><li>Webサーバー・プロキシのルーティング設定と、共通エラーページの当時の記録</li></ul></dd><dt>何が見つかれば判断できるか</dt><dd><strong>成功を裏付ける証拠:</strong> 対象要求への応答に本来公開しないファイル内容が含まれた記録、または不正なファイル読み込み・実行の記録。</dd><dd><strong>失敗を裏付ける証拠:</strong> 対象要求がファイルアクセス前に拒否された記録、または対象ファイルを読み込まず情報を含まない応答を返した処理記録。</dd></dl>
+<p class="muted">これらは調査の目安であり、証拠を検出したという意味ではありません。ログに痕跡がないだけでは失敗と判断できません。当時の記録が残っていない場合は成否不明が続きます。失敗の証拠は確認できた要求の範囲に限られ、事案全体の失敗を保証しません。現在の環境での再現結果だけでは当時の成否を確定できません。WebAuditは追加証拠を取り込んで判定を自動更新しません。</p></section><p><a href="#incident-list">事案の一覧表に戻る</a></p></article><article id="WA-e209a83ef4765316"><span class="tag">高</span><span class="tag">成否不明</span><h3>192.0.2.20 · 脆弱性の悪用試行</h3><p>WA-e209a83ef4765316 · 1 件の観測 · スコア 30 · 成否の確信度 0.2<br><small>証拠の強さを示す指標。成功確率ではありません。</small></p><p>対象ホスト 不明 · User-Agent BrowserB<br>2026-11-01T00:00:10Z 〜 2026-11-01T00:00:10Z</p>
+<p>GeoIP: 非公開アドレス · 不明  · ASN 不明  · 国 未検索, ASN 未検索</p>
+<h4>検出・成否判定の理由</h4><ul><li>SQLインジェクションの試行</li><li>アクセスログにあるのは要求と応答のメタデータであり、サーバー側の実行結果や返された内容ではありません</li></ul><p class="muted">記録された接続元IP、対象ホスト（取得できる場合）、User-Agent、技法の分類、イベント時刻の5分間区分が一致。これは関連付けの仮説であり、同じ主体だと確認したものではありません</p>
+<details open id="evidence-WA-e209a83ef4765316"><summary>証拠と正規化</summary><p><strong>F:\project\webauditJ\examples\sample.log:5</strong></p><pre>192.0.2.20 - - [01/Nov/2026:00:00:10 +0000] &quot;GET /?id=UNION%20SELECT%20password HTTP/1.1&quot; 500 100 &quot;-&quot; &quot;BrowserB&quot;</pre><p>時刻: 2026-11-01T00:00:10Z · HTTPステータス 500 · 応答バイト数 100</p><span class="tag">検出用のパーセントデコード</span><span class="tag">検出用の小文字化・バックスラッシュ変換</span><span class="tag">検出用の小文字化・バックスラッシュ変換</span><pre>/?id=UNION%20SELECT%20password</pre><pre>/?id=UNION SELECT password</pre><pre>/?id=union%20select%20password</pre><pre>/?id=union select password</pre></details>
+<details><summary>不足している証拠と追加の調査事項</summary><ul><li>応答本文と対象リソースの本来の動作</li><li>要求本文、アプリケーション・認証の監査記録</li><li>バックエンド・プロキシのステータス変換とファイル・プロセス・通信の証拠</li></ul><ol><li>参照先の元ログを読み、要求の転送先とプロキシ設定を確認してください</li><li>同時刻・同一リソースのアプリケーション・認証・エラーログを照合してください</li><li>ペイロードの探索では、サーバーのファイル・プロセス・外向き通信を確認してください</li></ol></details><section><h4>成否を確認するには</h4><p>この事案の時刻（タイムゾーンを確認）・対象ホスト・URLを基に、可能ならリクエストIDで記録を照合してください。送信元IPだけでは同じ利用者・要求と断定できません。</p>
+<h5>攻撃・検出の種類: SQLインジェクション</h5><dl><dt>不明な理由</dt><dd>アクセスログには、バックエンドで実行された問い合わせと取得・変更されたデータが記録されていません。</dd><dt>確認する場所</dt><dd><ul><li>アプリケーションの処理・エラーログと当時の応答記録</li><li>対象のDB・ディレクトリサービス・XML検索処理の監査ログ</li></ul></dd><dt>何が見つかれば判断できるか</dt><dd><strong>成功を裏付ける証拠:</strong> 対象要求の入力によって意図しない問い合わせが実行され、データ取得・変更や認証回避が起きた記録。</dd><dd><strong>失敗を裏付ける証拠:</strong> 対象要求が問い合わせ実行前に拒否された記録、または入力が値として扱われ、意図しない問い合わせや結果が生じなかった処理記録。</dd></dl>
+<p class="muted">これらは調査の目安であり、証拠を検出したという意味ではありません。ログに痕跡がないだけでは失敗と判断できません。当時の記録が残っていない場合は成否不明が続きます。失敗の証拠は確認できた要求の範囲に限られ、事案全体の失敗を保証しません。現在の環境での再現結果だけでは当時の成否を確定できません。WebAuditは追加証拠を取り込んで判定を自動更新しません。</p></section><p><a href="#incident-list">事案の一覧表に戻る</a></p></article><article id="WA-53546a87d8946592"><span class="tag">高</span><span class="tag">失敗の疑い</span><h3>192.0.2.30 · 脆弱性の悪用試行</h3><p>WA-53546a87d8946592 · 3 件の観測 · スコア 30 · 成否の確信度 0.5<br><small>証拠の強さを示す指標。成功確率ではありません。</small></p><p>対象ホスト 不明 · User-Agent BrowserC<br>2026-11-01T00:00:11Z 〜 2026-11-01T00:00:13Z</p>
+<p>GeoIP: 非公開アドレス · 不明  · ASN 不明  · 国 未検索, ASN 未検索</p>
+<h4>検出・成否判定の理由</h4><ul><li>パストラバーサルまたはローカルファイル読み込みの試行</li><li>アクセスログにあるのは要求と応答のメタデータであり、サーバー側の実行結果や返された内容ではありません</li><li>この活動の3件以上の全観測が拒否・未検出の応答でした。ステータス変換や未観測の試行があるため、失敗を断定できません</li></ul><p class="muted">記録された接続元IP、対象ホスト（取得できる場合）、User-Agent、技法の分類、イベント時刻の5分間区分が一致。これは関連付けの仮説であり、同じ主体だと確認したものではありません</p>
+<details open id="evidence-WA-53546a87d8946592"><summary>証拠と正規化</summary><p><strong>F:\project\webauditJ\examples\sample.log:6</strong></p><pre>192.0.2.30 - - [01/Nov/2026:00:00:11 +0000] &quot;GET /a/../../etc/passwd HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserC&quot;</pre><p>時刻: 2026-11-01T00:00:11Z · HTTPステータス 404 · 応答バイト数 0</p><pre>/a/../../etc/passwd</pre><p><strong>F:\project\webauditJ\examples\sample.log:7</strong></p><pre>192.0.2.30 - - [01/Nov/2026:00:00:12 +0000] &quot;GET /a/../../etc/passwd HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserC&quot;</pre><p>時刻: 2026-11-01T00:00:12Z · HTTPステータス 404 · 応答バイト数 0</p><pre>/a/../../etc/passwd</pre><p><strong>F:\project\webauditJ\examples\sample.log:8</strong></p><pre>192.0.2.30 - - [01/Nov/2026:00:00:13 +0000] &quot;GET /a/../../etc/passwd HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserC&quot;</pre><p>時刻: 2026-11-01T00:00:13Z · HTTPステータス 404 · 応答バイト数 0</p><pre>/a/../../etc/passwd</pre></details>
+<details><summary>不足している証拠と追加の調査事項</summary><ul><li>応答本文と対象リソースの本来の動作</li><li>要求本文、アプリケーション・認証の監査記録</li><li>バックエンド・プロキシのステータス変換とファイル・プロセス・通信の証拠</li></ul><ol><li>参照先の元ログを読み、要求の転送先とプロキシ設定を確認してください</li><li>同時刻・同一リソースのアプリケーション・認証・エラーログを照合してください</li><li>ペイロードの探索では、サーバーのファイル・プロセス・外向き通信を確認してください</li></ol></details><section><h4>成否を確認するには</h4><p>この事案の時刻（タイムゾーンを確認）・対象ホスト・URLを基に、可能ならリクエストIDで記録を照合してください。送信元IPだけでは同じ利用者・要求と断定できません。</p>
+<h5>攻撃・検出の種類: パストラバーサル / ローカルファイル読み込み</h5><dl><dt>不明な理由</dt><dd>HTTPステータスや応答サイズだけでは、対象ファイルの内容が返されたか、読み込み・実行されたか判断できません。</dd><dt>確認する場所</dt><dd><ul><li>当時の応答本文、アプリのファイル読み込み記録、ホストのファイルアクセス監査</li><li>Webサーバー・プロキシのルーティング設定と、共通エラーページの当時の記録</li></ul></dd><dt>何が見つかれば判断できるか</dt><dd><strong>成功を裏付ける証拠:</strong> 対象要求への応答に本来公開しないファイル内容が含まれた記録、または不正なファイル読み込み・実行の記録。</dd><dd><strong>失敗を裏付ける証拠:</strong> 対象要求がファイルアクセス前に拒否された記録、または対象ファイルを読み込まず情報を含まない応答を返した処理記録。</dd></dl>
+<p class="muted">これらは調査の目安であり、証拠を検出したという意味ではありません。ログに痕跡がないだけでは失敗と判断できません。当時の記録が残っていない場合は成否不明が続きます。失敗の証拠は確認できた要求の範囲に限られ、事案全体の失敗を保証しません。現在の環境での再現結果だけでは当時の成否を確定できません。WebAuditは追加証拠を取り込んで判定を自動更新しません。</p></section><p><a href="#incident-list">事案の一覧表に戻る</a></p></article><article id="WA-e3ae05f55589ce85"><span class="tag">中</span><span class="tag">成否不明</span><h3>192.0.2.40 · 脆弱性の悪用試行</h3><p>WA-e3ae05f55589ce85 · 1 件の観測 · スコア 15 · 成否の確信度 0.2<br><small>証拠の強さを示す指標。成功確率ではありません。</small></p><p>対象ホスト 不明 · User-Agent &lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;<br>2026-11-01T00:00:20Z 〜 2026-11-01T00:00:20Z</p>
+<p>GeoIP: 非公開アドレス · 不明  · ASN 不明  · 国 未検索, ASN 未検索</p>
+<h4>検出・成否判定の理由</h4><ul><li>XSSペイロードの試行</li><li>アクセスログにあるのは要求と応答のメタデータであり、サーバー側の実行結果や返された内容ではありません</li></ul><p class="muted">記録された接続元IP、対象ホスト（取得できる場合）、User-Agent、技法の分類、イベント時刻の5分間区分が一致。これは関連付けの仮説であり、同じ主体だと確認したものではありません</p>
+<details open id="evidence-WA-e3ae05f55589ce85"><summary>証拠と正規化</summary><p><strong>F:\project\webauditJ\examples\sample.log:9</strong></p><pre>192.0.2.40 - - [01/Nov/2026:00:00:20 +0000] &quot;GET /?q=%3Cscript%3E HTTP/1.1&quot; 200 100 &quot;-&quot; &quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;&quot;</pre><p>時刻: 2026-11-01T00:00:20Z · HTTPステータス 200 · 応答バイト数 100</p><span class="tag">検出用のパーセントデコード</span><span class="tag">検出用の小文字化・バックスラッシュ変換</span><pre>/?q=%3Cscript%3E</pre><pre>/?q=&lt;script&gt;</pre><pre>/?q=%3cscript%3e</pre></details>
+<details><summary>不足している証拠と追加の調査事項</summary><ul><li>応答本文と対象リソースの本来の動作</li><li>要求本文、アプリケーション・認証の監査記録</li><li>バックエンド・プロキシのステータス変換とファイル・プロセス・通信の証拠</li></ul><ol><li>参照先の元ログを読み、要求の転送先とプロキシ設定を確認してください</li><li>同時刻・同一リソースのアプリケーション・認証・エラーログを照合してください</li><li>ペイロードの探索では、サーバーのファイル・プロセス・外向き通信を確認してください</li></ol></details><section><h4>成否を確認するには</h4><p>この事案の時刻（タイムゾーンを確認）・対象ホスト・URLを基に、可能ならリクエストIDで記録を照合してください。送信元IPだけでは同じ利用者・要求と断定できません。</p>
+<h5>攻撃・検出の種類: XSS</h5><dl><dt>不明な理由</dt><dd>アクセスログだけでは、入力が応答や保存データにどう埋め込まれ、ブラウザーで実行されたか確認できません。</dd><dt>確認する場所</dt><dd><ul><li>当時の応答HTML・保存データと、その表示先の記録</li><li>対象ブラウザーの実行・通信記録、CSPレポート</li></ul></dd><dt>何が見つかれば判断できるか</dt><dd><strong>成功を裏付ける証拠:</strong> 対象入力に由来するスクリプトが対象画面で実行された記録。反射・保存されただけでは実行の確定にはなりません。</dd><dd><strong>失敗を裏付ける証拠:</strong> 対象入力が拒否された記録、または該当表示箇所で実行されない形にエスケープされた記録。CSPの遮断記録はその実行試行について確認してください。</dd></dl>
+<p class="muted">これらは調査の目安であり、証拠を検出したという意味ではありません。ログに痕跡がないだけでは失敗と判断できません。当時の記録が残っていない場合は成否不明が続きます。失敗の証拠は確認できた要求の範囲に限られ、事案全体の失敗を保証しません。現在の環境での再現結果だけでは当時の成否を確定できません。WebAuditは追加証拠を取り込んで判定を自動更新しません。</p></section><p><a href="#incident-list">事案の一覧表に戻る</a></p></article>
+<h2>独立したHub・Auraの検出</h2><section class="panel"><p>検出元の検出は攻撃の成功を示すものではありません。</p><div class="table" id="upstream-list"><table><thead><tr><th scope="col">検出元 / ルール</th><th scope="col">接続元 / グループ</th><th scope="col">件数</th><th scope="col">対象期間:</th></tr></thead><tbody>
+<tr><td>AuraDFIR<br><a href="#upstream-0">lfi_traversal</a></td><td>192.0.2.30<br>192.0.2.30</td><td>3</td><td>2026-11-01T00:00:11Z 〜 2026-11-01T00:00:13Z</td></tr><tr><td>AuraDFIR<br><a href="#upstream-1">sensitive_file</a></td><td>192.0.2.10<br>192.0.2.10</td><td>3</td><td>2026-11-01T00:00:01Z 〜 2026-11-01T00:00:03Z</td></tr><tr><td>AuraDFIR<br><a href="#upstream-2">xss</a></td><td>192.0.2.40<br>192.0.2.40</td><td>1</td><td>2026-11-01T00:00:20Z 〜 2026-11-01T00:00:20Z</td></tr><tr><td>AuraDFIR/analysis<br><a href="#upstream-3">rare_user_agent</a></td><td><br>&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;</td><td>1</td><td>不明 〜 不明</td></tr><tr><td>AuraDFIR/analysis<br><a href="#upstream-4">rare_user_agent</a></td><td><br>BrowserB</td><td>1</td><td>不明 〜 不明</td></tr><tr><td>AuraDFIR/analysis<br><a href="#upstream-5">rare_user_agent</a></td><td><br>Mozilla/5.0</td><td>1</td><td>不明 〜 不明</td></tr><tr><td>AuraDFIR/analysis<br><a href="#upstream-6">rare_user_agent</a></td><td><br>BrowserA</td><td>3</td><td>不明 〜 不明</td></tr><tr><td>AuraDFIR/analysis<br><a href="#upstream-7">rare_user_agent</a></td><td><br>BrowserC</td><td>3</td><td>不明 〜 不明</td></tr>
+</tbody></table></div></section>
+<article id="upstream-0"><h3>AuraDFIR · lfi_traversal</h3><p>接続元 / グループ: 192.0.2.30 / 192.0.2.30<br>件数: 3</p><h4>対象期間と参照元</h4><p>2026-11-01T00:00:11Z 〜 2026-11-01T00:00:13Z</p><p>F:\project\webauditJ\examples\sample.log:6</p><p>F:\project\webauditJ\examples\sample.log:7</p><p>F:\project\webauditJ\examples\sample.log:8</p><h4>証拠の例（元ログの参照は最大8件）</h4><p><strong>F:\project\webauditJ\examples\sample.log:6</strong></p><pre>192.0.2.30 - - [01/Nov/2026:00:00:11 +0000] &quot;GET /a/../../etc/passwd HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserC&quot;</pre><p><strong>F:\project\webauditJ\examples\sample.log:7</strong></p><pre>192.0.2.30 - - [01/Nov/2026:00:00:12 +0000] &quot;GET /a/../../etc/passwd HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserC&quot;</pre><p><strong>F:\project\webauditJ\examples\sample.log:8</strong></p><pre>192.0.2.30 - - [01/Nov/2026:00:00:13 +0000] &quot;GET /a/../../etc/passwd HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserC&quot;</pre><p><a href="#upstream-list">Hub・Auraの検出一覧表に戻る</a></p></article><article id="upstream-1"><h3>AuraDFIR · sensitive_file</h3><p>接続元 / グループ: 192.0.2.10 / 192.0.2.10<br>件数: 3</p><h4>対象期間と参照元</h4><p>2026-11-01T00:00:01Z 〜 2026-11-01T00:00:03Z</p><p>F:\project\webauditJ\examples\sample.log:2</p><p>F:\project\webauditJ\examples\sample.log:3</p><p>F:\project\webauditJ\examples\sample.log:4</p><h4>証拠の例（元ログの参照は最大8件）</h4><p><strong>F:\project\webauditJ\examples\sample.log:2</strong></p><pre>192.0.2.10 - - [01/Nov/2026:00:00:01 +0000] &quot;GET /.env HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserA&quot;</pre><p><strong>F:\project\webauditJ\examples\sample.log:3</strong></p><pre>192.0.2.10 - - [01/Nov/2026:00:00:02 +0000] &quot;GET /.env HTTP/1.1&quot; 200 128 &quot;-&quot; &quot;BrowserA&quot;</pre><p><strong>F:\project\webauditJ\examples\sample.log:4</strong></p><pre>192.0.2.10 - - [01/Nov/2026:00:00:03 +0000] &quot;GET /.env HTTP/1.1&quot; 200 128 &quot;-&quot; &quot;BrowserA&quot;</pre><p><a href="#upstream-list">Hub・Auraの検出一覧表に戻る</a></p></article><article id="upstream-2"><h3>AuraDFIR · xss</h3><p>接続元 / グループ: 192.0.2.40 / 192.0.2.40<br>件数: 1</p><h4>対象期間と参照元</h4><p>2026-11-01T00:00:20Z 〜 2026-11-01T00:00:20Z</p><p>F:\project\webauditJ\examples\sample.log:9</p><h4>証拠の例（元ログの参照は最大8件）</h4><p><strong>F:\project\webauditJ\examples\sample.log:9</strong></p><pre>192.0.2.40 - - [01/Nov/2026:00:00:20 +0000] &quot;GET /?q=%3Cscript%3E HTTP/1.1&quot; 200 100 &quot;-&quot; &quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;&quot;</pre><p><a href="#upstream-list">Hub・Auraの検出一覧表に戻る</a></p></article><article id="upstream-3"><h3>AuraDFIR/analysis · rare_user_agent</h3><p>接続元 / グループ:  / &lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;<br>件数: 1</p><h4>対象期間と参照元</h4><p>不明 〜 不明</p><h4>証拠の例（元ログの参照は最大8件）</h4><p class="muted">この集計の対象となったログの例です。個々の要求が攻撃と確認されたものではありません。</p><p><strong>F:\project\webauditJ\examples\sample.log:9</strong></p><pre>192.0.2.40 - - [01/Nov/2026:00:00:20 +0000] &quot;GET /?q=%3Cscript%3E HTTP/1.1&quot; 200 100 &quot;-&quot; &quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;&quot;</pre><p><a href="#upstream-list">Hub・Auraの検出一覧表に戻る</a></p></article><article id="upstream-4"><h3>AuraDFIR/analysis · rare_user_agent</h3><p>接続元 / グループ:  / BrowserB<br>件数: 1</p><h4>対象期間と参照元</h4><p>不明 〜 不明</p><h4>証拠の例（元ログの参照は最大8件）</h4><p class="muted">この集計の対象となったログの例です。個々の要求が攻撃と確認されたものではありません。</p><p><strong>F:\project\webauditJ\examples\sample.log:5</strong></p><pre>192.0.2.20 - - [01/Nov/2026:00:00:10 +0000] &quot;GET /?id=UNION%20SELECT%20password HTTP/1.1&quot; 500 100 &quot;-&quot; &quot;BrowserB&quot;</pre><p><a href="#upstream-list">Hub・Auraの検出一覧表に戻る</a></p></article><article id="upstream-5"><h3>AuraDFIR/analysis · rare_user_agent</h3><p>接続元 / グループ:  / Mozilla/5.0<br>件数: 1</p><h4>対象期間と参照元</h4><p>不明 〜 不明</p><h4>証拠の例（元ログの参照は最大8件）</h4><p class="muted">この集計の対象となったログの例です。個々の要求が攻撃と確認されたものではありません。</p><p><strong>F:\project\webauditJ\examples\sample.log:1</strong></p><pre>192.0.2.1 - - [01/Nov/2026:00:00:00 +0000] &quot;GET / HTTP/1.1&quot; 200 100 &quot;-&quot; &quot;Mozilla/5.0&quot;</pre><p><a href="#upstream-list">Hub・Auraの検出一覧表に戻る</a></p></article><article id="upstream-6"><h3>AuraDFIR/analysis · rare_user_agent</h3><p>接続元 / グループ:  / BrowserA<br>件数: 3</p><h4>対象期間と参照元</h4><p>不明 〜 不明</p><h4>証拠の例（元ログの参照は最大8件）</h4><p class="muted">この集計の対象となったログの例です。個々の要求が攻撃と確認されたものではありません。</p><p><strong>F:\project\webauditJ\examples\sample.log:2</strong></p><pre>192.0.2.10 - - [01/Nov/2026:00:00:01 +0000] &quot;GET /.env HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserA&quot;</pre><p><strong>F:\project\webauditJ\examples\sample.log:3</strong></p><pre>192.0.2.10 - - [01/Nov/2026:00:00:02 +0000] &quot;GET /.env HTTP/1.1&quot; 200 128 &quot;-&quot; &quot;BrowserA&quot;</pre><p><strong>F:\project\webauditJ\examples\sample.log:4</strong></p><pre>192.0.2.10 - - [01/Nov/2026:00:00:03 +0000] &quot;GET /.env HTTP/1.1&quot; 200 128 &quot;-&quot; &quot;BrowserA&quot;</pre><p><a href="#upstream-list">Hub・Auraの検出一覧表に戻る</a></p></article><article id="upstream-7"><h3>AuraDFIR/analysis · rare_user_agent</h3><p>接続元 / グループ:  / BrowserC<br>件数: 3</p><h4>対象期間と参照元</h4><p>不明 〜 不明</p><h4>証拠の例（元ログの参照は最大8件）</h4><p class="muted">この集計の対象となったログの例です。個々の要求が攻撃と確認されたものではありません。</p><p><strong>F:\project\webauditJ\examples\sample.log:6</strong></p><pre>192.0.2.30 - - [01/Nov/2026:00:00:11 +0000] &quot;GET /a/../../etc/passwd HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserC&quot;</pre><p><strong>F:\project\webauditJ\examples\sample.log:7</strong></p><pre>192.0.2.30 - - [01/Nov/2026:00:00:12 +0000] &quot;GET /a/../../etc/passwd HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserC&quot;</pre><p><strong>F:\project\webauditJ\examples\sample.log:8</strong></p><pre>192.0.2.30 - - [01/Nov/2026:00:00:13 +0000] &quot;GET /a/../../etc/passwd HTTP/1.1&quot; 404 0 &quot;-&quot; &quot;BrowserC&quot;</pre><p><a href="#upstream-list">Hub・Auraの検出一覧表に戻る</a></p></article>
+<h2>GeoIP / ASN による調査の参考情報</h2><section class="panel"><p>調査の参考情報です。同じ国やASNであることは、同じ攻撃者・攻撃・攻撃成功の証拠にはなりません。件数は保持された解析済み接続元とWebAudit事案を対象とし、外部ルールのアラートは別扱いです。IP・種類の例はグループごとに最大64件で、省略時の件数は実際より少ない可能性があります。</p>
+<h3>データベースの出典</h3><p><strong>国 — DB-IP</strong><br>F:\project\webauditJ\.worktrees\report-readability\src\test\resources\geoip\country.mmdb<br>DBIP-Country-Lite · 公開版 不明 · 構築日時 2026-11-01T00:00:00Z · 取得日時 不明<br>出典 不明 · 世代 不明 · 最終確認日時 不明<br>CC BY 4.0; IP Geolocation by DB-IP (https://db-ip.com)</p><p><strong>ASN — DB-IP</strong><br>F:\project\webauditJ\.worktrees\report-readability\src\test\resources\geoip\asn.mmdb<br>DBIP-ASN-Lite · 公開版 不明 · 構築日時 2026-11-01T00:00:00Z · 取得日時 不明<br>出典 不明 · 世代 不明 · 最終確認日時 不明<br>CC BY 4.0; IP Geolocation by DB-IP (https://db-ip.com)</p>
+<h3>国別集計</h3><div class="table"><table><tr><th>グループ</th><th>要求数</th><th>異なるIP数 / 不審なIP数</th><th>事案数 / 検出した種類</th><th>IPの例</th></tr><tr><td>unknown unknown</td><td>9</td><td>5 / 4</td><td>4 · パストラバーサル / ローカルファイル読み込み, 機密ファイル, SQLインジェクション, XSS</td><td>192.0.2.1, 192.0.2.10, 192.0.2.20, 192.0.2.30, 192.0.2.40</td></tr></table></div><h3>ASN別集計</h3><div class="table"><table><tr><th>グループ</th><th>要求数</th><th>異なるIP数 / 不審なIP数</th><th>事案数 / 検出した種類</th><th>IPの例</th></tr><tr><td>unknown unknown</td><td>9</td><td>5 / 4</td><td>4 · パストラバーサル / ローカルファイル読み込み, 機密ファイル, SQLインジェクション, XSS</td><td>192.0.2.1, 192.0.2.10, 192.0.2.20, 192.0.2.30, 192.0.2.40</td></tr></table></div>
+<h3>既知のASN内の類似した活動</h3>
+<details><summary>保持された全接続元</summary><div class="table"><table><tr><th>IP</th><th>要求数</th><th>アドレス分類 / 検索状態</th><th>国</th><th>ASN</th></tr><tr><td>192.0.2.1</td><td>1</td><td>予約済みアドレス / 非公開アドレス</td><td>不明  / 未検索</td><td>不明  / 未検索</td></tr><tr><td>192.0.2.10</td><td>3</td><td>予約済みアドレス / 非公開アドレス</td><td>不明  / 未検索</td><td>不明  / 未検索</td></tr><tr><td>192.0.2.20</td><td>1</td><td>予約済みアドレス / 非公開アドレス</td><td>不明  / 未検索</td><td>不明  / 未検索</td></tr><tr><td>192.0.2.30</td><td>3</td><td>予約済みアドレス / 非公開アドレス</td><td>不明  / 未検索</td><td>不明  / 未検索</td></tr><tr><td>192.0.2.40</td><td>1</td><td>予約済みアドレス / 非公開アドレス</td><td>不明  / 未検索</td><td>不明  / 未検索</td></tr></table></div></details><p><a href="https://db-ip.com">DB-IPによるIP位置情報</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。DB情報は調査の参考情報です。</p></section>
+<h2>完全なレポートとルールの出典</h2><details><summary>対応・未対応の外部ルールを含む完全な構造化レポート</summary><pre>{
+  &quot;schema&quot; : &quot;webaudit/2&quot;,
+  &quot;version&quot; : &quot;2.1.1&quot;,
+  &quot;rules_version&quot; : &quot;2026.11.20.2&quot;,
+  &quot;analyzed_at&quot; : &quot;2026-11-27T12:17:55.8825076Z&quot;,
+  &quot;warnings&quot; : [ &quot;Request bodies and response contents are unavailable; authentication results and compromise cannot be verified&quot;, &quot;Client address is the recorded peer; forwarded headers are untrusted and proxy topology is unknown&quot;, &quot;Too few IP peers for request/error-rate statistical inference&quot;, &quot;Missing referer in 9 parsed requests reduces related detection coverage&quot; ],
+  &quot;partial&quot; : false,
+  &quot;files&quot; : [ {
+    &quot;path&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+    &quot;parsed&quot; : 9,
+    &quot;unparsed&quot; : 0
+  } ],
+  &quot;requests&quot; : 9,
+  &quot;unparsed&quot; : 0,
+  &quot;duplicates&quot; : 0,
+  &quot;first&quot; : &quot;2026-11-01T00:00:00Z&quot;,
+  &quot;last&quot; : &quot;2026-11-01T00:00:20Z&quot;,
+  &quot;missing_fields&quot; : {
+    &quot;referer&quot; : 9
+  },
+  &quot;findings&quot; : [ {
+    &quot;id&quot; : &quot;WA-68533c54f477aefb&quot;,
+    &quot;ip&quot; : &quot;192.0.2.10&quot;,
+    &quot;host&quot; : null,
+    &quot;user_agent&quot; : &quot;BrowserA&quot;,
+    &quot;first&quot; : &quot;2026-11-01T00:00:01Z&quot;,
+    &quot;last&quot; : &quot;2026-11-01T00:00:03Z&quot;,
+    &quot;count&quot; : 3,
+    &quot;severity&quot; : &quot;high&quot;,
+    &quot;attack_score&quot; : 30,
+    &quot;phase&quot; : &quot;reconnaissance&quot;,
+    &quot;rules&quot; : [ {
+      &quot;id&quot; : &quot;WA-sensitive_file&quot;,
+      &quot;category&quot; : &quot;sensitive_file&quot;,
+      &quot;severity&quot; : &quot;high&quot;,
+      &quot;pattern&quot; : &quot;/(?:\\.env(?:\\.[a-z0-9_-]+)?|\\.git/(?:config|head)|\\.svn/entries|\\.htpasswd|id_rsa|\\.aws/credentials|dump\\.sql|database\\.sql|wp-config\\.php(?:\\.bak)?|web\\.config)(?:[?;/]|$)&quot;,
+      &quot;description&quot; : &quot;Sensitive resource probe&quot;,
+      &quot;field&quot; : &quot;url&quot;,
+      &quot;required&quot; : [ &quot;target&quot; ],
+      &quot;source&quot; : &quot;docs/rule-inventory.md&quot;
+    } ],
+    &quot;categories&quot; : [ &quot;sensitive_file&quot; ],
+    &quot;correlation&quot; : [ &quot;Same recorded peer IP, target host (when available), User-Agent, technique family and five-minute event-time partition; this is a hypothesis, not verified identity&quot; ],
+    &quot;reasons&quot; : [ &quot;Sensitive resource probe&quot; ],
+    &quot;evidence&quot; : [ {
+      &quot;event&quot; : {
+        &quot;raw_request&quot; : &quot;GET /.env HTTP/1.1&quot;,
+        &quot;log_type&quot; : &quot;http_access-log&quot;,
+        &quot;time&quot; : &quot;2026-11-01T00:00:01Z&quot;,
+        &quot;ip&quot; : &quot;192.0.2.10&quot;,
+        &quot;host&quot; : null,
+        &quot;method&quot; : &quot;GET&quot;,
+        &quot;target&quot; : &quot;/.env&quot;,
+        &quot;path&quot; : &quot;/.env&quot;,
+        &quot;query&quot; : null,
+        &quot;protocol&quot; : &quot;HTTP/1.1&quot;,
+        &quot;status&quot; : 404,
+        &quot;bytes&quot; : 0,
+        &quot;user_agent&quot; : &quot;BrowserA&quot;,
+        &quot;referer&quot; : null,
+        &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+        &quot;line&quot; : 2,
+        &quot;raw&quot; : &quot;192.0.2.10 - - [01/Nov/2026:00:00:01 +0000] \&quot;GET /.env HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserA\&quot;&quot;,
+        &quot;recorded_user_agent&quot; : &quot;BrowserA&quot;,
+        &quot;recorded_referer&quot; : &quot;-&quot;
+      },
+      &quot;normalization&quot; : {
+        &quot;original&quot; : &quot;/.env&quot;,
+        &quot;variants&quot; : [ &quot;/.env&quot; ],
+        &quot;steps&quot; : null,
+        &quot;warnings&quot; : null
+      }
+    }, {
+      &quot;event&quot; : {
+        &quot;raw_request&quot; : &quot;GET /.env HTTP/1.1&quot;,
+        &quot;log_type&quot; : &quot;http_access-log&quot;,
+        &quot;time&quot; : &quot;2026-11-01T00:00:02Z&quot;,
+        &quot;ip&quot; : &quot;192.0.2.10&quot;,
+        &quot;host&quot; : null,
+        &quot;method&quot; : &quot;GET&quot;,
+        &quot;target&quot; : &quot;/.env&quot;,
+        &quot;path&quot; : &quot;/.env&quot;,
+        &quot;query&quot; : null,
+        &quot;protocol&quot; : &quot;HTTP/1.1&quot;,
+        &quot;status&quot; : 200,
+        &quot;bytes&quot; : 128,
+        &quot;user_agent&quot; : &quot;BrowserA&quot;,
+        &quot;referer&quot; : null,
+        &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+        &quot;line&quot; : 3,
+        &quot;raw&quot; : &quot;192.0.2.10 - - [01/Nov/2026:00:00:02 +0000] \&quot;GET /.env HTTP/1.1\&quot; 200 128 \&quot;-\&quot; \&quot;BrowserA\&quot;&quot;,
+        &quot;recorded_user_agent&quot; : &quot;BrowserA&quot;,
+        &quot;recorded_referer&quot; : &quot;-&quot;
+      },
+      &quot;normalization&quot; : {
+        &quot;original&quot; : &quot;/.env&quot;,
+        &quot;variants&quot; : [ &quot;/.env&quot; ],
+        &quot;steps&quot; : null,
+        &quot;warnings&quot; : null
+      }
+    }, {
+      &quot;event&quot; : {
+        &quot;raw_request&quot; : &quot;GET /.env HTTP/1.1&quot;,
+        &quot;log_type&quot; : &quot;http_access-log&quot;,
+        &quot;time&quot; : &quot;2026-11-01T00:00:03Z&quot;,
+        &quot;ip&quot; : &quot;192.0.2.10&quot;,
+        &quot;host&quot; : null,
+        &quot;method&quot; : &quot;GET&quot;,
+        &quot;target&quot; : &quot;/.env&quot;,
+        &quot;path&quot; : &quot;/.env&quot;,
+        &quot;query&quot; : null,
+        &quot;protocol&quot; : &quot;HTTP/1.1&quot;,
+        &quot;status&quot; : 200,
+        &quot;bytes&quot; : 128,
+        &quot;user_agent&quot; : &quot;BrowserA&quot;,
+        &quot;referer&quot; : null,
+        &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+        &quot;line&quot; : 4,
+        &quot;raw&quot; : &quot;192.0.2.10 - - [01/Nov/2026:00:00:03 +0000] \&quot;GET /.env HTTP/1.1\&quot; 200 128 \&quot;-\&quot; \&quot;BrowserA\&quot;&quot;,
+        &quot;recorded_user_agent&quot; : &quot;BrowserA&quot;,
+        &quot;recorded_referer&quot; : &quot;-&quot;
+      },
+      &quot;normalization&quot; : {
+        &quot;original&quot; : &quot;/.env&quot;,
+        &quot;variants&quot; : [ &quot;/.env&quot; ],
+        &quot;steps&quot; : null,
+        &quot;warnings&quot; : null
+      }
+    } ],
+    &quot;outcome&quot; : {
+      &quot;verdict&quot; : &quot;possible_success&quot;,
+      &quot;confidence&quot; : 0.55,
+      &quot;reasons&quot; : [ &quot;Access logs show requests and response metadata, not server-side execution or returned content&quot;, &quot;Same sensitive resource changed from blocked/not-found to repeated nonempty 2xx responses; soft-404, redirects, generic pages or legitimate changes remain possible&quot; ],
+      &quot;missing&quot; : [ &quot;Response content and expected resource semantics&quot;, &quot;Request body, application/authentication audit trail&quot;, &quot;Backend/proxy status mapping and filesystem/process/network evidence&quot; ],
+      &quot;next&quot; : [ &quot;Inspect the referenced original logs and confirm request routing and proxy configuration&quot;, &quot;Correlate application/authentication and error logs for the same time and resource&quot;, &quot;For payload probes inspect server files, processes and outbound connections&quot;, &quot;Verify actual returned sensitive bytes against a nonexistent-path response; preserve response/application evidence&quot; ],
+      &quot;investigation&quot; : [ {
+        &quot;category&quot; : &quot;sensitive_file&quot;,
+        &quot;why_unknown&quot; : &quot;HTTPステータスや応答サイズだけでは、対象ファイルの内容が返されたか、読み込み・実行されたか判断できません。&quot;,
+        &quot;success_evidence&quot; : &quot;対象要求への応答に本来公開しないファイル内容が含まれた記録、または不正なファイル読み込み・実行の記録。&quot;,
+        &quot;failure_evidence&quot; : &quot;対象要求がファイルアクセス前に拒否された記録、または対象ファイルを読み込まず情報を含まない応答を返した処理記録。&quot;,
+        &quot;where_to_check&quot; : [ &quot;当時の応答本文、アプリのファイル読み込み記録、ホストのファイルアクセス監査&quot;, &quot;Webサーバー・プロキシのルーティング設定と、共通エラーページの当時の記録&quot; ]
+      } ]
+    },
+    &quot;geoip&quot; : {
+      &quot;status&quot; : &quot;non_public&quot;,
+      &quot;country_status&quot; : &quot;not_queried&quot;,
+      &quot;asn_status&quot; : &quot;not_queried&quot;,
+      &quot;classification&quot; : &quot;reserved&quot;,
+      &quot;country_code&quot; : null,
+      &quot;country_name&quot; : null,
+      &quot;asn&quot; : null,
+      &quot;asn_organization&quot; : null
+    }
+  }, {
+    &quot;id&quot; : &quot;WA-e209a83ef4765316&quot;,
+    &quot;ip&quot; : &quot;192.0.2.20&quot;,
+    &quot;host&quot; : null,
+    &quot;user_agent&quot; : &quot;BrowserB&quot;,
+    &quot;first&quot; : &quot;2026-11-01T00:00:10Z&quot;,
+    &quot;last&quot; : &quot;2026-11-01T00:00:10Z&quot;,
+    &quot;count&quot; : 1,
+    &quot;severity&quot; : &quot;high&quot;,
+    &quot;attack_score&quot; : 30,
+    &quot;phase&quot; : &quot;exploitation_attempt&quot;,
+    &quot;rules&quot; : [ {
+      &quot;id&quot; : &quot;WA-sqli&quot;,
+      &quot;category&quot; : &quot;sqli&quot;,
+      &quot;severity&quot; : &quot;high&quot;,
+      &quot;pattern&quot; : &quot;union(?:\\s|/\\*.*?\\*/|\\+)+(?:all\\s+)?select|(?:&#39;|\\\&quot;)\\s*(?:or|and)\\s+|\\b(?:or|and)\\s+1\\s*=\\s*1|\\b(?:sleep|pg_sleep|benchmark|load_file)\\s*\\(|information_schema|into\\s+(?:out|dump)file&quot;,
+      &quot;description&quot; : &quot;SQL injection attempt&quot;,
+      &quot;field&quot; : &quot;url&quot;,
+      &quot;required&quot; : [ &quot;target&quot; ],
+      &quot;source&quot; : &quot;docs/rule-inventory.md&quot;
+    } ],
+    &quot;categories&quot; : [ &quot;sqli&quot; ],
+    &quot;correlation&quot; : [ &quot;Same recorded peer IP, target host (when available), User-Agent, technique family and five-minute event-time partition; this is a hypothesis, not verified identity&quot; ],
+    &quot;reasons&quot; : [ &quot;SQL injection attempt&quot; ],
+    &quot;evidence&quot; : [ {
+      &quot;event&quot; : {
+        &quot;raw_request&quot; : &quot;GET /?id=UNION%20SELECT%20password HTTP/1.1&quot;,
+        &quot;log_type&quot; : &quot;http_access-log&quot;,
+        &quot;time&quot; : &quot;2026-11-01T00:00:10Z&quot;,
+        &quot;ip&quot; : &quot;192.0.2.20&quot;,
+        &quot;host&quot; : null,
+        &quot;method&quot; : &quot;GET&quot;,
+        &quot;target&quot; : &quot;/?id=UNION%20SELECT%20password&quot;,
+        &quot;path&quot; : &quot;/&quot;,
+        &quot;query&quot; : &quot;id=UNION%20SELECT%20password&quot;,
+        &quot;protocol&quot; : &quot;HTTP/1.1&quot;,
+        &quot;status&quot; : 500,
+        &quot;bytes&quot; : 100,
+        &quot;user_agent&quot; : &quot;BrowserB&quot;,
+        &quot;referer&quot; : null,
+        &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+        &quot;line&quot; : 5,
+        &quot;raw&quot; : &quot;192.0.2.20 - - [01/Nov/2026:00:00:10 +0000] \&quot;GET /?id=UNION%20SELECT%20password HTTP/1.1\&quot; 500 100 \&quot;-\&quot; \&quot;BrowserB\&quot;&quot;,
+        &quot;recorded_user_agent&quot; : &quot;BrowserB&quot;,
+        &quot;recorded_referer&quot; : &quot;-&quot;
+      },
+      &quot;normalization&quot; : {
+        &quot;original&quot; : &quot;/?id=UNION%20SELECT%20password&quot;,
+        &quot;variants&quot; : [ &quot;/?id=UNION%20SELECT%20password&quot;, &quot;/?id=UNION SELECT password&quot;, &quot;/?id=union%20select%20password&quot;, &quot;/?id=union select password&quot; ],
+        &quot;steps&quot; : [ &quot;percent-decode detection variant&quot;, &quot;case-fold/backslash detection variant&quot;, &quot;case-fold/backslash detection variant&quot; ],
+        &quot;warnings&quot; : null
+      }
+    } ],
+    &quot;outcome&quot; : {
+      &quot;verdict&quot; : &quot;unknown&quot;,
+      &quot;confidence&quot; : 0.2,
+      &quot;reasons&quot; : [ &quot;Access logs show requests and response metadata, not server-side execution or returned content&quot; ],
+      &quot;missing&quot; : [ &quot;Response content and expected resource semantics&quot;, &quot;Request body, application/authentication audit trail&quot;, &quot;Backend/proxy status mapping and filesystem/process/network evidence&quot; ],
+      &quot;next&quot; : [ &quot;Inspect the referenced original logs and confirm request routing and proxy configuration&quot;, &quot;Correlate application/authentication and error logs for the same time and resource&quot;, &quot;For payload probes inspect server files, processes and outbound connections&quot; ],
+      &quot;investigation&quot; : [ {
+        &quot;category&quot; : &quot;sqli&quot;,
+        &quot;why_unknown&quot; : &quot;アクセスログには、バックエンドで実行された問い合わせと取得・変更されたデータが記録されていません。&quot;,
+        &quot;success_evidence&quot; : &quot;対象要求の入力によって意図しない問い合わせが実行され、データ取得・変更や認証回避が起きた記録。&quot;,
+        &quot;failure_evidence&quot; : &quot;対象要求が問い合わせ実行前に拒否された記録、または入力が値として扱われ、意図しない問い合わせや結果が生じなかった処理記録。&quot;,
+        &quot;where_to_check&quot; : [ &quot;アプリケーションの処理・エラーログと当時の応答記録&quot;, &quot;対象のDB・ディレクトリサービス・XML検索処理の監査ログ&quot; ]
+      } ]
+    },
+    &quot;geoip&quot; : {
+      &quot;status&quot; : &quot;non_public&quot;,
+      &quot;country_status&quot; : &quot;not_queried&quot;,
+      &quot;asn_status&quot; : &quot;not_queried&quot;,
+      &quot;classification&quot; : &quot;reserved&quot;,
+      &quot;country_code&quot; : null,
+      &quot;country_name&quot; : null,
+      &quot;asn&quot; : null,
+      &quot;asn_organization&quot; : null
+    }
+  }, {
+    &quot;id&quot; : &quot;WA-53546a87d8946592&quot;,
+    &quot;ip&quot; : &quot;192.0.2.30&quot;,
+    &quot;host&quot; : null,
+    &quot;user_agent&quot; : &quot;BrowserC&quot;,
+    &quot;first&quot; : &quot;2026-11-01T00:00:11Z&quot;,
+    &quot;last&quot; : &quot;2026-11-01T00:00:13Z&quot;,
+    &quot;count&quot; : 3,
+    &quot;severity&quot; : &quot;high&quot;,
+    &quot;attack_score&quot; : 30,
+    &quot;phase&quot; : &quot;exploitation_attempt&quot;,
+    &quot;rules&quot; : [ {
+      &quot;id&quot; : &quot;WA-lfi_traversal&quot;,
+      &quot;category&quot; : &quot;lfi_traversal&quot;,
+      &quot;severity&quot; : &quot;high&quot;,
+      &quot;pattern&quot; : &quot;\\.\\./|/etc/(?:passwd|shadow)|/proc/self/|php://(?:filter|input)|(?:file|phar|zip):///|windows/system32|boot\\.ini&quot;,
+      &quot;description&quot; : &quot;Traversal or local inclusion attempt&quot;,
+      &quot;field&quot; : &quot;url&quot;,
+      &quot;required&quot; : [ &quot;target&quot; ],
+      &quot;source&quot; : &quot;docs/rule-inventory.md&quot;
+    } ],
+    &quot;categories&quot; : [ &quot;lfi_traversal&quot; ],
+    &quot;correlation&quot; : [ &quot;Same recorded peer IP, target host (when available), User-Agent, technique family and five-minute event-time partition; this is a hypothesis, not verified identity&quot; ],
+    &quot;reasons&quot; : [ &quot;Traversal or local inclusion attempt&quot; ],
+    &quot;evidence&quot; : [ {
+      &quot;event&quot; : {
+        &quot;raw_request&quot; : &quot;GET /a/../../etc/passwd HTTP/1.1&quot;,
+        &quot;log_type&quot; : &quot;http_access-log&quot;,
+        &quot;time&quot; : &quot;2026-11-01T00:00:11Z&quot;,
+        &quot;ip&quot; : &quot;192.0.2.30&quot;,
+        &quot;host&quot; : null,
+        &quot;method&quot; : &quot;GET&quot;,
+        &quot;target&quot; : &quot;/a/../../etc/passwd&quot;,
+        &quot;path&quot; : &quot;/a/../../etc/passwd&quot;,
+        &quot;query&quot; : null,
+        &quot;protocol&quot; : &quot;HTTP/1.1&quot;,
+        &quot;status&quot; : 404,
+        &quot;bytes&quot; : 0,
+        &quot;user_agent&quot; : &quot;BrowserC&quot;,
+        &quot;referer&quot; : null,
+        &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+        &quot;line&quot; : 6,
+        &quot;raw&quot; : &quot;192.0.2.30 - - [01/Nov/2026:00:00:11 +0000] \&quot;GET /a/../../etc/passwd HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserC\&quot;&quot;,
+        &quot;recorded_user_agent&quot; : &quot;BrowserC&quot;,
+        &quot;recorded_referer&quot; : &quot;-&quot;
+      },
+      &quot;normalization&quot; : {
+        &quot;original&quot; : &quot;/a/../../etc/passwd&quot;,
+        &quot;variants&quot; : [ &quot;/a/../../etc/passwd&quot; ],
+        &quot;steps&quot; : null,
+        &quot;warnings&quot; : null
+      }
+    }, {
+      &quot;event&quot; : {
+        &quot;raw_request&quot; : &quot;GET /a/../../etc/passwd HTTP/1.1&quot;,
+        &quot;log_type&quot; : &quot;http_access-log&quot;,
+        &quot;time&quot; : &quot;2026-11-01T00:00:12Z&quot;,
+        &quot;ip&quot; : &quot;192.0.2.30&quot;,
+        &quot;host&quot; : null,
+        &quot;method&quot; : &quot;GET&quot;,
+        &quot;target&quot; : &quot;/a/../../etc/passwd&quot;,
+        &quot;path&quot; : &quot;/a/../../etc/passwd&quot;,
+        &quot;query&quot; : null,
+        &quot;protocol&quot; : &quot;HTTP/1.1&quot;,
+        &quot;status&quot; : 404,
+        &quot;bytes&quot; : 0,
+        &quot;user_agent&quot; : &quot;BrowserC&quot;,
+        &quot;referer&quot; : null,
+        &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+        &quot;line&quot; : 7,
+        &quot;raw&quot; : &quot;192.0.2.30 - - [01/Nov/2026:00:00:12 +0000] \&quot;GET /a/../../etc/passwd HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserC\&quot;&quot;,
+        &quot;recorded_user_agent&quot; : &quot;BrowserC&quot;,
+        &quot;recorded_referer&quot; : &quot;-&quot;
+      },
+      &quot;normalization&quot; : {
+        &quot;original&quot; : &quot;/a/../../etc/passwd&quot;,
+        &quot;variants&quot; : [ &quot;/a/../../etc/passwd&quot; ],
+        &quot;steps&quot; : null,
+        &quot;warnings&quot; : null
+      }
+    }, {
+      &quot;event&quot; : {
+        &quot;raw_request&quot; : &quot;GET /a/../../etc/passwd HTTP/1.1&quot;,
+        &quot;log_type&quot; : &quot;http_access-log&quot;,
+        &quot;time&quot; : &quot;2026-11-01T00:00:13Z&quot;,
+        &quot;ip&quot; : &quot;192.0.2.30&quot;,
+        &quot;host&quot; : null,
+        &quot;method&quot; : &quot;GET&quot;,
+        &quot;target&quot; : &quot;/a/../../etc/passwd&quot;,
+        &quot;path&quot; : &quot;/a/../../etc/passwd&quot;,
+        &quot;query&quot; : null,
+        &quot;protocol&quot; : &quot;HTTP/1.1&quot;,
+        &quot;status&quot; : 404,
+        &quot;bytes&quot; : 0,
+        &quot;user_agent&quot; : &quot;BrowserC&quot;,
+        &quot;referer&quot; : null,
+        &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+        &quot;line&quot; : 8,
+        &quot;raw&quot; : &quot;192.0.2.30 - - [01/Nov/2026:00:00:13 +0000] \&quot;GET /a/../../etc/passwd HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserC\&quot;&quot;,
+        &quot;recorded_user_agent&quot; : &quot;BrowserC&quot;,
+        &quot;recorded_referer&quot; : &quot;-&quot;
+      },
+      &quot;normalization&quot; : {
+        &quot;original&quot; : &quot;/a/../../etc/passwd&quot;,
+        &quot;variants&quot; : [ &quot;/a/../../etc/passwd&quot; ],
+        &quot;steps&quot; : null,
+        &quot;warnings&quot; : null
+      }
+    } ],
+    &quot;outcome&quot; : {
+      &quot;verdict&quot; : &quot;likely_failed&quot;,
+      &quot;confidence&quot; : 0.5,
+      &quot;reasons&quot; : [ &quot;Access logs show requests and response metadata, not server-side execution or returned content&quot;, &quot;All observed responses in this activity were blocked/not-found, with at least three observations; status mapping and unobserved attempts prevent confirmation&quot; ],
+      &quot;missing&quot; : [ &quot;Response content and expected resource semantics&quot;, &quot;Request body, application/authentication audit trail&quot;, &quot;Backend/proxy status mapping and filesystem/process/network evidence&quot; ],
+      &quot;next&quot; : [ &quot;Inspect the referenced original logs and confirm request routing and proxy configuration&quot;, &quot;Correlate application/authentication and error logs for the same time and resource&quot;, &quot;For payload probes inspect server files, processes and outbound connections&quot; ],
+      &quot;investigation&quot; : [ {
+        &quot;category&quot; : &quot;lfi_traversal&quot;,
+        &quot;why_unknown&quot; : &quot;HTTPステータスや応答サイズだけでは、対象ファイルの内容が返されたか、読み込み・実行されたか判断できません。&quot;,
+        &quot;success_evidence&quot; : &quot;対象要求への応答に本来公開しないファイル内容が含まれた記録、または不正なファイル読み込み・実行の記録。&quot;,
+        &quot;failure_evidence&quot; : &quot;対象要求がファイルアクセス前に拒否された記録、または対象ファイルを読み込まず情報を含まない応答を返した処理記録。&quot;,
+        &quot;where_to_check&quot; : [ &quot;当時の応答本文、アプリのファイル読み込み記録、ホストのファイルアクセス監査&quot;, &quot;Webサーバー・プロキシのルーティング設定と、共通エラーページの当時の記録&quot; ]
+      } ]
+    },
+    &quot;geoip&quot; : {
+      &quot;status&quot; : &quot;non_public&quot;,
+      &quot;country_status&quot; : &quot;not_queried&quot;,
+      &quot;asn_status&quot; : &quot;not_queried&quot;,
+      &quot;classification&quot; : &quot;reserved&quot;,
+      &quot;country_code&quot; : null,
+      &quot;country_name&quot; : null,
+      &quot;asn&quot; : null,
+      &quot;asn_organization&quot; : null
+    }
+  }, {
+    &quot;id&quot; : &quot;WA-e3ae05f55589ce85&quot;,
+    &quot;ip&quot; : &quot;192.0.2.40&quot;,
+    &quot;host&quot; : null,
+    &quot;user_agent&quot; : &quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;&quot;,
+    &quot;first&quot; : &quot;2026-11-01T00:00:20Z&quot;,
+    &quot;last&quot; : &quot;2026-11-01T00:00:20Z&quot;,
+    &quot;count&quot; : 1,
+    &quot;severity&quot; : &quot;medium&quot;,
+    &quot;attack_score&quot; : 15,
+    &quot;phase&quot; : &quot;exploitation_attempt&quot;,
+    &quot;rules&quot; : [ {
+      &quot;id&quot; : &quot;WA-xss&quot;,
+      &quot;category&quot; : &quot;xss&quot;,
+      &quot;severity&quot; : &quot;medium&quot;,
+      &quot;pattern&quot; : &quot;&lt;(?:script|svg|img|iframe)\\b|javascript\\s*:|\\bon(?:error|load|mouseover)\\s*=&quot;,
+      &quot;description&quot; : &quot;XSS payload attempt&quot;,
+      &quot;field&quot; : &quot;url&quot;,
+      &quot;required&quot; : [ &quot;target&quot; ],
+      &quot;source&quot; : &quot;docs/rule-inventory.md&quot;
+    } ],
+    &quot;categories&quot; : [ &quot;xss&quot; ],
+    &quot;correlation&quot; : [ &quot;Same recorded peer IP, target host (when available), User-Agent, technique family and five-minute event-time partition; this is a hypothesis, not verified identity&quot; ],
+    &quot;reasons&quot; : [ &quot;XSS payload attempt&quot; ],
+    &quot;evidence&quot; : [ {
+      &quot;event&quot; : {
+        &quot;raw_request&quot; : &quot;GET /?q=%3Cscript%3E HTTP/1.1&quot;,
+        &quot;log_type&quot; : &quot;http_access-log&quot;,
+        &quot;time&quot; : &quot;2026-11-01T00:00:20Z&quot;,
+        &quot;ip&quot; : &quot;192.0.2.40&quot;,
+        &quot;host&quot; : null,
+        &quot;method&quot; : &quot;GET&quot;,
+        &quot;target&quot; : &quot;/?q=%3Cscript%3E&quot;,
+        &quot;path&quot; : &quot;/&quot;,
+        &quot;query&quot; : &quot;q=%3Cscript%3E&quot;,
+        &quot;protocol&quot; : &quot;HTTP/1.1&quot;,
+        &quot;status&quot; : 200,
+        &quot;bytes&quot; : 100,
+        &quot;user_agent&quot; : &quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;&quot;,
+        &quot;referer&quot; : null,
+        &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+        &quot;line&quot; : 9,
+        &quot;raw&quot; : &quot;192.0.2.40 - - [01/Nov/2026:00:00:20 +0000] \&quot;GET /?q=%3Cscript%3E HTTP/1.1\&quot; 200 100 \&quot;-\&quot; \&quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;\&quot;&quot;,
+        &quot;recorded_user_agent&quot; : &quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;&quot;,
+        &quot;recorded_referer&quot; : &quot;-&quot;
+      },
+      &quot;normalization&quot; : {
+        &quot;original&quot; : &quot;/?q=%3Cscript%3E&quot;,
+        &quot;variants&quot; : [ &quot;/?q=%3Cscript%3E&quot;, &quot;/?q=&lt;script&gt;&quot;, &quot;/?q=%3cscript%3e&quot; ],
+        &quot;steps&quot; : [ &quot;percent-decode detection variant&quot;, &quot;case-fold/backslash detection variant&quot; ],
+        &quot;warnings&quot; : null
+      }
+    } ],
+    &quot;outcome&quot; : {
+      &quot;verdict&quot; : &quot;unknown&quot;,
+      &quot;confidence&quot; : 0.2,
+      &quot;reasons&quot; : [ &quot;Access logs show requests and response metadata, not server-side execution or returned content&quot; ],
+      &quot;missing&quot; : [ &quot;Response content and expected resource semantics&quot;, &quot;Request body, application/authentication audit trail&quot;, &quot;Backend/proxy status mapping and filesystem/process/network evidence&quot; ],
+      &quot;next&quot; : [ &quot;Inspect the referenced original logs and confirm request routing and proxy configuration&quot;, &quot;Correlate application/authentication and error logs for the same time and resource&quot;, &quot;For payload probes inspect server files, processes and outbound connections&quot; ],
+      &quot;investigation&quot; : [ {
+        &quot;category&quot; : &quot;xss&quot;,
+        &quot;why_unknown&quot; : &quot;アクセスログだけでは、入力が応答や保存データにどう埋め込まれ、ブラウザーで実行されたか確認できません。&quot;,
+        &quot;success_evidence&quot; : &quot;対象入力に由来するスクリプトが対象画面で実行された記録。反射・保存されただけでは実行の確定にはなりません。&quot;,
+        &quot;failure_evidence&quot; : &quot;対象入力が拒否された記録、または該当表示箇所で実行されない形にエスケープされた記録。CSPの遮断記録はその実行試行について確認してください。&quot;,
+        &quot;where_to_check&quot; : [ &quot;当時の応答HTML・保存データと、その表示先の記録&quot;, &quot;対象ブラウザーの実行・通信記録、CSPレポート&quot; ]
+      } ]
+    },
+    &quot;geoip&quot; : {
+      &quot;status&quot; : &quot;non_public&quot;,
+      &quot;country_status&quot; : &quot;not_queried&quot;,
+      &quot;asn_status&quot; : &quot;not_queried&quot;,
+      &quot;classification&quot; : &quot;reserved&quot;,
+      &quot;country_code&quot; : null,
+      &quot;country_name&quot; : null,
+      &quot;asn&quot; : null,
+      &quot;asn_organization&quot; : null
+    }
+  } ],
+  &quot;upstream_alerts&quot; : null,
+  &quot;aura_matches&quot; : [ {
+    &quot;source&quot; : &quot;AuraDFIR&quot;,
+    &quot;rule_id&quot; : &quot;lfi_traversal&quot;,
+    &quot;ip&quot; : &quot;192.0.2.30&quot;,
+    &quot;group&quot; : &quot;192.0.2.30&quot;,
+    &quot;first&quot; : &quot;2026-11-01T00:00:11Z&quot;,
+    &quot;last&quot; : &quot;2026-11-01T00:00:13Z&quot;,
+    &quot;count&quot; : 3,
+    &quot;events&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 6
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 7
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 8
+    } ],
+    &quot;evidence&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 6,
+      &quot;raw&quot; : &quot;192.0.2.30 - - [01/Nov/2026:00:00:11 +0000] \&quot;GET /a/../../etc/passwd HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserC\&quot;&quot;
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 7,
+      &quot;raw&quot; : &quot;192.0.2.30 - - [01/Nov/2026:00:00:12 +0000] \&quot;GET /a/../../etc/passwd HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserC\&quot;&quot;
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 8,
+      &quot;raw&quot; : &quot;192.0.2.30 - - [01/Nov/2026:00:00:13 +0000] \&quot;GET /a/../../etc/passwd HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserC\&quot;&quot;
+    } ]
+  }, {
+    &quot;source&quot; : &quot;AuraDFIR&quot;,
+    &quot;rule_id&quot; : &quot;sensitive_file&quot;,
+    &quot;ip&quot; : &quot;192.0.2.10&quot;,
+    &quot;group&quot; : &quot;192.0.2.10&quot;,
+    &quot;first&quot; : &quot;2026-11-01T00:00:01Z&quot;,
+    &quot;last&quot; : &quot;2026-11-01T00:00:03Z&quot;,
+    &quot;count&quot; : 3,
+    &quot;events&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 2
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 3
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 4
+    } ],
+    &quot;evidence&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 2,
+      &quot;raw&quot; : &quot;192.0.2.10 - - [01/Nov/2026:00:00:01 +0000] \&quot;GET /.env HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserA\&quot;&quot;
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 3,
+      &quot;raw&quot; : &quot;192.0.2.10 - - [01/Nov/2026:00:00:02 +0000] \&quot;GET /.env HTTP/1.1\&quot; 200 128 \&quot;-\&quot; \&quot;BrowserA\&quot;&quot;
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 4,
+      &quot;raw&quot; : &quot;192.0.2.10 - - [01/Nov/2026:00:00:03 +0000] \&quot;GET /.env HTTP/1.1\&quot; 200 128 \&quot;-\&quot; \&quot;BrowserA\&quot;&quot;
+    } ]
+  }, {
+    &quot;source&quot; : &quot;AuraDFIR&quot;,
+    &quot;rule_id&quot; : &quot;xss&quot;,
+    &quot;ip&quot; : &quot;192.0.2.40&quot;,
+    &quot;group&quot; : &quot;192.0.2.40&quot;,
+    &quot;first&quot; : &quot;2026-11-01T00:00:20Z&quot;,
+    &quot;last&quot; : &quot;2026-11-01T00:00:20Z&quot;,
+    &quot;count&quot; : 1,
+    &quot;events&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 9
+    } ],
+    &quot;evidence&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 9,
+      &quot;raw&quot; : &quot;192.0.2.40 - - [01/Nov/2026:00:00:20 +0000] \&quot;GET /?q=%3Cscript%3E HTTP/1.1\&quot; 200 100 \&quot;-\&quot; \&quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;\&quot;&quot;
+    } ]
+  } ],
+  &quot;aura_analysis&quot; : [ {
+    &quot;source&quot; : &quot;AuraDFIR/analysis&quot;,
+    &quot;rule_id&quot; : &quot;rare_user_agent&quot;,
+    &quot;ip&quot; : &quot;&quot;,
+    &quot;group&quot; : &quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;&quot;,
+    &quot;count&quot; : 1,
+    &quot;first&quot; : null,
+    &quot;last&quot; : null,
+    &quot;events&quot; : null,
+    &quot;evidence&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 9,
+      &quot;raw&quot; : &quot;192.0.2.40 - - [01/Nov/2026:00:00:20 +0000] \&quot;GET /?q=%3Cscript%3E HTTP/1.1\&quot; 200 100 \&quot;-\&quot; \&quot;&lt;script&gt;alert(&#39;untrusted&#39;)&lt;/script&gt;\&quot;&quot;
+    } ]
+  }, {
+    &quot;source&quot; : &quot;AuraDFIR/analysis&quot;,
+    &quot;rule_id&quot; : &quot;rare_user_agent&quot;,
+    &quot;ip&quot; : &quot;&quot;,
+    &quot;group&quot; : &quot;BrowserB&quot;,
+    &quot;count&quot; : 1,
+    &quot;first&quot; : null,
+    &quot;last&quot; : null,
+    &quot;events&quot; : null,
+    &quot;evidence&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 5,
+      &quot;raw&quot; : &quot;192.0.2.20 - - [01/Nov/2026:00:00:10 +0000] \&quot;GET /?id=UNION%20SELECT%20password HTTP/1.1\&quot; 500 100 \&quot;-\&quot; \&quot;BrowserB\&quot;&quot;
+    } ]
+  }, {
+    &quot;source&quot; : &quot;AuraDFIR/analysis&quot;,
+    &quot;rule_id&quot; : &quot;rare_user_agent&quot;,
+    &quot;ip&quot; : &quot;&quot;,
+    &quot;group&quot; : &quot;Mozilla/5.0&quot;,
+    &quot;count&quot; : 1,
+    &quot;first&quot; : null,
+    &quot;last&quot; : null,
+    &quot;events&quot; : null,
+    &quot;evidence&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 1,
+      &quot;raw&quot; : &quot;192.0.2.1 - - [01/Nov/2026:00:00:00 +0000] \&quot;GET / HTTP/1.1\&quot; 200 100 \&quot;-\&quot; \&quot;Mozilla/5.0\&quot;&quot;
+    } ]
+  }, {
+    &quot;source&quot; : &quot;AuraDFIR/analysis&quot;,
+    &quot;rule_id&quot; : &quot;rare_user_agent&quot;,
+    &quot;ip&quot; : &quot;&quot;,
+    &quot;group&quot; : &quot;BrowserA&quot;,
+    &quot;count&quot; : 3,
+    &quot;first&quot; : null,
+    &quot;last&quot; : null,
+    &quot;events&quot; : null,
+    &quot;evidence&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 2,
+      &quot;raw&quot; : &quot;192.0.2.10 - - [01/Nov/2026:00:00:01 +0000] \&quot;GET /.env HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserA\&quot;&quot;
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 3,
+      &quot;raw&quot; : &quot;192.0.2.10 - - [01/Nov/2026:00:00:02 +0000] \&quot;GET /.env HTTP/1.1\&quot; 200 128 \&quot;-\&quot; \&quot;BrowserA\&quot;&quot;
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 4,
+      &quot;raw&quot; : &quot;192.0.2.10 - - [01/Nov/2026:00:00:03 +0000] \&quot;GET /.env HTTP/1.1\&quot; 200 128 \&quot;-\&quot; \&quot;BrowserA\&quot;&quot;
+    } ]
+  }, {
+    &quot;source&quot; : &quot;AuraDFIR/analysis&quot;,
+    &quot;rule_id&quot; : &quot;rare_user_agent&quot;,
+    &quot;ip&quot; : &quot;&quot;,
+    &quot;group&quot; : &quot;BrowserC&quot;,
+    &quot;count&quot; : 3,
+    &quot;first&quot; : null,
+    &quot;last&quot; : null,
+    &quot;events&quot; : null,
+    &quot;evidence&quot; : [ {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 6,
+      &quot;raw&quot; : &quot;192.0.2.30 - - [01/Nov/2026:00:00:11 +0000] \&quot;GET /a/../../etc/passwd HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserC\&quot;&quot;
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 7,
+      &quot;raw&quot; : &quot;192.0.2.30 - - [01/Nov/2026:00:00:12 +0000] \&quot;GET /a/../../etc/passwd HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserC\&quot;&quot;
+    }, {
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\examples\\sample.log&quot;,
+      &quot;line&quot; : 8,
+      &quot;raw&quot; : &quot;192.0.2.30 - - [01/Nov/2026:00:00:13 +0000] \&quot;GET /a/../../etc/passwd HTTP/1.1\&quot; 404 0 \&quot;-\&quot; \&quot;BrowserC\&quot;&quot;
+    } ]
+  } ],
+  &quot;upstream_rules&quot; : [ {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2017-9841&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2017-9841 exploits&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2017-9841.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n    evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp;\n    Lower(evt.Meta.http_path) endsWith &#39;util/php/eval-stdin.php&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2019-18935&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect Telerik CVE-2019-18935 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2019-18935.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; Upper(QueryUnescape(evt.Meta.http_path)) startsWith Upper(&#39;/Telerik.Web.UI.WebResource.axd?type=rau&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2022-26134&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Confluence - RCE (CVE-2022-26134)&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-26134.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;Upper(PathUnescape(evt.Meta.http_path)) contains Upper(&#39;@java.lang.Runtime@getRuntime().exec(&#39;)\&quot;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2022-35914&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2022-35914 exploits&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-35914.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;Upper(evt.Meta.http_path) contains Upper(&#39;/vendor/htmlawed/htmlawed/htmLawedTest.php&#39;)\&quot;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2022-37042&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2022-37042 exploits&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-37042.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  (\n  Upper(evt.Meta.http_path) contains Upper(&#39;/service/extension/backup/mboximport?account-name=admin&amp;ow=2&amp;no-switch=1&amp;append=1&#39;) ||\n  Upper(evt.Meta.http_path) contains Upper(&#39;/service/extension/backup/mboximport?account-name=admin&amp;account-status=1&amp;ow=cmd&#39;) \n  )\n  and evt.Meta.http_status startsWith (&#39;40&#39;) and\n  Upper(evt.Meta.http_verb) == &#39;POST&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/fortinet-cve-2022-40684&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect cve-2022-40684 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-40684.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and \n  Upper(evt.Meta.http_path) startsWith Upper(&#39;/api/v2/cmdb/system/admin/&#39;) and Lower(evt.Parsed.http_user_agent) == &#39;report runner&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2022-41082&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2022-41082 exploits&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-41082.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  Upper(evt.Meta.http_path) contains Upper(&#39;/autodiscover/autodiscover.json&#39;) &amp;&amp;\n  Upper(evt.Parsed.http_args) contains Upper(&#39;powershell&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2022-41697&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2022-41697 enumeration&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-41697.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  Upper(evt.Meta.http_path) contains Upper(&#39;/ghost/api/admin/session&#39;) &amp;&amp;\n  Upper(evt.Parsed.verb) == &#39;POST&#39; &amp;&amp;\n  evt.Meta.http_status == &#39;404&#39;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2022-42889&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2022-42889 exploits (Text4Shell)&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-42889.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  Upper(PathUnescape(evt.Meta.http_path)) contains Upper(&#39;${script:javascript:java.lang.Runtime.getRuntime().exec(&#39;)\n  or\n  Upper(PathUnescape(evt.Meta.http_path)) contains Upper(&#39;${script:js:java.lang.Runtime.getRuntime().exec(&#39;)\n  or\n  Upper(PathUnescape(evt.Meta.http_path)) contains Upper(&#39;${url:UTF-8:&#39;) \n  or\n  Upper(PathUnescape(evt.Meta.http_path)) contains Upper(&#39;${dns:address|&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2022-44877&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2022-44877 exploits&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-44877.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  Lower(evt.Meta.http_path) contains &#39;/index.php&#39; &amp;&amp;\n  Upper(evt.Parsed.verb) == &#39;POST&#39; &amp;&amp;\n  evt.Meta.http_status == &#39;302&#39; &amp;&amp;\n  Lower(evt.Parsed.http_args) matches &#39;login=.*(\\\\$|%24)(\\\\(|%28).*(\\\\)|%29)&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2022-46169-bf&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2022-46169 brute forcing&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-46169.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  Upper(evt.Meta.http_path) contains Upper(&#39;/remote_agent.php&#39;) &amp;&amp;\n  Upper(evt.Parsed.verb) == &#39;GET&#39; &amp;&amp;\n  Lower(evt.Parsed.http_args) contains &#39;host_id&#39; &amp;&amp;\n  Lower(evt.Parsed.http_args) contains &#39;local_data_ids&#39;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2022-46169-cmd&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2022-46169 cmd injection&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2022-46169.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  Upper(evt.Meta.http_path) contains Upper(&#39;/remote_agent.php&#39;) &amp;&amp;\n  Upper(evt.Parsed.verb) == &#39;GET&#39; &amp;&amp;\n  Lower(evt.Parsed.http_args) contains &#39;action=polldata&#39; &amp;&amp;\n  Lower(evt.Parsed.http_args) matches &#39;poller_id=.*(;|%3b)&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2023-22515&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2023-22515 exploitation&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2023-22515.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  Lower(evt.Parsed.file_ext) == &#39;.action&#39; &amp;&amp;\n  (Lower(evt.Parsed.file_dir) contains &#39;/setup&#39; || Lower(evt.Parsed.file_frag) == &#39;server-info&#39;) &amp;&amp;\n  evt.Parsed.file_frag != nil&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2023-22518&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2023-22518 exploits&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2023-22518.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  Upper(evt.Meta.http_path) contains Upper(&#39;/json/setup-restore.action&#39;) &amp;&amp;\n  Upper(evt.Parsed.verb) == &#39;POST&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2023-49103&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect owncloud CVE-2023-49103 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2023-49103.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; Lower(evt.Meta.http_path) contains &#39;/owncloud/apps/graphapi/vendor/microsoft/microsoft-graph/tests/getphpinfo.php&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2024-0012&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2024-0012 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2024-0012.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  let request = Lower(evt.Parsed.request);\n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; \n  evt.Meta.http_status in [&#39;404&#39;, &#39;403&#39;] &amp;&amp;\n  (request matches &#39;/php/.*/\\\\.js\\\\.map&#39; || request matches &#39;/index.php/.*\\\\.js\\\\.map&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2024-38475&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.request&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2024-38475 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2024-38475.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; \n  evt.Meta.http_status in [&#39;404&#39;, &#39;403&#39;] &amp;&amp;\n  Lower(evt.Parsed.request) endsWith &#39;%3f&#39;&quot;,
+    &quot;capacity&quot; : 3,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/CVE-2024-9474&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect CVE-2024-9474 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/CVE-2024-9474.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  let request = Lower(evt.Parsed.request);\n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; \n  evt.Meta.http_status in [&#39;404&#39;, &#39;403&#39;] &amp;&amp;\n  evt.Meta.http_verb == &#39;POST&#39; &amp;&amp;\n  request contains &#39;/php/utils/createremoteappwebsession.php/watchtowr.js.map&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/apache_log4j2_cve-2021-44228&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect cve-2021-44228 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/apache_log4j2_cve-2021-44228.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and \n  (\n    any(File(\&quot;log4j2_cve_2021_44228.txt\&quot;), { Upper(evt.Meta.http_path) contains Upper(#)})\n  or\n    any(File(\&quot;log4j2_cve_2021_44228.txt\&quot;), { Upper(evt.Parsed.http_user_agent) contains Upper(#)})\n  or\n    any(File(\&quot;log4j2_cve_2021_44228.txt\&quot;), { Upper(evt.Parsed.http_referer) contains Upper(#)})  \n  )&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/f5-big-ip-cve-2020-5902&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;F5 BIG-IP TMUI - RCE (CVE-2020-5902)&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/f5-big-ip-cve-2020-5902.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and \n    (\n    Upper(evt.Meta.http_path) matches &#39;/TMUI/LOGIN.JSP/..;/TMUI/[^.]+.JSP\\\\?(FILENAME|COMMAND|DIRECTORYPATH|TABID)=&#39;\n    or\n    Upper(evt.Meta.http_path) matches &#39;/TMUI/LOGIN.JSP/%2E%2E;/TMUI/[^.]+.JSP\\\\?(FILENAME|COMMAND|DIRECTORYPATH|TABID)=&#39;\n    )&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/fortinet-cve-2018-13379&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect cve-2018-13379 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/fortinet-cve-2018-13379.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and \n    Upper(evt.Meta.http_path) contains Upper(&#39;/remote/fgt_lang?lang=/../../../..//////////dev/cmdb/sslvpn_websession&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/grafana-cve-2021-43798&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Grafana - Arbitrary File Read (CVE-2021-43798)&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/grafana-cve-2021-43798.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and \n    (Upper(evt.Meta.http_path) matches &#39;/PUBLIC/PLUGINS/[^/]+/../[./]+/&#39;\n    or\n    Upper(evt.Meta.http_path) matches &#39;/PUBLIC/PLUGINS/[^/]+/%2E%2E/[%2E/]+/&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-admin-interface-probing&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;evt.Meta.http_path&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect generic HTTP admin interface probing&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-admin-interface-probing.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.service == &#39;http&#39; and \n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] and \n  evt.Meta.http_status in [&#39;404&#39;, &#39;403&#39;] and\n  any(File(\&quot;admin_interfaces.txt\&quot;), { Lower(evt.Meta.http_path) contains #})&quot;,
+    &quot;capacity&quot; : 2,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-apiscp-bf&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;detect apisCP dashboard bruteforce&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-apiscp-bf.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp; evt.Meta.http_path startsWith &#39;/apps/login&#39; &amp;&amp; evt.Parsed.verb == &#39;POST&#39; &amp;&amp; evt.Meta.http_status == &#39;200&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-backdoors-attempts&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;5s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.file_name&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect attempt to common backdoors&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-backdoors-attempts.yaml&quot;,
+    &quot;filter&quot; : &quot;&#39;evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and any(File(\&quot;backdoors.txt\&quot;), { evt.Parsed.file_name == #})&#39;&quot;,
+    &quot;capacity&quot; : 1,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-bad-user-agent&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;1m&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect usage of bad User Agent&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-bad-user-agent.yaml&quot;,
+    &quot;filter&quot; : &quot;&#39;evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] &amp;&amp; RegexpInFile(evt.Parsed.http_user_agent, \&quot;bad_user_agents.regex.txt\&quot;)&#39;&quot;,
+    &quot;capacity&quot; : 1,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-bf-wordpress_bf&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect WordPress bruteforce on admin interface&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-bf-wordpress_bf.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp; evt.Parsed.file_name == &#39;wp-login.php&#39; &amp;&amp; evt.Parsed.verb == &#39;POST&#39; &amp;&amp; evt.Meta.http_status == &#39;200&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-bf-wordpress_bf_xmlrpc&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;2m&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect WordPress bruteforce on XML-RPC endpoint&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-bf-wordpress_bf_xmlrpc.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp; evt.Parsed.file_name == &#39;xmlrpc.php&#39; &amp;&amp; evt.Parsed.verb == &#39;POST&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-crawl-non_statics&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;0.5s&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.file_name&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip + &#39;/&#39; + evt.Meta.target_fqdn&quot;,
+    &quot;description&quot; : &quot;Detect aggressive crawl on non static resources&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-crawl-non_statics.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; evt.Parsed.static_ressource == &#39;false&#39; &amp;&amp; evt.Parsed.verb in [&#39;GET&#39;, &#39;HEAD&#39;]\&quot;&quot;,
+    &quot;capacity&quot; : 40,
+    &quot;supported&quot; : true,
+    &quot;cache_size&quot; : 5
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-cve-2021-41773&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Apache - Path Traversal (CVE-2021-41773)&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-cve-2021-41773.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and \n    (Upper(evt.Meta.http_path) contains \&quot;/.%2E/.%2E/\&quot;\n      or\n     Upper(evt.Meta.http_path) contains \&quot;/%2E%2E/%2E%2E\&quot;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-cve-2021-42013&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Apache - Path Traversal (CVE-2021-42013)&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-cve-2021-42013.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and \n    Upper(evt.Meta.http_path) contains \&quot;/%%32%65%%32%65/\&quot;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-cve-probing&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;evt.Meta.http_path&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect generic HTTP cve probing&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-cve-probing.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.service == &#39;http&#39; and \n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] and \n  evt.Meta.http_status in [&#39;404&#39;, &#39;403&#39;] and\n  any(File(\&quot;trendy_cves_uris.json\&quot;), { \n    evt.Meta.http_path contains JsonExtract(#, \&quot;uri\&quot;) ? evt.SetMeta(\&quot;cve\&quot;, JsonExtract(#, \&quot;cve\&quot;)) : false \n  })&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-dos-bypass-cache&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;1s&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.http_args&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect DoS tools bypassing cache every request&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-dos-bypass-cache.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp; evt.Meta.http_args_len != &#39;&#39; &amp;&amp; int(evt.Meta.http_args_len) &gt;= 7 &amp;&amp; int(evt.Meta.http_args_len) &lt;= 12 &amp;&amp; evt.Parsed.http_args matches &#39;^[0-9]+$&#39; &amp;&amp; evt.Parsed.static_ressource == &#39;false&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 30,
+    &quot;supported&quot; : true,
+    &quot;cache_size&quot; : 10
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-dos-invalid-http-versions&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect DoS tools using invalid HTTP versions&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-dos-invalid-http-versions.yaml&quot;,
+    &quot;filter&quot; : &quot;&#39;evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] &amp;&amp; evt.Parsed.http_version != \&quot;\&quot; &amp;&amp; evt.Parsed.http_version not in [\&quot;0.9\&quot;, \&quot;1.0\&quot;, \&quot;1.1\&quot;, \&quot;2.0\&quot;, \&quot;3.0\&quot;]&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-dos-random-uri&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;1s&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect DoS tools using random uri&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-dos-random-uri.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type == \&quot;http_access-log\&quot; &amp;&amp;\n  evt.Meta.http_verb == &#39;GET&#39; &amp;&amp;\n  evt.Parsed.static_ressource == &#39;false&#39; &amp;&amp;\n  Upper(evt.Parsed.file_frag) == evt.Parsed.file_frag &amp;&amp;\n  len(evt.Parsed.file_frag) == 6 &amp;&amp;\n  int(evt.Meta.http_args_len) == 0&quot;,
+    &quot;capacity&quot; : 30,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-dos-swithcing-ua&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;8s&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.http_user_agent&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect DoS tools switching user-agent too fast&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-dos-switching-ua.yaml&quot;,
+    &quot;filter&quot; : &quot;&#39;evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;]&#39;&quot;,
+    &quot;capacity&quot; : 10,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-generic-bf&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect generic http brute force&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-generic-bf.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.service == &#39;http&#39; &amp;&amp; evt.Meta.sub_type == &#39;auth_fail&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;LePresidente/http-generic-401-bf&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip + &#39; &#39; + evt.Meta.http_path&quot;,
+    &quot;description&quot; : &quot;Detect generic 401 Authorization error brute force&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-generic-bf.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp; evt.Parsed.verb == &#39;POST&#39; &amp;&amp; evt.Meta.http_status == &#39;401&#39;\&quot;\n# group by path too: a credential brute force repeats the same endpoint, while\n# 401s spread over different paths (client probing an endpoint being configured,\n# path enumeration) are not a credential attack&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;LePresidente/http-generic-403-bf&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect generic 403 Forbidden (Authorization) error brute force&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-generic-bf.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp; evt.Parsed.verb == &#39;POST&#39; &amp;&amp; evt.Meta.http_status == &#39;403&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-generic-test&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Crowdsec Generic Test Scenario: basic HTTP trigger&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-generic-test.yaml&quot;,
+    &quot;filter&quot; : &quot;evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and\n  evt.Meta.http_path == \&quot;/crowdsec-test-NtktlJHV4TfBSK3wvlhiOBnl\&quot;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-magento-bf&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect bruteforce on Magento admin interface&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-magento-bf.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;ADMIN_LOGIN_FAILED&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : false
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-magento-ccs-by-as&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;30s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.ASNNumber&quot;,
+    &quot;description&quot; : &quot;Detect distributed credit card stuffing from same AS&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-magento-ccs-by-as.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;PAYMENT_FAILED&#39; and evt.Meta.ASNNumber != &#39;&#39; \&quot;&quot;,
+    &quot;capacity&quot; : 10,
+    &quot;supported&quot; : false
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-magento-ccs-by-country&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;30s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.IsoCode&quot;,
+    &quot;description&quot; : &quot;Detect distributed credit card stuffing from same country&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-magento-ccs-by-country.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;PAYMENT_FAILED&#39; and evt.Meta.IsoCode != &#39;&#39; \&quot;&quot;,
+    &quot;capacity&quot; : 10,
+    &quot;supported&quot; : false
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-magento-ccs&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;30s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect credit card stuffing from a single IP&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-magento-ccs.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;PAYMENT_FAILED&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 3,
+    &quot;supported&quot; : false
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-open-proxy&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect scan for open proxy&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-open-proxy.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp; evt.Meta.http_status in [&#39;400&#39;,&#39;405&#39;] &amp;&amp; (evt.Parsed.verb == &#39;CONNECT&#39; || evt.Parsed.request matches &#39;^http[s]?://&#39;)\&quot;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-path-traversal-probing&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;evt.Meta.http_path&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect path traversal attempt&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-path-traversal-probing.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; any(File(&#39;http_path_traversal.txt&#39;),{evt.Meta.http_path contains #})\&quot;&quot;,
+    &quot;capacity&quot; : 3,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-probing&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Meta.http_path&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip + &#39;/&#39; + evt.Meta.target_fqdn&quot;,
+    &quot;description&quot; : &quot;Detect site scanning/probing from a single ip&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-probing.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.service == &#39;http&#39; &amp;&amp; evt.Meta.http_status in [&#39;404&#39;, &#39;403&#39;, &#39;400&#39;] &amp;&amp; evt.Parsed.static_ressource == &#39;false&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 10,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-sap-interface-probing&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;evt.Meta.http_path&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect generic HTTP SAP interface probing&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-sap-interface-probing.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.service == &#39;http&#39; and \n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] and \n  evt.Meta.http_status in [&#39;404&#39;, &#39;403&#39;] and (\n    let uri = Lower(evt.Meta.http_path);\n    uri contains \&quot;/sap/bc/gui/sap/its/webgui\&quot;\n    or uri contains \&quot;/irj/portal\&quot;\n    or uri contains \&quot;/sap/bc/\&quot;\n    or uri contains \&quot;/sap/bc/ui2/flp\&quot;\n    or uri contains \&quot;/sap/bc/ui5_ui5/\&quot;\n    or uri contains \&quot;/sap/opu/odata/\&quot;\n    or uri contains \&quot;/sap/bc/webdynpro/\&quot;\n    or uri contains \&quot;/sap/public/bc/\&quot;\n    or uri contains \&quot;/sap/public/info\&quot;\n    or uri contains \&quot;/sap/public/icf_info\&quot;\n    or uri contains \&quot;/sap/admin/publicicp/\&quot;\n    or uri contains \&quot;/sap/admin/public/\&quot;\n    or uri == \&quot;/nwa\&quot;\n    or uri contains \&quot;/webdynpro/dispatcher/sap.com/tc~sec~ume~wd~umeadmin/umeadminapp\&quot;\n    or uri contains \&quot;/sap/hana/xs/admin\&quot;\n    or uri contains \&quot;/sap/hana/xs/formlogin\&quot;\n    or uri contains \&quot;/irj/go/km/navigation\&quot;\n  )&quot;,
+    &quot;capacity&quot; : 1,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-sensitive-files&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;5s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.request&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect attempt to access to sensitive files (.log, .db ..) or folders (.git)&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-sensitive-files.yaml&quot;,
+    &quot;filter&quot; : &quot;&#39;evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and any(File(\&quot;sensitive_data.txt\&quot;), { evt.Parsed.request endsWith #})&#39;&quot;,
+    &quot;capacity&quot; : 4,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-sqli-probbing-detection&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;1s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.http_args&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;A scenario that detects SQL injection probing with minimal false positives&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-sqli-probing.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; any(File(&#39;sqli_probe_patterns.txt&#39;), {Upper(evt.Parsed.http_args) contains Upper(#)})\&quot;&quot;,
+    &quot;capacity&quot; : 10,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-technology-probing&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;1m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect HTTP technology/vendor probing&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-technology-probing.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  if (evt.Meta.service == &#39;http&#39; and\n      evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] and\n      evt.Meta.http_status in [&#39;404&#39;, &#39;403&#39;])\n    {\n      let target_technology = LookupFile(evt.Meta.http_path, \&quot;technology_probing.json\&quot;);\n      target_technology != \&quot;\&quot; ? evt.SetMeta(\&quot;target_technology\&quot;, target_technology)  : false\n    } else { false }&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-wordpress-scan&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.request&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect exploitation attempts against common WordPress endpoints&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-wordpress-scan.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.service == &#39;http&#39; and\n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] and\n  evt.Meta.http_status in [&#39;404&#39;, &#39;403&#39;] and\n  Lower(evt.Parsed.request) matches \&quot;(?i)(/wp-.*\\\\.php|/wp-content/plugins/.*\\\\.(txt|md))$\&quot;&quot;,
+    &quot;capacity&quot; : 3,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-wordpress_user-enum&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.http_args&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect WordPress probing: authors enumeration&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-wordpress_user-enum.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp; Upper(evt.Parsed.http_args) contains &#39;AUTHOR=&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-wordpress_wpconfig&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;10s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.file_name&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect WordPress probing: variations around wp-config.php by wpscan&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-wordpress_wpconfig.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; &amp;&amp; evt.Parsed.file_name contains &#39;wp-config.php&#39;\&quot;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/http-xss-probbing&quot;,
+    &quot;type&quot; : &quot;leaky&quot;,
+    &quot;leakspeed&quot; : &quot;1s&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;evt.Parsed.http_args&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;A scenario that detects XSS probing with minimal false positives&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/http-xss-probing.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; any(File(&#39;xss_probe_patterns.txt&#39;), {Upper(evt.Parsed.http_args) contains Upper(#)})\&quot;&quot;,
+    &quot;capacity&quot; : 5,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/jira_cve-2021-26086&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect Atlassian Jira CVE-2021-26086 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/jira_cve-2021-26086.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and any(File(\&quot;jira_cve_2021-26086.txt\&quot;), {Upper(evt.Meta.http_path) contains Upper(#)})&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/netgear_rce&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect Netgear RCE DGN1000/DGN220 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/netgear_rce.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; Lower(QueryUnescape(evt.Meta.http_path)) startsWith Lower(&#39;/setup.cgi?next_file=netgear.cfg&amp;todo=syscmd&amp;cmd=&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/pulse-secure-sslvpn-cve-2019-11510&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect cve-2019-11510 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/pulse-secure-sslvpn-cve-2019-11510.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and \n    (Upper(evt.Meta.http_path) matches &#39;/DANA-NA/../DANA/HTML5ACC/GUACAMOLE/../../../../../../../[^?]+\\\\?/DANA/HTML5ACC/GUACAMOLE/&#39;\n    or\n    Upper(evt.Meta.http_path) matches &#39;/DANA-NA/%2E%2E/DANA/HTML5ACC/GUACAMOLE/%2E%2E/%2E%2E/%2E%2E/%2E%2E/%2E%2E/%2E%2E/%2E%2E/[^?]+\\\\?/DANA/HTML5ACC/GUACAMOLE/&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/spring4shell_cve-2022-22965&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect cve-2022-22965 probing&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/spring4shell_cve-2022-22965.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and\n    (Upper(evt.Meta.http_path) contains &#39;CLASS.MODULE.CLASSLOADER.&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/thinkphp-cve-2018-20062&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect ThinkPHP CVE-2018-20062 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/thinkphp-cve-2018-20062.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [\&quot;http_access-log\&quot;, \&quot;http_error-log\&quot;] and RegexpInFile(Lower(evt.Meta.http_path), \&quot;thinkphp_cve_2018-20062.txt\&quot;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/vmware-cve-2022-22954&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect Vmware CVE-2022-22954 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/vmware-cve-2022-22954.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; Upper(QueryUnescape(evt.Meta.http_path)) startsWith Upper(&#39;/catalog-portal/ui/oauth/verify?error=&amp;deviceUdid=${\&quot;freemarker.template.utility.Execute\&quot;?new()(&#39;)&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;crowdsecurity/vmware-vcenter-vmsa-2021-0027&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;2m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;Detect VMSA-2021-0027 exploitation attempts&quot;,
+    &quot;file&quot; : &quot;scenarios/crowdsecurity/vmware-vcenter-vmsa-2021-0027.yaml&quot;,
+    &quot;filter&quot; : &quot;|\n  evt.Meta.log_type in [&#39;http_access-log&#39;, &#39;http_error-log&#39;] &amp;&amp; evt.Meta.http_path matches &#39;/ui/vcav-bootstrap/rest/vcav-providers/provider-logo\\\\?url=(file|http)&#39;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  }, {
+    &quot;name&quot; : &quot;ltsich/http-w00tw00t&quot;,
+    &quot;type&quot; : &quot;trigger&quot;,
+    &quot;leakspeed&quot; : &quot;&quot;,
+    &quot;blackhole&quot; : &quot;5m&quot;,
+    &quot;distinct&quot; : &quot;&quot;,
+    &quot;groupby&quot; : &quot;evt.Meta.source_ip&quot;,
+    &quot;description&quot; : &quot;detect w00tw00t&quot;,
+    &quot;file&quot; : &quot;scenarios/ltsich/http-w00tw00t.yaml&quot;,
+    &quot;filter&quot; : &quot;\&quot;evt.Meta.log_type == &#39;http_access-log&#39; and (\n  evt.Parsed.file_name contains &#39;w00tw00t.at.ISC.SANS.DFind&#39; or\n  Lower(evt.Meta.http_path) == &#39;/core/skin/login.aspx&#39;\n  )\&quot;&quot;,
+    &quot;capacity&quot; : 0,
+    &quot;supported&quot; : true
+  } ],
+  &quot;upstream_sources&quot; : {
+    &quot;AuraDFIR&quot; : &quot;23d4ec28381b77a6080d3d883adfc43d6decdc5e&quot;,
+    &quot;crowdsec&quot; : &quot;8f653d0c23ece719cce9ca7a4a942fe06fad6842&quot;,
+    &quot;hub&quot; : &quot;626d9a38c208ab594ac0078437598257042a59be&quot;,
+    &quot;sec-lists&quot; : &quot;81734435645b603991fb31f6dbedc9b6b6f5f50c&quot;
+  },
+  &quot;outcomes&quot; : {
+    &quot;confirmed_success&quot; : 0,
+    &quot;possible_success&quot; : 1,
+    &quot;unknown&quot; : 2,
+    &quot;likely_failed&quot; : 1,
+    &quot;confirmed_failure&quot; : 0
+  },
+  &quot;categories&quot; : {
+    &quot;lfi_traversal&quot; : 1,
+    &quot;sensitive_file&quot; : 1,
+    &quot;sqli&quot; : 1,
+    &quot;xss&quot; : 1
+  },
+  &quot;severities&quot; : {
+    &quot;high&quot; : 3,
+    &quot;medium&quot; : 1
+  },
+  &quot;geoip&quot; : {
+    &quot;enabled&quot; : true,
+    &quot;databases&quot; : [ {
+      &quot;role&quot; : &quot;country&quot;,
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\.worktrees\\report-readability\\src\\test\\resources\\geoip\\country.mmdb&quot;,
+      &quot;provider&quot; : &quot;DB-IP&quot;,
+      &quot;type&quot; : &quot;DBIP-Country-Lite&quot;,
+      &quot;updated_at&quot; : &quot;2026-11-01&quot;,
+      &quot;license&quot; : &quot;CC BY 4.0; IP Geolocation by DB-IP (https://db-ip.com)&quot;,
+      &quot;version&quot; : null,
+      &quot;downloaded_at&quot; : null,
+      &quot;build_time&quot; : &quot;2026-11-01T00:00:00Z&quot;,
+      &quot;source_url&quot; : null,
+      &quot;generation&quot; : null,
+      &quot;last_checked_at&quot; : null
+    }, {
+      &quot;role&quot; : &quot;asn&quot;,
+      &quot;file&quot; : &quot;F:\\project\\webauditJ\\.worktrees\\report-readability\\src\\test\\resources\\geoip\\asn.mmdb&quot;,
+      &quot;provider&quot; : &quot;DB-IP&quot;,
+      &quot;type&quot; : &quot;DBIP-ASN-Lite&quot;,
+      &quot;updated_at&quot; : &quot;2026-11-01&quot;,
+      &quot;license&quot; : &quot;CC BY 4.0; IP Geolocation by DB-IP (https://db-ip.com)&quot;,
+      &quot;version&quot; : null,
+      &quot;downloaded_at&quot; : null,
+      &quot;build_time&quot; : &quot;2026-11-01T00:00:00Z&quot;,
+      &quot;source_url&quot; : null,
+      &quot;generation&quot; : null,
+      &quot;last_checked_at&quot; : null
+    } ],
+    &quot;peers&quot; : [ {
+      &quot;ip&quot; : &quot;192.0.2.1&quot;,
+      &quot;info&quot; : {
+        &quot;status&quot; : &quot;non_public&quot;,
+        &quot;country_status&quot; : &quot;not_queried&quot;,
+        &quot;asn_status&quot; : &quot;not_queried&quot;,
+        &quot;classification&quot; : &quot;reserved&quot;,
+        &quot;country_code&quot; : null,
+        &quot;country_name&quot; : null,
+        &quot;asn&quot; : null,
+        &quot;asn_organization&quot; : null
+      },
+      &quot;requests&quot; : 1
+    }, {
+      &quot;ip&quot; : &quot;192.0.2.10&quot;,
+      &quot;info&quot; : {
+        &quot;status&quot; : &quot;non_public&quot;,
+        &quot;country_status&quot; : &quot;not_queried&quot;,
+        &quot;asn_status&quot; : &quot;not_queried&quot;,
+        &quot;classification&quot; : &quot;reserved&quot;,
+        &quot;country_code&quot; : null,
+        &quot;country_name&quot; : null,
+        &quot;asn&quot; : null,
+        &quot;asn_organization&quot; : null
+      },
+      &quot;requests&quot; : 3
+    }, {
+      &quot;ip&quot; : &quot;192.0.2.20&quot;,
+      &quot;info&quot; : {
+        &quot;status&quot; : &quot;non_public&quot;,
+        &quot;country_status&quot; : &quot;not_queried&quot;,
+        &quot;asn_status&quot; : &quot;not_queried&quot;,
+        &quot;classification&quot; : &quot;reserved&quot;,
+        &quot;country_code&quot; : null,
+        &quot;country_name&quot; : null,
+        &quot;asn&quot; : null,
+        &quot;asn_organization&quot; : null
+      },
+      &quot;requests&quot; : 1
+    }, {
+      &quot;ip&quot; : &quot;192.0.2.30&quot;,
+      &quot;info&quot; : {
+        &quot;status&quot; : &quot;non_public&quot;,
+        &quot;country_status&quot; : &quot;not_queried&quot;,
+        &quot;asn_status&quot; : &quot;not_queried&quot;,
+        &quot;classification&quot; : &quot;reserved&quot;,
+        &quot;country_code&quot; : null,
+        &quot;country_name&quot; : null,
+        &quot;asn&quot; : null,
+        &quot;asn_organization&quot; : null
+      },
+      &quot;requests&quot; : 3
+    }, {
+      &quot;ip&quot; : &quot;192.0.2.40&quot;,
+      &quot;info&quot; : {
+        &quot;status&quot; : &quot;non_public&quot;,
+        &quot;country_status&quot; : &quot;not_queried&quot;,
+        &quot;asn_status&quot; : &quot;not_queried&quot;,
+        &quot;classification&quot; : &quot;reserved&quot;,
+        &quot;country_code&quot; : null,
+        &quot;country_name&quot; : null,
+        &quot;asn&quot; : null,
+        &quot;asn_organization&quot; : null
+      },
+      &quot;requests&quot; : 1
+    } ],
+    &quot;countries&quot; : [ {
+      &quot;key&quot; : &quot;unknown&quot;,
+      &quot;name&quot; : &quot;unknown&quot;,
+      &quot;requests&quot; : 9,
+      &quot;incidents&quot; : 4,
+      &quot;ip_count&quot; : 5,
+      &quot;suspicious_ip_count&quot; : 4,
+      &quot;ips&quot; : [ &quot;192.0.2.1&quot;, &quot;192.0.2.10&quot;, &quot;192.0.2.20&quot;, &quot;192.0.2.30&quot;, &quot;192.0.2.40&quot; ],
+      &quot;categories&quot; : [ &quot;lfi_traversal&quot;, &quot;sensitive_file&quot;, &quot;sqli&quot;, &quot;xss&quot; ],
+      &quot;multiple_suspicious_ips&quot; : false
+    } ],
+    &quot;asns&quot; : [ {
+      &quot;key&quot; : &quot;unknown&quot;,
+      &quot;name&quot; : &quot;unknown&quot;,
+      &quot;requests&quot; : 9,
+      &quot;incidents&quot; : 4,
+      &quot;ip_count&quot; : 5,
+      &quot;suspicious_ip_count&quot; : 4,
+      &quot;ips&quot; : [ &quot;192.0.2.1&quot;, &quot;192.0.2.10&quot;, &quot;192.0.2.20&quot;, &quot;192.0.2.30&quot;, &quot;192.0.2.40&quot; ],
+      &quot;categories&quot; : [ &quot;lfi_traversal&quot;, &quot;sensitive_file&quot;, &quot;sqli&quot;, &quot;xss&quot; ],
+      &quot;multiple_suspicious_ips&quot; : false
+    } ],
+    &quot;truncated&quot; : false,
+    &quot;correlations&quot; : [ ],
+    &quot;correlations_truncated&quot; : false,
+    &quot;context&quot; : &quot;Investigation context only: shared country or ASN does not establish a shared actor, an attack, or attack success. Counts cover retained parsed peers and WebAudit incidents; upstream alerts are separate. IP/category samples are limited to 64 per group; counts may be lower bounds when truncated.&quot;
+  }
+}</pre></details>
+<footer>WebAuditJ · MIT License · AuraDFIR、CrowdSec、CrowdSec Hubを参照した独立実装です。第三者ライセンス表示はアプリケーションに付属しています。外部の画像・スクリプト・スタイルシートは使用しません。</footer>
+</main></body></html>

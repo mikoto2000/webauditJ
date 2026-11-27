@@ -26,6 +26,8 @@ jobs:
         run: .\mvnw.cmd -B -ntp -s .mvn/settings.xml verify
       - name: Inspect executable JAR
         run: python tools/verify_jar.py
+      - name: Verify published report examples
+        run: python tools/build-report-pages.py .workflow/report-pages
       - name: Deny application network access
         if: runner.os == 'Linux' && runner.arch == 'X64'
         run: python tools/verify_offline.py

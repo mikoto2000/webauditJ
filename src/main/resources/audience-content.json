@@ -14,7 +14,8 @@
         "title": "機密資源の露出",
         "condition": "機密資源が応答に含まれていた場合",
         "conditional_impact": "秘密情報の取得や二次的な不正アクセスにつながる可能性。内容・機密性は未確認。",
-        "next_action": "当時の応答内容と対象経路の公開設定を確認"
+        "next_action": "当時の応答内容と対象経路の公開設定を確認",
+        "escalation_condition": "当時の応答本文やファイルアクセス記録で、公開すべきでないファイルの内容が返された、または読み込まれたと確認できた場合、露出した情報と影響範囲を調べ、対象経路の制限を検討してください。"
       },
       {
         "id": "authentication",
@@ -26,7 +27,8 @@
         "title": "認証・認可の不正利用",
         "condition": "権限外の認証や操作が成功していた場合",
         "conditional_impact": "アカウントや管理機能が不正利用された可能性。認証成功・権限は未確認。",
-        "next_action": "認証結果・対象アカウント・操作履歴を照合"
+        "next_action": "認証結果・対象アカウント・操作履歴を照合",
+        "escalation_condition": "認証・操作記録で、正当な利用者によるものではないログイン成功や権限外の操作が確認された場合、対象アカウントと操作範囲を調べ、アカウントやセッションの制限を検討してください。"
       },
       {
         "id": "processing",
@@ -48,7 +50,8 @@
         "title": "意図しない処理・情報取得",
         "condition": "対象の脆弱な処理が要求を解釈・実行した場合",
         "conditional_impact": "不正な処理や情報取得につながる可能性。実行・変更・被害は未確認。",
-        "next_action": "AP・DB・ホストの処理記録と当時の応答を照合"
+        "next_action": "AP・DB・ホストの処理記録と当時の応答を照合",
+        "escalation_condition": "アプリ・DB・ホスト・ブラウザーの記録などで、対象の入力による意図しない処理、データ取得・変更、またはスクリプト実行が確認された場合、影響した処理とデータを調べ、対象機能の制限や詳細調査を検討してください。"
       },
       {
         "id": "data",
@@ -61,7 +64,8 @@
         "title": "権限外データ取得の可能性",
         "condition": "権限外の機密データが返されていた場合",
         "conditional_impact": "情報の秘密性が損なわれる可能性。量だけではデータ内容・権限を判断できない。",
-        "next_action": "返却データ・認可・正規の出力処理を照合"
+        "next_action": "返却データ・認可・正規の出力処理を照合",
+        "escalation_condition": "返却データの内容と当時の権限を照合し、権限外の機密データ取得が確認された場合、取得されたデータと範囲を調べ、対象の出力処理やアクセスの制限を検討してください。応答量の多さだけでは判断しません。"
       },
       {
         "id": "availability",
@@ -76,17 +80,17 @@
         "title": "処理品質・可用性への影響",
         "condition": "異常な処理や負荷が正規利用に影響していた場合",
         "conditional_impact": "機能の停止や品質低下の可能性。業務影響・現在の状態は未確認。",
-        "next_action": "当時の例外・性能記録と提供された稼働状況を確認"
+        "next_action": "当時の例外・性能記録と提供された稼働状況を確認",
+        "escalation_condition": "稼働・性能・エラー記録で、対象の通信に伴うサービス停止や正規利用への支障が確認された場合、影響範囲と継続状況を調べ、対象を絞った通信制限や復旧対応を検討してください。通信量の多さだけでは判断しません。"
       },
       {
         "id": "review",
-        "categories": [
-          "unknown"
-        ],
+        "categories": [],
         "title": "探索・不審活動の追加確認",
         "condition": "検出された活動が実際の不正処理や資源取得につながった場合",
         "conditional_impact": "後続の攻撃や不正利用につながる可能性。適用性・主体・被害は未確認。",
-        "next_action": "適用ルール・対象経路・正規利用と後続記録を確認"
+        "next_action": "適用ルール・対象経路・正規利用と後続記録を確認",
+        "escalation_condition": ""
       }
     ],
     "response_rules": [
@@ -123,7 +127,7 @@
       "責任者が残存リスクへの対応継続または受容を判断する。自動終了しない。"
     ],
     "labels": {
-      "priority": "優先的な追加調査",
+      "priority": "優先的な追加調査が必要",
       "planned": "計画的な追加調査",
       "hold": "判断保留",
       "monitor": "監視継続"
@@ -159,7 +163,14 @@
       "検出された活動が実際の不正処理や資源取得につながった場合": "検出された活動が実際の不正処理や資源取得につながった場合",
       "後続の攻撃や不正利用につながる可能性。適用性・主体・被害は未確認。": "後続の攻撃や不正利用につながる可能性。適用性・主体・被害は未確認。",
       "適用ルール・対象経路・正規利用と後続記録を確認": "適用ルール・対象経路・正規利用と後続記録を確認",
+      "当時の応答本文やファイルアクセス記録で、公開すべきでないファイルの内容が返された、または読み込まれたと確認できた場合、露出した情報と影響範囲を調べ、対象経路の制限を検討してください。": "当時の応答本文やファイルアクセス記録で、公開すべきでないファイルの内容が返された、または読み込まれたと確認できた場合、露出した情報と影響範囲を調べ、対象経路の制限を検討してください。",
+      "認証・操作記録で、正当な利用者によるものではないログイン成功や権限外の操作が確認された場合、対象アカウントと操作範囲を調べ、アカウントやセッションの制限を検討してください。": "認証・操作記録で、正当な利用者によるものではないログイン成功や権限外の操作が確認された場合、対象アカウントと操作範囲を調べ、アカウントやセッションの制限を検討してください。",
+      "アプリ・DB・ホスト・ブラウザーの記録などで、対象の入力による意図しない処理、データ取得・変更、またはスクリプト実行が確認された場合、影響した処理とデータを調べ、対象機能の制限や詳細調査を検討してください。": "アプリ・DB・ホスト・ブラウザーの記録などで、対象の入力による意図しない処理、データ取得・変更、またはスクリプト実行が確認された場合、影響した処理とデータを調べ、対象機能の制限や詳細調査を検討してください。",
+      "返却データの内容と当時の権限を照合し、権限外の機密データ取得が確認された場合、取得されたデータと範囲を調べ、対象の出力処理やアクセスの制限を検討してください。応答量の多さだけでは判断しません。": "返却データの内容と当時の権限を照合し、権限外の機密データ取得が確認された場合、取得されたデータと範囲を調べ、対象の出力処理やアクセスの制限を検討してください。応答量の多さだけでは判断しません。",
+      "稼働・性能・エラー記録で、対象の通信に伴うサービス停止や正規利用への支障が確認された場合、影響範囲と継続状況を調べ、対象を絞った通信制限や復旧対応を検討してください。通信量の多さだけでは判断しません。": "稼働・性能・エラー記録で、対象の通信に伴うサービス停止や正規利用への支障が確認された場合、影響範囲と継続状況を調べ、対象を絞った通信制限や復旧対応を検討してください。通信量の多さだけでは判断しません。",
       "未確認。侵害の有無を確定する調査は未実施。": "未確認。侵害の有無を確定する調査は未実施。",
+      "追加の記録で不正な活動や被害の拡大・継続が確認されたら、責任者が現在の状況と業務への影響を確認し、対応の強化を判断してください。アクセスログの検出だけで制限や停止を自動決定しません。": "追加の記録で不正な活動や被害の拡大・継続が確認されたら、責任者が現在の状況と業務への影響を確認し、対応の強化を判断してください。アクセスログの検出だけで制限や停止を自動決定しません。",
+      "調査を見送ると、被害の有無が分からない状態が続き、ログの上書きで後から確認できなくなる可能性があります。": "調査を見送ると、被害の有無が分からない状態が続き、ログの上書きで後から確認できなくなる可能性があります。",
       "露出・不正な重要操作・現在の重大障害を追加証拠で確認した場合、責任者が緊急対応を検討。アクセスログだけで自動選択しない。": "露出・不正な重要操作・現在の重大障害を追加証拠で確認した場合、責任者が緊急対応を検討。アクセスログだけで自動選択しない。",
       "成功の疑い、または既存の調査基準で高優先度の事案がある。": "成功の疑い、または既存の調査基準で高優先度の事案がある。",
       "優先根拠がなく、解析成功0件または解析が不完全。": "優先根拠がなく、解析成功0件または解析が不完全。",
@@ -176,17 +187,14 @@
       "既存ルールの優先度と成否に基づく調査順序。組織の影響度や成功確率ではない。": "既存ルールの優先度と成否に基づく調査順序。組織の影響度や成功確率ではない。",
       "独立検出は適用性・成否・優先度を未評価。ルールと証拠を確認する。": "独立検出は適用性・成否・優先度を未評価。ルールと証拠を確認する。",
       "成功の疑いを裏付ける既存の要求間変化があり、追加証拠の確認を優先する。": "成功の疑いを裏付ける既存の要求間変化があり、追加証拠の確認を優先する。",
-      "当時の情報露出・権限外操作・意図しない処理、または現在の継続する悪性活動を追加証拠で確認したら、責任者が詳細調査・対象を絞った制限を検討する。": "当時の情報露出・権限外操作・意図しない処理、または現在の継続する悪性活動を追加証拠で確認したら、責任者が詳細調査・対象を絞った制限を検討する。",
-      "不正利用や影響を未確認のまま残し、記録の上書きで検証不能になる可能性。": "不正利用や影響を未確認のまま残し、記録の上書きで検証不能になる可能性。",
       "優先度に応じて実施（提案。実期限は責任者が設定）": "優先度に応じて実施（提案。実期限は責任者が設定）",
       "システム管理・開発・セキュリティ部門（担当候補）": "システム管理・開発・セキュリティ部門（担当候補）",
       "支持・反証、成否または確認不能の理由、残存リスクと次の判断を記録。": "支持・反証、成否または確認不能の理由、残存リスクと次の判断を記録。",
-      "双方に実在するネイティブIDを優先。なければ期間・ホスト・メソッド・経路から候補を比較し、時刻ずれ・競合・共有IPを評価する。": "双方に実在するネイティブIDを優先。なければ期間・ホスト・メソッド・経路から候補を比較し、時刻ずれ・競合・共有IPを評価する。",
-      "対象事案なし。調査開始を依頼するプロンプトは生成しません。\n": "対象事案なし。調査開始を依頼するプロンプトは生成しません。\n"
+      "双方に実在するネイティブIDを優先。なければ期間・ホスト・メソッド・経路から候補を比較し、時刻ずれ・競合・共有IPを評価する。": "双方に実在するネイティブIDを優先。なければ期間・ホスト・メソッド・経路から候補を比較し、時刻ずれ・競合・共有IPを評価する。"
     },
     "confirmed_impact": "未確認。侵害の有無を確定する調査は未実施。",
-    "escalation_condition": "当時の情報露出・権限外操作・意図しない処理、または現在の継続する悪性活動を追加証拠で確認したら、責任者が詳細調査・対象を絞った制限を検討する。",
-    "if_deferred": "不正利用や影響を未確認のまま残し、記録の上書きで検証不能になる可能性。",
+    "common_escalation_condition": "追加の記録で不正な活動や被害の拡大・継続が確認されたら、責任者が現在の状況と業務への影響を確認し、対応の強化を判断してください。アクセスログの検出だけで制限や停止を自動決定しません。",
+    "common_if_deferred": "調査を見送ると、被害の有無が分からない状態が続き、ログの上書きで後から確認できなくなる可能性があります。",
     "suggested_timing": "優先度に応じて実施（提案。実期限は責任者が設定）",
     "suggested_owner": "システム管理・開発・セキュリティ部門（担当候補）",
     "completion_condition": "支持・反証、成否または確認不能の理由、残存リスクと次の判断を記録。",
@@ -208,7 +216,8 @@
         "title": "Sensitive resource exposure",
         "condition": "If sensitive resources were actually returned",
         "conditional_impact": "Disclosure or subsequent unauthorized access may follow; content and sensitivity remain unverified.",
-        "next_action": "Review historical responses and route exposure settings"
+        "next_action": "Review historical responses and route exposure settings",
+        "escalation_condition": "If historical response content or file-access records establish that non-public file content was returned or read, investigate the exposed information and affected scope and consider restricting the affected route."
       },
       {
         "id": "authentication",
@@ -220,7 +229,8 @@
         "title": "Unauthorized authentication or authorization",
         "condition": "If unauthorized authentication or operations succeeded",
         "conditional_impact": "Accounts or privileged functions may have been misused; authentication and entitlements are unverified.",
-        "next_action": "Correlate authentication outcomes, accounts and operation audits"
+        "next_action": "Correlate authentication outcomes, accounts and operation audits",
+        "escalation_condition": "If authentication or operation audits establish a login by an unauthorized user or an unauthorized operation, investigate the account and operation scope and consider account or session restrictions."
       },
       {
         "id": "processing",
@@ -242,7 +252,8 @@
         "title": "Unintended processing or information access",
         "condition": "If an applicable vulnerable operation interpreted or executed the input",
         "conditional_impact": "Unintended execution or data access may occur; execution, changes and harm are unverified.",
-        "next_action": "Correlate application, database, host records and historical responses"
+        "next_action": "Correlate application, database, host records and historical responses",
+        "escalation_condition": "If application, database, host or browser evidence establishes unintended processing, data access or modification, or script execution caused by the input, investigate affected operations and data and consider function restrictions or detailed investigation."
       },
       {
         "id": "data",
@@ -255,7 +266,8 @@
         "title": "Possible unauthorized data retrieval",
         "condition": "If confidential data was returned without authorization",
         "conditional_impact": "Confidentiality may be affected; volume alone cannot establish content or authorization.",
-        "next_action": "Review returned data, authorization and legitimate export jobs"
+        "next_action": "Review returned data, authorization and legitimate export jobs",
+        "escalation_condition": "If returned content and historical authorization establish unauthorized retrieval of confidential data, investigate the data and scope and consider restricting the affected export or access. Response volume alone is insufficient."
       },
       {
         "id": "availability",
@@ -270,17 +282,17 @@
         "title": "Service quality or availability",
         "condition": "If abnormal processing or load affected legitimate use",
         "conditional_impact": "Functions may be impaired; business impact and current state are unverified.",
-        "next_action": "Review historical errors, performance and supplied service-status records"
+        "next_action": "Review historical errors, performance and supplied service-status records",
+        "escalation_condition": "If service, performance or error records establish an outage or disruption to legitimate use associated with the traffic, investigate affected scope and whether disruption continues and consider targeted traffic restrictions or recovery. Traffic volume alone is insufficient."
       },
       {
         "id": "review",
-        "categories": [
-          "unknown"
-        ],
+        "categories": [],
         "title": "Further review of probing or suspicious activity",
         "condition": "If the detected activity led to unauthorized operations or resource access",
         "conditional_impact": "Subsequent attacks or misuse may follow; applicability, identity and harm are unverified.",
-        "next_action": "Validate rule applicability, target routes, authorized use and subsequent records"
+        "next_action": "Validate rule applicability, target routes, authorized use and subsequent records",
+        "escalation_condition": ""
       }
     ],
     "response_rules": [
@@ -317,7 +329,7 @@
       "A responsible owner decides continued response or residual-risk acceptance; no automatic closure."
     ],
     "labels": {
-      "priority": "Priority investigation",
+      "priority": "Priority investigation needed",
       "planned": "Planned investigation",
       "hold": "Judgment deferred",
       "monitor": "Continue monitoring"
@@ -353,7 +365,14 @@
       "検出された活動が実際の不正処理や資源取得につながった場合": "If the detected activity led to unauthorized operations or resource access",
       "後続の攻撃や不正利用につながる可能性。適用性・主体・被害は未確認。": "Subsequent attacks or misuse may follow; applicability, identity and harm are unverified.",
       "適用ルール・対象経路・正規利用と後続記録を確認": "Validate rule applicability, target routes, authorized use and subsequent records",
+      "当時の応答本文やファイルアクセス記録で、公開すべきでないファイルの内容が返された、または読み込まれたと確認できた場合、露出した情報と影響範囲を調べ、対象経路の制限を検討してください。": "If historical response content or file-access records establish that non-public file content was returned or read, investigate the exposed information and affected scope and consider restricting the affected route.",
+      "認証・操作記録で、正当な利用者によるものではないログイン成功や権限外の操作が確認された場合、対象アカウントと操作範囲を調べ、アカウントやセッションの制限を検討してください。": "If authentication or operation audits establish a login by an unauthorized user or an unauthorized operation, investigate the account and operation scope and consider account or session restrictions.",
+      "アプリ・DB・ホスト・ブラウザーの記録などで、対象の入力による意図しない処理、データ取得・変更、またはスクリプト実行が確認された場合、影響した処理とデータを調べ、対象機能の制限や詳細調査を検討してください。": "If application, database, host or browser evidence establishes unintended processing, data access or modification, or script execution caused by the input, investigate affected operations and data and consider function restrictions or detailed investigation.",
+      "返却データの内容と当時の権限を照合し、権限外の機密データ取得が確認された場合、取得されたデータと範囲を調べ、対象の出力処理やアクセスの制限を検討してください。応答量の多さだけでは判断しません。": "If returned content and historical authorization establish unauthorized retrieval of confidential data, investigate the data and scope and consider restricting the affected export or access. Response volume alone is insufficient.",
+      "稼働・性能・エラー記録で、対象の通信に伴うサービス停止や正規利用への支障が確認された場合、影響範囲と継続状況を調べ、対象を絞った通信制限や復旧対応を検討してください。通信量の多さだけでは判断しません。": "If service, performance or error records establish an outage or disruption to legitimate use associated with the traffic, investigate affected scope and whether disruption continues and consider targeted traffic restrictions or recovery. Traffic volume alone is insufficient.",
       "未確認。侵害の有無を確定する調査は未実施。": "Unverified. An investigation establishing compromise or its absence has not been performed.",
+      "追加の記録で不正な活動や被害の拡大・継続が確認されたら、責任者が現在の状況と業務への影響を確認し、対応の強化を判断してください。アクセスログの検出だけで制限や停止を自動決定しません。": "If additional records establish unauthorized activity or continuing or expanding harm, the responsible owner reviews the current situation and operational impact and decides whether to strengthen the response. Access-log detections alone do not automatically authorize restrictions or shutdowns.",
+      "調査を見送ると、被害の有無が分からない状態が続き、ログの上書きで後から確認できなくなる可能性があります。": "Deferring investigation leaves harm unresolved and logs may be overwritten, preventing later verification.",
       "露出・不正な重要操作・現在の重大障害を追加証拠で確認した場合、責任者が緊急対応を検討。アクセスログだけで自動選択しない。": "A responsible owner considers urgent response after corroborating disclosure, unauthorized critical operations or current severe impairment; not selected automatically from access logs.",
       "成功の疑い、または既存の調査基準で高優先度の事案がある。": "A possible-success case or a case with high investigation priority exists.",
       "優先根拠がなく、解析成功0件または解析が不完全。": "No priority evidence and either zero parsed observations or incomplete analysis.",
@@ -370,17 +389,14 @@
       "既存ルールの優先度と成否に基づく調査順序。組織の影響度や成功確率ではない。": "Investigation order follows existing rule priority and outcome, not organizational impact or success probability.",
       "独立検出は適用性・成否・優先度を未評価。ルールと証拠を確認する。": "Independent detection: applicability, outcome and priority are unassessed; review its rule and evidence.",
       "成功の疑いを裏付ける既存の要求間変化があり、追加証拠の確認を優先する。": "Existing outcome evidence indicates possible success; prioritize corroboration.",
-      "当時の情報露出・権限外操作・意図しない処理、または現在の継続する悪性活動を追加証拠で確認したら、責任者が詳細調査・対象を絞った制限を検討する。": "If corroborating records establish disclosure, unauthorized operations, unintended processing or ongoing malicious activity, the owner considers detailed investigation and targeted restrictions.",
-      "不正利用や影響を未確認のまま残し、記録の上書きで検証不能になる可能性。": "Misuse or impact may remain unresolved and overwritten records may prevent verification.",
       "優先度に応じて実施（提案。実期限は責任者が設定）": "Schedule by priority (suggestion; the owner sets the deadline)",
       "システム管理・開発・セキュリティ部門（担当候補）": "System, development and security owners (suggested roles)",
       "支持・反証、成否または確認不能の理由、残存リスクと次の判断を記録。": "Record support/refutation, outcomes or inability to verify, residual risk and the next decision.",
-      "双方に実在するネイティブIDを優先。なければ期間・ホスト・メソッド・経路から候補を比較し、時刻ずれ・競合・共有IPを評価する。": "Prefer native IDs actually present on both sides; otherwise compare time, host, method and route candidates, clock skew, competing matches and shared IPs.",
-      "対象事案なし。調査開始を依頼するプロンプトは生成しません。\n": "No selected cases. No investigation-start prompt is generated.\n"
+      "双方に実在するネイティブIDを優先。なければ期間・ホスト・メソッド・経路から候補を比較し、時刻ずれ・競合・共有IPを評価する。": "Prefer native IDs actually present on both sides; otherwise compare time, host, method and route candidates, clock skew, competing matches and shared IPs."
     },
     "confirmed_impact": "Unverified. An investigation establishing compromise or its absence has not been performed.",
-    "escalation_condition": "If corroborating records establish disclosure, unauthorized operations, unintended processing or ongoing malicious activity, the owner considers detailed investigation and targeted restrictions.",
-    "if_deferred": "Misuse or impact may remain unresolved and overwritten records may prevent verification.",
+    "common_escalation_condition": "If additional records establish unauthorized activity or continuing or expanding harm, the responsible owner reviews the current situation and operational impact and decides whether to strengthen the response. Access-log detections alone do not automatically authorize restrictions or shutdowns.",
+    "common_if_deferred": "Deferring investigation leaves harm unresolved and logs may be overwritten, preventing later verification.",
     "suggested_timing": "Schedule by priority (suggestion; the owner sets the deadline)",
     "suggested_owner": "System, development and security owners (suggested roles)",
     "completion_condition": "Record support/refutation, outcomes or inability to verify, residual risk and the next decision.",

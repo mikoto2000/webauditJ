@@ -131,7 +131,7 @@ class ReportsTest {
       var out = new StringWriter();
       Reports.write(out, r, "html", lang);
       String html = out.toString();
-      int start = html.indexOf("<a href=\"#upstream-");
+      int start = html.indexOf("<a href=\"#upstream-", html.indexOf("id=\"upstream-list\""));
       int detail = html.indexOf("<article id=\"upstream-");
       assertTrue(start > 0 && detail > start);
       assertTrue(html.substring(0, start).contains("id=\"upstream-list\""));

@@ -25,16 +25,24 @@
  const boxes=[...document.querySelectorAll('input[name="secondary-case"]')];
  const l=(ja,en)=>plan.language==='en'?en:ja;
  function update(){
-  const ids=boxes.filter(b=>b.checked).map(b=>b.value);$('secondary-materials').replaceChildren();
+  const ids=boxes.filter(b=>b.checked).map(b=>b.value);$('secondary-selection-summary').textContent=l('選択対象：','Selected targets: ')+ids.length+(ids.length?' · '+ids.slice(0,5).join(', ')+(ids.length>5?' …':''):'');$('secondary-materials').replaceChildren();
   for(const c of plan.cases.filter(c=>ids.includes(c.id))){const p=document.createElement('p');p.textContent=c.id+': '+c.required_materials.join(' / ');$('secondary-materials').appendChild(p);}
   try{$('secondary-prompt').value=render(plan,ids,{primary:$('secondary-primary').value,additional:$('secondary-additional').value,output:$('secondary-output').value});$('secondary-copy').disabled=$('secondary-save').disabled=false;$('secondary-status').textContent=l('依頼文を生成しました。調査・送信は行っていません。','Request generated. No investigation or transmission performed.');}
   catch(e){$('secondary-prompt').value='';$('secondary-copy').disabled=$('secondary-save').disabled=true;$('secondary-status').textContent=e.message;}
  }
- for(const b of boxes)b.addEventListener('change',update);
+ function clearCaseHash(){if(String(location.hash||'').replace(/^#/,'').startsWith('request-'))location.hash='secondary-investigation';}
+ for(const b of boxes)b.addEventListener('change',()=>{clearCaseHash();update();});
  for(const id of ['secondary-primary','secondary-additional','secondary-output'])$(id).addEventListener('input',update);
- for(const [id,mode] of [['secondary-all','all'],['secondary-priority','priority'],['secondary-none','none']])$(id).onclick=()=>{boxes.forEach(b=>b.checked=mode==='all'||mode==='priority'&&plan.cases.some(c=>c.id===b.value&&c.priority==='high'));update();};
- document.addEventListener('click',e=>{const b=e.target.closest('button[data-secondary-case]');if(!b)return;boxes.forEach(x=>x.checked=x.value===b.dataset.secondaryCase);update();location.hash='secondary-investigation';$('secondary-investigation').scrollIntoView();});
+ for(const [id,mode] of [['secondary-all','all'],['secondary-priority','priority'],['secondary-none','none']])$(id).onclick=()=>{boxes.forEach(b=>b.checked=mode==='all'||mode==='priority'&&plan.cases.some(c=>c.id===b.value&&c.priority==='high'));clearCaseHash();update();};
+ function selectCase(id,setHash){
+  const known=plan.cases.some(c=>c.id===id);boxes.forEach(x=>x.checked=known&&x.value===id);update();
+  if(!known){$('secondary-status').textContent=l('不明な対象です。対象一覧から選び直してください。','Unknown target. Select a target from the list.');return;}
+  if(setHash)location.hash='request-'+encodeURIComponent(id);$('secondary-investigation').scrollIntoView();
+ }
+ function applyCaseHash(){const hash=String(location.hash||'').replace(/^#/,'');if(!hash.startsWith('request-'))return false;try{selectCase(decodeURIComponent(hash.slice(8)),false);}catch{boxes.forEach(x=>x.checked=false);update();$('secondary-status').textContent=l('対象指定を読み取れません。対象一覧から選び直してください。','Invalid target reference. Select a target from the list.');}return true;}
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-secondary-case]');if(!b)return;e.preventDefault?.();selectCase(b.dataset.secondaryCase,true);});
+ root.addEventListener?.('hashchange',applyCaseHash);
  $('secondary-copy').onclick=async()=>{try{if(!navigator.clipboard?.writeText)throw Error();await navigator.clipboard.writeText($('secondary-prompt').value);$('secondary-status').textContent=l('コピーしました。','Copied.');}catch{$('secondary-prompt').focus();$('secondary-prompt').select();$('secondary-status').textContent=l('本文を選択しました。Ctrl+C / Command+Cでコピーしてください。','Text selected. Copy with Ctrl+C / Command+C.');}};
  $('secondary-save').onclick=()=>{const u=URL.createObjectURL(new Blob([$('secondary-prompt').value],{type:'text/markdown;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='secondary-investigation-selected.md';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);};
- update();
+ if(!applyCaseHash())update();
 })(typeof globalThis!=='undefined'?globalThis:this);

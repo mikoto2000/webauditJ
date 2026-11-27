@@ -42,6 +42,8 @@ Include all of the following, explicitly marking unknowns instead of inventing t
 8. Tertiary-investigation needs and reasons; escalation and overall closure
    conditions. Do not automatically accept risk or close the investigation.
 
+Section 05 is used after the section 04 investigation results are available. Show common escalation and deferral guidance once. Add conditional, evidence-based criteria for specific risk profiles and group targets that share identical criteria. Keep every target reference; do not infer that criteria were met from a detection alone.
+
 ## Technical report / 技術者向け構成
 
 1. Purpose, targets and actual investigated scope.
@@ -62,7 +64,15 @@ Include all of the following, explicitly marking unknowns instead of inventing t
     output/report-quality contract. Do not initiate further collection automatically.
 11. Reproduction: input/settings/rule versions, actual commands, scripts and results.
 
+Focus the main coverage-results chapter on detected targets linked to executive risks and target-specific follow-up work for other tools or investigators. Start each case with the observed facts, suspected risk, unverified matters and next checks. Show how many request records the case contains and a bounded representative sample. Keep raw logs, full rules, detailed metrics and reasoning in expandable supporting sections. Avoid a second chapter repeating the same case-list tables. Do not create a standalone overall-assessment chapter that only repeats counts and general caveats. Keep scope-sensitive conclusions in the overview and corroboration requirements beside the affected cases. Put actual runtime gaps and diagnostics beside the input inventory, target-specific unknowns beside the affected cases, and general tool/display/masking/sharing limitations in a reference appendix. Avoid a standalone limitations chapter repeating them. Follow the risk correspondence chapter with case evidence and retain full incident/detection CSV links and display-limit warnings. Keep general unsupported, unperformed, no-match and full evaluation inventories in a separate appendix; they are scope references, not suspected attacks.
+
+Keep methods and whole-log statistics in reference appendices, with links from the detected-target chapter. Retain essential scope limits in the input chapter and case-specific facts in each case overview. The main reading path is overview, scope, suspected targets, case evidence and recommended actions. Follow these with a numbered investigation-request and result-reporting chapter. Preserve a selected target from a case/action link into the request, show all retained targets including those omitted from the priority summary, and explain reporting and responsible-owner decisions after investigation without turning the report into a progress tracker.
+
+Keep assessment definitions in an appendix after the technical investigation and handoff sections. Link to it from the contents, case list and detailed analysis so definitions do not interrupt the results.
+
 ## Shared HTML quality / HTML共通要件
+
+- Start every substantive chapter with a short "After reading this chapter" note: state the decision, check or action expected of its reader. Use audience-appropriate language and do not imply that reading or generating a report executes the action.
 
 - Reuse the primary design, terminology and separate evaluation axes where possible.
   `templates/` contains renderer-owned HTML/template source and `report.css`.

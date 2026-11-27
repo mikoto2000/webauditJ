@@ -1,0 +1,74 @@
+{
+  "version" : "webaudit/response-rules-2",
+  "response_rules" : [ {
+    "code" : "urgent",
+    "condition" : "露出・不正な重要操作・現在の重大障害を追加証拠で確認した場合、責任者が緊急対応を検討。アクセスログだけで自動選択しない。"
+  }, {
+    "code" : "priority",
+    "condition" : "成功の疑い、または既存の調査基準で高優先度の事案がある。"
+  }, {
+    "code" : "hold",
+    "condition" : "優先根拠がなく、解析成功0件または解析が不完全。"
+  }, {
+    "code" : "planned",
+    "condition" : "評価可能な候補があるが、高優先度ではない。独立検出の優先度未評価も含む。"
+  }, {
+    "code" : "monitor",
+    "condition" : "完全に評価できた範囲で候補なし。安全の保証ではない。"
+  } ],
+  "common_escalation_condition" : "追加の記録で不正な活動や被害の拡大・継続が確認されたら、責任者が現在の状況と業務への影響を確認し、対応の強化を判断してください。アクセスログの検出だけで制限や停止を自動決定しません。",
+  "common_if_deferred" : "調査を見送ると、被害の有無が分からない状態が続き、ログの上書きで後から確認できなくなる可能性があります。",
+  "escalation_fallback" : "Use common_escalation_condition when a profile has no specific criteria",
+  "priority_rule" : "possible_success or severity high/critical => high; medium => medium; otherwise low; independent detections unassessed",
+  "profiles" : [ {
+    "id" : "resource",
+    "categories" : [ "sensitive_file", "lfi_traversal", "rfi", "null_byte" ],
+    "title" : "機密資源の露出",
+    "condition" : "機密資源が応答に含まれていた場合",
+    "conditional_impact" : "秘密情報の取得や二次的な不正アクセスにつながる可能性。内容・機密性は未確認。",
+    "next_action" : "当時の応答内容と対象経路の公開設定を確認",
+    "escalation_condition" : "当時の応答本文やファイルアクセス記録で、公開すべきでないファイルの内容が返された、または読み込まれたと確認できた場合、露出した情報と影響範囲を調べ、対象経路の制限を検討してください。"
+  }, {
+    "id" : "authentication",
+    "categories" : [ "auth", "login", "access_bypass" ],
+    "title" : "認証・認可の不正利用",
+    "condition" : "権限外の認証や操作が成功していた場合",
+    "conditional_impact" : "アカウントや管理機能が不正利用された可能性。認証成功・権限は未確認。",
+    "next_action" : "認証結果・対象アカウント・操作履歴を照合",
+    "escalation_condition" : "認証・操作記録で、正当な利用者によるものではないログイン成功や権限外の操作が確認された場合、対象アカウントと操作範囲を調べ、アカウントやセッションの制限を検討してください。"
+  }, {
+    "id" : "processing",
+    "categories" : [ "sqli", "nosqli", "ldap_injection", "xpath_injection", "command_injection", "shellshock", "ssti", "deserialization", "log4shell", "spring4shell", "struts_ognl", "ssrf", "xss" ],
+    "title" : "意図しない処理・情報取得",
+    "condition" : "対象の脆弱な処理が要求を解釈・実行した場合",
+    "conditional_impact" : "不正な処理や情報取得につながる可能性。実行・変更・被害は未確認。",
+    "next_action" : "AP・DB・ホストの処理記録と当時の応答を照合",
+    "escalation_condition" : "アプリ・DB・ホスト・ブラウザーの記録などで、対象の入力による意図しない処理、データ取得・変更、またはスクリプト実行が確認された場合、影響した処理とデータを調べ、対象機能の制限や詳細調査を検討してください。"
+  }, {
+    "id" : "data",
+    "categories" : [ "WS-size", "WS-url-size", "size_anomaly", "large_response" ],
+    "title" : "権限外データ取得の可能性",
+    "condition" : "権限外の機密データが返されていた場合",
+    "conditional_impact" : "情報の秘密性が損なわれる可能性。量だけではデータ内容・権限を判断できない。",
+    "next_action" : "返却データ・認可・正規の出力処理を照合",
+    "escalation_condition" : "返却データの内容と当時の権限を照合し、権限外の機密データ取得が確認された場合、取得されたデータと範囲を調べ、対象の出力処理やアクセスの制限を検討してください。応答量の多さだけでは判断しません。"
+  }, {
+    "id" : "availability",
+    "categories" : [ "rate", "burst", "WS-hour", "WS-ip", "WS-errors", "traffic_spike" ],
+    "title" : "処理品質・可用性への影響",
+    "condition" : "異常な処理や負荷が正規利用に影響していた場合",
+    "conditional_impact" : "機能の停止や品質低下の可能性。業務影響・現在の状態は未確認。",
+    "next_action" : "当時の例外・性能記録と提供された稼働状況を確認",
+    "escalation_condition" : "稼働・性能・エラー記録で、対象の通信に伴うサービス停止や正規利用への支障が確認された場合、影響範囲と継続状況を調べ、対象を絞った通信制限や復旧対応を検討してください。通信量の多さだけでは判断しません。"
+  }, {
+    "id" : "review",
+    "categories" : [ ],
+    "title" : "探索・不審活動の追加確認",
+    "condition" : "検出された活動が実際の不正処理や資源取得につながった場合",
+    "conditional_impact" : "後続の攻撃や不正利用につながる可能性。適用性・主体・被害は未確認。",
+    "next_action" : "適用ルール・対象経路・正規利用と後続記録を確認",
+    "escalation_condition" : ""
+  } ],
+  "profile_precedence" : "resource, authentication, processing, data, availability; otherwise review",
+  "impact" : "conditional; never organization-specific probability or verified harm"
+}

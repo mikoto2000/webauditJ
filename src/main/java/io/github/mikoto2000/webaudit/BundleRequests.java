@@ -427,9 +427,7 @@ final class BundleRequests {
 
   static final List<String> REQUEST_HEADERS =
       List.of(
-          "request_id",
-          "finding_ids",
-          "detection_ids",
+          "attack_categories",
           "timestamp",
           "source_ip",
           "country_code",
@@ -445,21 +443,23 @@ final class BundleRequests {
           "request_duration",
           "referer",
           "user_agent",
-          "attack_categories",
-          "rule_ids",
           "detection_engines",
           "severity",
           "detection_confidence",
           "detection_reason",
-          "source_file_id",
           "source_file",
           "source_line",
           "relation",
-          "direct_detection_ids",
-          "related_detection_ids",
           "normalization_steps",
           "raw_log",
-          "count_quality");
+          "count_quality",
+          "request_id",
+          "finding_ids",
+          "detection_ids",
+          "rule_ids",
+          "source_file_id",
+          "direct_detection_ids",
+          "related_detection_ids");
 
   static String[] requestRow(
       Map<String, Object> snapshot, Event e, Matches matches, String quality) {
@@ -490,9 +490,7 @@ final class BundleRequests {
             ? "related"
             : matches.related.isEmpty() ? "direct" : "direct_and_related";
     return new String[] {
-      Json.string(snapshot.get("request_id")),
-      String.join(";", findings),
-      String.join(";", ids),
+      String.join(";", categories),
       e.timezoneUnknown ? "" : Times.text(e.time),
       e.ip,
       Json.string(geo.get("country_code")),
@@ -508,21 +506,23 @@ final class BundleRequests {
       Json.string(snapshot.get("request_duration")),
       s(e.referer),
       s(e.ua),
-      String.join(";", categories),
-      String.join(";", rules),
       String.join(";", engines),
       severity,
       "unknown",
       String.join(";", reasons),
-      Json.string(snapshot.get("source_file_id")),
       e.file,
       Long.toString(e.line),
       relation,
-      Bundle.join(matches.direct.stream().map(a -> a.row.get("id")).toList()),
-      Bundle.join(matches.related.stream().map(a -> a.row.get("id")).toList()),
       Bundle.join(normalization.get("steps")),
       e.raw,
-      quality
+      quality,
+      Json.string(snapshot.get("request_id")),
+      String.join(";", findings),
+      String.join(";", ids),
+      String.join(";", rules),
+      Json.string(snapshot.get("source_file_id")),
+      Bundle.join(matches.direct.stream().map(a -> a.row.get("id")).toList()),
+      Bundle.join(matches.related.stream().map(a -> a.row.get("id")).toList())
     };
   }
 

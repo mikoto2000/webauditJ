@@ -128,3 +128,7 @@ Go版を先に完了した後、Java版を順に実装した。各フェーズ�
 | 移植照合補正 | [#37](https://github.com/mikoto2000/webaudit/pull/37)、[#38](https://github.com/mikoto2000/webaudit/pull/38) マージ・PR/main CI成功・削除済 | ASN評価前提・数値の排他的分類と不審件数品質を移植内で共通化 |
 
 Go版Phase5のmain CIは既存PowerShell起動待ち5秒タイムアウト後に該当jobを1回再実行して成功した。Java版はPhase5までPR/main CIの成功を確認済み。作業記録は成果物外の`.workflow/reporting/state.md`に保持する。
+
+## 読みやすさ・追加調査フロー
+
+Go版 PR47/48 の移植範囲・参照値・検証は [readability-port.md](readability-port.md) を参照。`ReportReadabilityTest` が読み方、IDによるリスク対応、CSV列順、0件解析を検証し、`audience-runtime.cjs` が対象指定・再読込・不正IDの選択動作を検証する。CIは全OSで公開サンプルのハッシュとリンクも検証する。

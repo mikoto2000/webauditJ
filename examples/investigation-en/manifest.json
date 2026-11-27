@@ -1,15 +1,18 @@
 {
+  "decision_rules_version" : "webaudit/response-rules-2",
+  "report_spec_version" : "webaudit/report-spec-1",
+  "secondary_template_version" : "webaudit/secondary-prompt-1",
   "schema" : "webaudit/manifest-1",
-  "version" : "2.0.0",
+  "version" : "2.1.1",
   "build" : {
     "java_version" : "25",
     "os" : "Windows 11",
     "arch" : "amd64",
-    "artifact_sha256" : "4399cd5873d1badbc54b5848b3aa37fdab59b0453521a4adfc7a6c9a8ac5ec01",
+    "artifact_sha256" : "2ca5e73cadcf62e28d058a5b58143800fa0008a323c7cad1965cb0bc14d88513",
     "artifact_hash_scope" : "distribution_jar_bytes_at_manifest_generation"
   },
-  "started_at" : "2026-11-24T09:12:08.922278Z",
-  "finished_at" : "2026-11-24T09:12:09.0683206Z",
+  "started_at" : "2026-11-27T12:17:48.026458Z",
+  "finished_at" : "2026-11-27T12:17:48.2090904Z",
   "settings" : {
     "parser" : "auto",
     "custom_regex" : "[not recorded]",
@@ -57,12 +60,12 @@
   "warnings" : [ "Request bodies and response contents are unavailable; authentication results and compromise cannot be verified", "Client address is the recorded peer; forwarded headers are untrusted and proxy topology is unknown", "Too few IP peers for request/error-rate statistical inference", "Missing referer in 9 parsed requests reduces related detection coverage" ],
   "artifacts" : [ {
     "path" : "suspicious-requests.csv",
-    "sha256" : "d0c36dacaff2ed20e1da4127f479ff8d431a099487c6cc63b6ba183ad884a248",
+    "sha256" : "830689472b6172fe02fd900f3a86a4adb4d7870e3a30a6065be069eef823050e",
     "bytes" : 6722
   }, {
     "path" : "related-requests.csv",
-    "sha256" : "02fe18ab5946c38757246aeaa63053b2f820441350c16d950351bd37c331b31d",
-    "bytes" : 7162
+    "sha256" : "e340fb16bb404f0e294623c88d95e6fab6324089aa242cbd48ab448ed0a49d79",
+    "bytes" : 7164
   }, {
     "path" : "detections.csv",
     "sha256" : "0d64e29d9c14bf896d4a44046cbf8575003fc0cb38bd77c572537a87e132a14a",
@@ -149,16 +152,164 @@
     "bytes" : 55
   }, {
     "path" : "diagnostics/execution-log.txt",
-    "sha256" : "9ff283f0869e125752762a9c16515a095dc3a186a4c2b8fab14877c10882f391",
+    "sha256" : "8bad6e337c320bdce285a6588a1fcc636c0aa6cc6ad1bd8da963d806b4ed9e9e",
     "bytes" : 454
   }, {
     "path" : "report.json",
-    "sha256" : "c31189e15308e3e7bd3d525de06174e976fafd8d621bd97277eafa929ff65064",
-    "bytes" : 356374
+    "sha256" : "796e1908ebab3cfaa1ebcef868d52e0ff888e4a89f2c96fb34479fd943512243",
+    "bytes" : 423016
+  }, {
+    "path" : "data/decision-support.json",
+    "sha256" : "7bd1478042803f3901485952c9b6d36c33c96cfd4a671d0ee05cdade9482a878",
+    "bytes" : 25881
+  }, {
+    "path" : "data/investigation-plan.json",
+    "sha256" : "115b527bbabbff780f9c98afab8eb94e0e782b0580abc9b05afda276308d1bc7",
+    "bytes" : 39307
+  }, {
+    "path" : "data/analysis.json",
+    "sha256" : "4e21d5f4d4eda1b0d526a51b9b1ebb0b9aa2898180847855615dd2a4ac17adb6",
+    "bytes" : 17377
+  }, {
+    "path" : "data/findings.json",
+    "sha256" : "6c26b69169a547e16c454effd5adcf7853f0704f9ad687b00953b6717b02743c",
+    "bytes" : 34458
+  }, {
+    "path" : "data/risks.json",
+    "sha256" : "5ee40a4ce70d4ab62a455cd2fd63495680f8675a6ab61cae64a1fbaf9def0c11",
+    "bytes" : 13553
+  }, {
+    "path" : "data/recommendations.json",
+    "sha256" : "737b1ea0645000695d9aa72c979dcabae7998f8698d10e57fef40fe186c01429",
+    "bytes" : 25436
+  }, {
+    "path" : "evidence/source-references.json",
+    "sha256" : "c47aba7efc0b224ca92afb7afb87b042483222693fec1f605d7a3420b19c6f8a",
+    "bytes" : 3892
+  }, {
+    "path" : "risk-rules.json",
+    "sha256" : "e8fb8fb71c9e91604d7ecf75fea19ac75b27d619c14b48953973cccbcf9c6d7e",
+    "bytes" : 6012
+  }, {
+    "path" : "risk-register.csv",
+    "sha256" : "25da2a77e019aeed859b59ef36fc903be0197041868658cd5da346cc589f6826",
+    "bytes" : 10520
+  }, {
+    "path" : "action-plan.csv",
+    "sha256" : "9b08d36d99acb56a53cf6082d733829c9f2e3a081b5fa27c98d86c7bd941d2bf",
+    "bytes" : 7096
+  }, {
+    "path" : "prompts/secondary-investigation-all.md",
+    "sha256" : "95f03f14c166280df25757a89a4695bce76598b331740f442e903900fd4234b5",
+    "bytes" : 11129
+  }, {
+    "path" : "prompts/secondary-investigation-priority.md",
+    "sha256" : "998c4b6f711e632a410ca6228aad95f549aa1cd870a1173df1807c98d5a30d54",
+    "bytes" : 5387
+  }, {
+    "path" : "prompts/cases/WA-68533c54f477aefb.md",
+    "sha256" : "bb97d6a6b785a0c2e22217e4336f063c82c6192bb3abb6c1665febf7379357b4",
+    "bytes" : 4222
+  }, {
+    "path" : "prompts/cases/WA-e209a83ef4765316.md",
+    "sha256" : "58e2ebd363cfe106095a67c9c1dc8d54259eec9e6a9e159fd6e97da1feb12d81",
+    "bytes" : 4237
+  }, {
+    "path" : "prompts/cases/WA-53546a87d8946592.md",
+    "sha256" : "89e78f7b7936a3fcd5312a535ff90285cdeb512ff7082c977048278a54b9281f",
+    "bytes" : 4222
+  }, {
+    "path" : "prompts/cases/WA-e3ae05f55589ce85.md",
+    "sha256" : "68c0e0b24b6ce787b86851bc7679bdc81553e82ee459f703c736216e49835ef2",
+    "bytes" : 4272
+  }, {
+    "path" : "prompts/cases/DET-3f3155956d35ab191969098eb3f28b05.md",
+    "sha256" : "5dafcc53c7f053799c2bc918142be9584278e66de89776f63c9e8139efd4b97f",
+    "bytes" : 4245
+  }, {
+    "path" : "prompts/cases/DET-f46f1e0d8936861b6d6ee668e0da5ee5.md",
+    "sha256" : "baf4dc5568a65007a3cd275805c9b56ac4ab14b64047388ad607de9953d27e41",
+    "bytes" : 4245
+  }, {
+    "path" : "prompts/cases/DET-e04a802150d1b00d86916f0c97ab9cc8.md",
+    "sha256" : "fe4299533b7f1a031f1fd6101d09d7987b72782d405ecbc814b60973f2add84a",
+    "bytes" : 4293
+  }, {
+    "path" : "prompts/cases/DET-03ae07b757f50ab890a74fe01a34030a.md",
+    "sha256" : "5044374d7dca862a2aad64e649a75c550b2f2fe539b83ca4f5bde7cd4425bc96",
+    "bytes" : 4302
+  }, {
+    "path" : "prompts/cases/DET-477f2cd524014e5368cfb1e0bb6dfe4f.md",
+    "sha256" : "5de5a87c267b67a2b6ed5ace23cb7355d445023ce4b94a0905ba265ae5ea2769",
+    "bytes" : 4302
+  }, {
+    "path" : "prompts/cases/DET-734734038fab05d4d89ce4e762bcd588.md",
+    "sha256" : "02f15940ab0f0c6924be92109561d9bd69c4f61e6601015215799f4e377e1cd5",
+    "bytes" : 4302
+  }, {
+    "path" : "prompts/cases/DET-3a94cf3eddc8266172d0f4e1e29f5593.md",
+    "sha256" : "6308f35eb7e3fdacf150105f362f3fc124f3346027532967cad160572e200f72",
+    "bytes" : 4302
+  }, {
+    "path" : "prompts/cases/DET-4c4a76ae2d2b61d4f67160e36b94f12b.md",
+    "sha256" : "511bb7cbed9fc10452b914ad9ed260cff1ab38de9e516cc4335ef303083c8b4a",
+    "bytes" : 4302
+  }, {
+    "path" : "secondary-plan.js",
+    "sha256" : "767ae6a7caac9b244a03df01f66e7973e40aee5e89c895c432b5c0fd2a133bd9",
+    "bytes" : 35487
+  }, {
+    "path" : "templates/report.css",
+    "sha256" : "f485eba24cea6b355b855c9d2567a87f4ec77001bcb3157d4a371d04d3491cef",
+    "bytes" : 1737
+  }, {
+    "path" : "templates/technical-report.html",
+    "sha256" : "c90aef51e1a55b41aa18c743de8e2df70a1dcd9e82de99141f3f00baee4222ac",
+    "bytes" : 63031
+  }, {
+    "path" : "report.css",
+    "sha256" : "f485eba24cea6b355b855c9d2567a87f4ec77001bcb3157d4a371d04d3491cef",
+    "bytes" : 1737
+  }, {
+    "path" : "report-spec.md",
+    "sha256" : "d27620f6c87bbd643148cd0d09d3bacc238fc64dad7e089777aad79bb363ef54",
+    "bytes" : 9967
+  }, {
+    "path" : "README.md",
+    "sha256" : "5edf6a28b5b2a27b1833fbb32a558b2584616a09056d3ee9d03499dbb81e0047",
+    "bytes" : 1703
+  }, {
+    "path" : "secondary-investigation.js",
+    "sha256" : "fe85179666fa19fda8cfdc415fbfc041a6fa71345437ee56a820d9b45da32d89",
+    "bytes" : 5965
+  }, {
+    "path" : "templates/executive-summary.html",
+    "sha256" : "4cacfa1986caecaa8f111c33b46622ef1f60b1032ce43e054c219e0b97762f63",
+    "bytes" : 25872
+  }, {
+    "path" : "executive-summary.html",
+    "sha256" : "0f5b67867089bf20651d1d6ae88ceef897587ae771664054f9595507ab9dd972",
+    "bytes" : 24832
+  }, {
+    "path" : "executive.html",
+    "sha256" : "0f5b67867089bf20651d1d6ae88ceef897587ae771664054f9595507ab9dd972",
+    "bytes" : 24832
   }, {
     "path" : "report.html",
-    "sha256" : "75cf0026043adb61e5f4dc05cc3d955d8bd45f56faaf8ccba1e2415ff4c60be6",
-    "bytes" : 245821
+    "sha256" : "61009ef8bbcee55958870267b280abe9457b5200a12cf18297c7bfd38e220db5",
+    "bytes" : 290552
+  }, {
+    "path" : "technical-report.html",
+    "sha256" : "fa8d1dd3ce67591e69a02d47ac38a5b5b8d7841c789d9ca4709b478b349e8726",
+    "bytes" : 332406
+  }, {
+    "path" : "technical.html",
+    "sha256" : "fa8d1dd3ce67591e69a02d47ac38a5b5b8d7841c789d9ca4709b478b349e8726",
+    "bytes" : 332406
+  }, {
+    "path" : "index.html",
+    "sha256" : "c5ac1f2c62cb4cf1eb2f57a559e19be9c2719b2884f8f217531c7db993b84392",
+    "bytes" : 1021
   } ],
   "artifact_hash_scope" : "all listed artifacts; manifest excludes its own hash"
 }
