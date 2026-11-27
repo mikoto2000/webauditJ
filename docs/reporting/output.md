@@ -75,3 +75,5 @@ Java版のmanifest.buildはJVM/OS/archと配布JAR自身のSHA-256を記録す�
 `--report-dir` は幹部向け `executive-summary.html`、技術者向け `technical-report.html`、二次調査の依頼Markdown・構造化計画・共通仕様書・HTML/CSSテンプレートも出力します。`index.html` から開いてください。詳細は[幹部・技術者向けレポート](audience-reports.md)を参照してください。依頼文の生成だけを行い、資料収集・LLM呼出し・調査実行は行いません。
 
 合成サンプルはJava版で生成しています。`python tools/build-report-pages.py NEW_DIRECTORY` でハッシュとリンクを検証し、閲覧用の静的ディレクトリを作成できます。
+
+レポート例は [GitHub Pages](https://mikoto2000.github.io/webauditJ/) でも公開しています。`main` のサンプル更新時に、成果物のハッシュ・サイズとHTMLリンクを検証して配信します。PRでは構築のみを行い、公開は行いません。
