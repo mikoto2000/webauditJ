@@ -1,5 +1,7 @@
 # WebAuditJ
 
+[公開レポート例を見る（日本語・English）](https://mikoto2000.github.io/webauditJ/)
+
 出力レポート例：[日本語](examples/investigation-ja/index.html) / [English](examples/investigation-en/index.html)
 
 最新リリース: [v2.1.1](https://github.com/mikoto2000/webauditJ/releases/tag/v2.1.1)。変更点は [リリースノート](docs/releases/v2.1.1.md)を参照してください。
