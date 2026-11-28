@@ -5,7 +5,6 @@ LLM, API key or Internet connection is required.
 
 - executive-summary.html: executive decisions, conditional risks and actions.
 - technical-report.html: detailed investigation and secondary-prompt generator.
-- report.html: established script-free technical entry with links to the new reports.
 - technical.html / executive.html: aliases for the audience-specific reports.
 - report.json: common analysis, decision support and secondary plan.
 - data/investigation-plan.json: trusted task conditions versus untrusted log observations.

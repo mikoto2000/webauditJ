@@ -38,7 +38,7 @@ java -jar target/webauditJ.jar --help
 java -jar target/webauditJ.jar --version
 ```
 
-ディレクトリは再帰的にファイル名順で読み、gzip は内容で判別します。同じ観測を繰り返し入力した場合も集計します。`--dedup-files` を指定したときだけ、ファイル全体の SHA-256 で重複を除きます。出力先を省略すると端末向け要約を、`--format json|csv|html` を指定するとその形式を標準出力へ出します。`-o` の既定形式は HTML です。
+ディレクトリは再帰的にファイル名順で読み、gzip は内容で判別します。同じ観測を繰り返し入力した場合も集計します。`--dedup-files` を指定したときだけ、ファイル全体の SHA-256 で重複を除きます。出力先を省略すると端末向け要約を、`--format json|csv|html` を指定するとその形式を標準出力へ出します。`-o` の既定形式は HTML です。単一HTMLは技術者向け報告に統一し、二次調査プロンプト生成用スクリプトと参照資料を内蔵します。CSV等のリンクから資料を保存できます。幹部向け報告と引継ぎ資料一式は `--report-dir` で出力してください。一式の従来の `report.html` は生成しません。
 
 Apache/Nginx のアクセス・エラーログ、JSON、syslog/journald、Nginx Proxy Manager と明示正規表現に対応します。独自形式の `--log-regex` は RE2 構文で、`(?P<ip>...)`、`(?P<time>...)`、`(?P<target>...)` が必須です。タイムゾーンのないエラーログには必要に応じて `--error-timezone Asia/Tokyo` を指定します。
 
@@ -56,7 +56,7 @@ java -jar target/webauditJ.jar access.log --lang en -o report-en.html
 java -jar target/webauditJ.jar access.log --format html --lang ja
 ```
 
-指定値は小文字の `ja` / `en` だけです。空・未対応値は入力解析や出力ファイル作成前に終了コード 2 で拒否します。`--lang` は HTML にだけ適用し、端末要約・ヘルプ・JSON・CSV の内容や判定コードは変更しません。ログ、URL、IP、ホスト名、User-Agent、ルール ID、DB の国名・組織名、構造化レポートとライセンス本文は原文を保持します。OS・外部ライブラリの診断も詳細を原文で表示します。
+指定値は小文字の `ja` / `en` だけです。空・未対応値は入力解析や出力ファイル作成前に終了コード 2 で拒否します。`--lang` は HTML とその内蔵資料・一式出力に適用し、端末要約・ヘルプ・単独JSON・CSVの内容や判定コードは変更しません。ログ、URL、IP、ホスト名、User-Agent、ルール ID、DB の国名・組織名、構造化レポートとライセンス本文は原文を保持します。OS・外部ライブラリの診断も詳細を原文で表示します。
 
 事案の詳細には、SQL インジェクション、コマンド実行、機密ファイル、XSS、認証、大量アクセスなど、検出の種類に応じた「不明な理由」「確認する場所」「何が見つかれば判断できるか」を表示します。複数の種類を検出した場合は各種類を案内します。成功・失敗の疑いがある場合やタイムゾーンが不明の場合も案内を保持します。端末の上位 5 事案、JSON の `outcome.investigation`、CSV の `details_json` にも含めます。Hub/Aura の独立した検出には追加しません。
 

@@ -115,9 +115,9 @@ class UpstreamEvidenceTest {
               null,
               null));
       String html = toFile ? Files.readString(output) : out.toString();
-      int at = html.indexOf("<article id=\"upstream-");
+      int at = html.indexOf("<article id=\"DET-");
       assertTrue(at > 0);
-      String details = html.substring(at);
+      String details = html.substring(at, html.indexOf("</article>", at));
       assertTrue(details.contains("<pre>192.0.2.1"));
       assertTrue(details.contains("&lt;script&gt;bad&lt;/script&gt;"));
       assertFalse(details.contains("<script>"));

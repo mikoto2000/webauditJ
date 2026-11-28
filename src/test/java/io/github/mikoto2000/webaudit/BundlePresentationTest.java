@@ -60,7 +60,7 @@ class BundlePresentationTest {
       options.title = "<script>title</script>";
       Path target = dir.resolve(lang);
       var report = Bundle.generate(List.of(input), target, new Options(), options);
-      String html = Files.readString(target.resolve("report.html"));
+      String html = Files.readString(target.resolve("technical-report.html"));
       for (int i = 1; i <= 11; i++) {
         assertTrue(html.contains("id=\"chapter-" + i + "\""));
       }

@@ -58,7 +58,9 @@ public final class Main {
     @CommandLine.Option(names = "--investigator")
     String investigator = "";
 
-    @CommandLine.Option(names = "--include-sensitive-evidence")
+    @CommandLine.Option(
+        names = "--include-sensitive-evidence",
+        description = "HTML reports: include unmasked sensitive source values")
     boolean includeSensitive;
 
     @CommandLine.Option(names = "--max-spool-bytes")
@@ -210,7 +212,8 @@ public final class Main {
         line(err, "--report-dir cannot be combined with -o or --format");
         return 2;
       }
-      if (a.reportDir != null
+      String mode = !a.format.isEmpty() ? a.format : a.output == null ? "summary" : "html";
+      if ((a.reportDir != null || mode.equals("html"))
           && (a.maxSpool < 1
               || a.maxSpool > (1L << 50)
               || a.maxReport < 1
@@ -255,26 +258,39 @@ public final class Main {
         o.logRegex = a.regex;
         o.geoIP = geo;
         if (a.verbose) o.progress = new InputProgressDisplay(err);
+        var bundle = new BundleOptions();
+        bundle.title = a.reportTitle;
+        bundle.system = a.system;
+        bundle.background = a.background;
+        bundle.purpose = a.purpose;
+        bundle.investigator = a.investigator;
+        bundle.language = a.language;
+        bundle.includeSensitiveEvidence = a.includeSensitive;
+        bundle.maxSpoolBytes = a.maxSpool;
+        bundle.maxOutputBytes = a.maxReport;
+        bundle.warnings.addAll(geoWarnings);
         if (a.reportDir != null) {
-          var bundle = new BundleOptions();
-          bundle.title = a.reportTitle;
-          bundle.system = a.system;
-          bundle.background = a.background;
-          bundle.purpose = a.purpose;
-          bundle.investigator = a.investigator;
-          bundle.language = a.language;
-          bundle.includeSensitiveEvidence = a.includeSensitive;
-          bundle.maxSpoolBytes = a.maxSpool;
-          bundle.maxOutputBytes = a.maxReport;
-          bundle.warnings.addAll(geoWarnings);
           var common = Bundle.generate(a.inputs, a.reportDir, o, bundle);
           Reports.write(out, Json.obj(common.get("analysis")), "summary");
           line(out, "\nReport directory: " + Reports.terminal(a.reportDir.toString()));
           return Json.bool(common.get("complete")) ? 0 : 1;
         }
-        String mode = !a.format.isEmpty() ? a.format : a.output == null ? "summary" : "html";
         o.retainUpstreamEvidence = mode.equals("html");
-        var report = Engine.analyze(a.inputs, o);
+        Map<String, Object> report;
+        String standalone;
+        if (mode.equals("html")) {
+          var generated = StandaloneReport.generate(a.inputs, o, bundle);
+          report = generated.analysis();
+          standalone = generated.html();
+        } else {
+          report = Engine.analyze(a.inputs, o);
+          standalone = "";
+        }
+        ReportWriter writeReport =
+            w -> {
+              if (mode.equals("html")) w.write(standalone);
+              else Reports.write(w, report, mode, a.language);
+            };
         for (String warning : geoWarnings) {
           Engine.warn(report, warning);
           line(err, Reports.terminal(warning));
@@ -301,14 +317,14 @@ public final class Main {
             return 2;
           }
           try {
-            writeAndCloseReport(a.output, file, w -> Reports.write(w, report, mode, a.language));
+            writeAndCloseReport(a.output, file, writeReport);
           } catch (IOException ex) {
             line(err, "Report write failed: " + Reports.terminal(ex.getMessage()));
             return 1;
           }
           Reports.write(out, report, "summary");
           line(out, "\nReport: " + Reports.terminal(a.output.toString()));
-        } else Reports.write(out, report, mode, a.language);
+        } else writeReport.write(out);
         return Json.bool(report.get("partial")) ? 1 : 0;
       }
     } catch (IOException | RuntimeException ex) {

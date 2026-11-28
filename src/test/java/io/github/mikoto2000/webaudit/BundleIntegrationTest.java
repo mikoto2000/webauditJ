@@ -72,7 +72,7 @@ class BundleIntegrationTest {
     assertEquals("'=1+2", rows.getFirst().get("user_agent"));
     for (var row : BundleRequestsTest.csv(target.resolve("findings.csv")))
       assertNotNull(Json.object(row.get("details_json")));
-    String html = Files.readString(target.resolve("report.html"));
+    String html = Files.readString(target.resolve("technical-report.html"));
     assertFalse(html.contains("<script>"));
     assertTrue(html.contains("&lt;script&gt;"));
     assertEquals(raw, Files.readString(input));
@@ -92,7 +92,7 @@ class BundleIntegrationTest {
       var report = Json.object(Files.readString(sample.resolve("report.json")));
       assertEquals(9, Json.number(Json.obj(report.get("summary")).get("total_requests")));
       assertFalse(Files.exists(sample.resolve("INCOMPLETE")));
-      String html = Files.readString(sample.resolve("report.html"));
+      String html = Files.readString(sample.resolve("technical-report.html"));
       assertTrue(html.contains("<html lang=\"" + language + "\""));
     }
   }

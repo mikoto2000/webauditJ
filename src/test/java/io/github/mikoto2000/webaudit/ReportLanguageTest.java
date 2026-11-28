@@ -156,7 +156,8 @@ class ReportLanguageTest {
       assertEquals(lang.equals("ja"), html.contains("成否を確認するには"));
       assertEquals(lang.equals("ja"), html.contains("成否不明"));
       assertTrue(html.contains("&lt;script&gt;"));
-      assertFalse(html.contains("<script>"));
+      assertEquals(2, html.split("<script>", -1).length - 1);
+      assertFalse(html.contains("<script src="));
       if (lang.equals("en")) assertTrue(html.contains("Historical response bodies"));
     }
     assertTrue(render("--format", "html").contains("lang=\"ja\""));

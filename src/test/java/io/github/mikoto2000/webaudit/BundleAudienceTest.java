@@ -68,7 +68,7 @@ class BundleAudienceTest {
       String exec = Files.readString(out.resolve("executive.html"));
       assertFalse(exec.contains("<script>"));
       assertTrue(exec.contains(lang.equals("ja") ? "推奨対応" : "Recommended response"));
-      assertFalse(Files.readString(out.resolve("report.html")).contains("<script"));
+      assertFalse(Files.exists(out.resolve("report.html")));
       for (var c : cases)
         assertTrue(
             Files.readString(out.resolve("prompts/cases/" + c.get("id") + ".md"))
@@ -98,6 +98,10 @@ class BundleAudienceTest {
   }
 
   static void verifyBrowser(Path out) throws Exception {
+    verifyBrowser(out, null);
+  }
+
+  static void verifyBrowser(Path out, Path standalone) throws Exception {
     try {
       var probe = new ProcessBuilder("node", "--version").start();
       if (!probe.waitFor(10, java.util.concurrent.TimeUnit.SECONDS)) {
@@ -109,14 +113,15 @@ class BundleAudienceTest {
       return;
     }
     Path log = out.resolveSibling(out.getFileName() + "-node.txt");
-    var run =
-        new ProcessBuilder(
+    var args =
+        new ArrayList<>(
+            List.of(
                 "node",
                 Path.of("src/test/resources/audience-runtime.cjs").toAbsolutePath().toString(),
-                out.toAbsolutePath().toString())
-            .redirectErrorStream(true)
-            .redirectOutput(log.toFile())
-            .start();
+                out.toAbsolutePath().toString()));
+    if (standalone != null) args.add(standalone.toAbsolutePath().toString());
+    var run =
+        new ProcessBuilder(args).redirectErrorStream(true).redirectOutput(log.toFile()).start();
     if (!run.waitFor(30, java.util.concurrent.TimeUnit.SECONDS)) {
       run.destroyForcibly();
       fail("Browser runtime timeout");

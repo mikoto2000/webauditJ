@@ -12,7 +12,7 @@ java -jar target/webauditJ.jar access.log --report-dir report-en --lang en
 
 | 成果物 | 内容 |
 |---|---|
-| report.html | 11章、目次、概要、全アクセス統計、カバレッジ、一覧/詳細/戻りリンク、生ログ代表例、事実と推定、推奨対応、印刷CSS |
+| technical-report.html | 11章、目次、概要、全アクセス統計、カバレッジ、一覧/詳細/戻りリンク、生ログ代表例、事実と推定、推奨対応、印刷CSS |
 | report.json | `webaudit/investigation-1`共通モデル。既存解析結果は`analysis`に保持 |
 | manifest.json | `webaudit/manifest-1`、build/実効条件/制限/ルールhash/DB来歴/入力hash/完全性/成果物hash |
 | log-inventory.csv | 入力ごとの原本ID・サイズ・hash・期間・行数・format・timezone・利用field・診断 |
@@ -77,3 +77,5 @@ Java版のmanifest.buildはJVM/OS/archと配布JAR自身のSHA-256を記録す�
 合成サンプルはJava版で生成しています。`python tools/build-report-pages.py NEW_DIRECTORY` でハッシュとリンクを検証し、閲覧用の静的ディレクトリを作成できます。
 
 レポート例は [GitHub Pages](https://mikoto2000.github.io/webauditJ/) でも公開しています。`main` のサンプル更新時に、成果物のハッシュ・サイズとHTMLリンクを検証して配信します。PRでは構築のみを行い、公開は行いません。
+
+単一HTML（`-o report.html` / `--format html`）も同じ技術者向け画面を使い、二次調査のスクリプトとCSV・JSON・仕様書などの参照資料を内蔵します。リンクから内蔵資料を保存できます。幹部向け報告と引継ぎ資料一式は `--report-dir` で出力してください。一式の従来の `report.html` は生成しません。単一HTMLにも `--include-sensitive-evidence`、調査メタデータ、`--max-spool-bytes`、`--max-report-bytes` が適用されます。生成中の非公開一時フォルダーは終了時に削除します。

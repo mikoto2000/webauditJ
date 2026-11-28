@@ -44,7 +44,7 @@ class ReportReadabilityTest {
                   .text(
                       "Rule applicability and the actual outcome remain unassessed for this"
                           + " independent detection.")));
-      assertFalse(Files.readString(out.resolve("report.html")).contains("<script"));
+      assertFalse(Files.exists(out.resolve("report.html")));
       for (String name : List.of("suspicious-requests.csv", "related-requests.csv")) {
         String header = Files.readAllLines(out.resolve(name)).getFirst();
         assertTrue(header.startsWith("attack_categories,timestamp,source_ip,"), header);
