@@ -755,7 +755,6 @@ final class BundleAudience {
                     ? "Investigation requests and result reporting (technical report)"
                     : "追加調査の依頼と結果報告（技術者向け）")
                 + "</a></li></ol>");
-    w.text("report.html", legacy);
     String enhanced =
         legacy
             .replace(

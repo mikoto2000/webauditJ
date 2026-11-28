@@ -272,8 +272,8 @@
     "bytes" : 5965
   }, {
     "path" : "README.md",
-    "sha256" : "5edf6a28b5b2a27b1833fbb32a558b2584616a09056d3ee9d03499dbb81e0047",
-    "bytes" : 1703
+    "sha256" : "3228c8ff781c1508181689e91e168993ebe475a9b490323705a62f066d65a8bd",
+    "bytes" : 1617
   }, {
     "path" : "report-spec.md",
     "sha256" : "d27620f6c87bbd643148cd0d09d3bacc238fc64dad7e089777aad79bb363ef54",
@@ -294,10 +294,6 @@
     "path" : "executive.html",
     "sha256" : "decfa0c736972e3b8d70846e70dff5aef9542d37b60248fb04ab99eb40072e45",
     "bytes" : 26325
-  }, {
-    "path" : "report.html",
-    "sha256" : "2cb79863101a2c1173b77dda569228a9fcb0561ebd9301ac3008b7554682c60f",
-    "bytes" : 311352
   }, {
     "path" : "technical-report.html",
     "sha256" : "7d2376fcd189364ca8ce09a20fb771d85fa34d5bb8b6ceae7d855cab135ade23",

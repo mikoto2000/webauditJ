@@ -132,3 +132,12 @@ Go版Phase5のmain CIは既存PowerShell起動待ち5秒タイムアウト後に
 ## 読みやすさ・追加調査フロー
 
 Go版 PR47/48 の移植範囲・参照値・検証は [readability-port.md](readability-port.md) を参照。`ReportReadabilityTest` が読み方、IDによるリスク対応、CSV列順、0件解析を検証し、`audience-runtime.cjs` が対象指定・再読込・不正IDの選択動作を検証する。CIは全OSで公開サンプルのハッシュとリンクも検証する。
+
+## レポートの出力改善
+
+Go版 [PR #50](https://github.com/mikoto2000/webaudit/pull/50)、確定head `5e06226708a54b14f97a7e4d24de4aad0f350815` を移植。単一HTMLも一式と同じ共通解析・技術者向け画面を使い、スクリプトとリンク先資料を内蔵する。一式の従来 `report.html` は生成しない。単独JSON/CSV/summary/watchと検出ルールは維持する。
+
+- `StandaloneReportTest`: 日英のCLI出力、内蔵JSONと対象ID、全hrefの自己完結、改行正規化後のCSPハッシュ、画面と復号資料のマスク・安全表示、機密値明示出力、圧縮ログ・合成GeoIP、内蔵後のバイト上限。
+- `BundleAudienceTest` / `BundleIntegrationTest` / `BundlePresentationTest` / `ReportReadabilityTest`: 廃止ファイル不存在、manifest整合、既存の技術者向け画面・リンク・機密値表示。
+- `audience-runtime.cjs`: 一式と単一HTMLで、実スクリプトの対象選択・文面一致・コピー代替・Markdown保存をDOMスタブで検証。実ブラウザーの表示・印刷検証とは区別する。
+- 公開一式サンプルは解析結果・証拠ID・生成時刻のスナップショットを保持し、廃止ファイルとREADME項目だけを除いてmanifestを更新。単一HTMLサンプルはJava配布JARで再生成。
